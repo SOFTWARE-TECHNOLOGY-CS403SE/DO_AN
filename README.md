@@ -1,7 +1,18 @@
 # DO_AN
 
-## HƯỚNG DẪN SỬ DỤNG GIT
+## Members
+```bash
 
+- Nguyễn Ngọc Khánh
+- Trần Thế Tường
+- Phùng Văn Mạnh
+- Nguyễn Khắc Hoài Nam
+- Trần Ngọc Tiến
+- Trương Thị Ngọc Ánh
+
+```
+
+## HƯỚNG DẪN SỬ DỤNG GIT
 ```bash
 
 - Xem tất cả các nhánh từ xa
