@@ -1,0 +1,8 @@
+- Tách bảng building
+- bảng chi phí
+- bảng thuê tòa nhà
+- bảng mua tòa nhà
+- bảng chi tiết tỏa nhà
+- nếu phát sinh thêm bảng: thanh toán
+
+
