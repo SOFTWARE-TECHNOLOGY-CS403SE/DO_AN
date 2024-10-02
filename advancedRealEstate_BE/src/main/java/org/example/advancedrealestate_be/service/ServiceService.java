@@ -4,7 +4,7 @@ import org.example.advancedrealestate_be.dto.ServiceDto;
 
 import java.util.List;
 
-public interface Service {
+public interface ServiceService {
     List<ServiceDto> findAll();
 
     ServiceDto findById(String id);

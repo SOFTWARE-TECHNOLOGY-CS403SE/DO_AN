@@ -4,7 +4,7 @@ import org.example.advancedrealestate_be.constant.ErrorEnumConstant;
 import org.example.advancedrealestate_be.dto.ServiceDto;
 import org.example.advancedrealestate_be.mapper.ServiceMapper;
 import org.example.advancedrealestate_be.repository.ServiceRepository;
-import org.example.advancedrealestate_be.service.Service;
+import org.example.advancedrealestate_be.service.ServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
@@ -14,10 +14,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 @org.springframework.stereotype.Service
-public class ServiceHandler implements Service {
+public class ServiceServiceHandler implements ServiceService {
     ServiceRepository serviceRepository;
     @Autowired
-    public ServiceHandler(ServiceRepository serviceRepository) {
+    public ServiceServiceHandler(ServiceRepository serviceRepository) {
         this.serviceRepository = serviceRepository;
     }
 
