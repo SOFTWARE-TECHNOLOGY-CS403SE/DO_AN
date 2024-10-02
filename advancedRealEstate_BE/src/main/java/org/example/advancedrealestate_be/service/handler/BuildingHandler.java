@@ -6,8 +6,10 @@ import org.example.advancedrealestate_be.entity.Building;
 import org.example.advancedrealestate_be.mapper.BuildingMapper;
 import org.example.advancedrealestate_be.repository.BuildingRepository;
 import org.example.advancedrealestate_be.service.BuildingService;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
@@ -19,8 +21,13 @@ import java.util.stream.Collectors;
 
 @Service
 public class BuildingHandler implements BuildingService {
-
+    @Autowired
     BuildingRepository buildingRepository;
+
+
+    @Autowired
+    private ModelMapper modelMapper;
+
 
     @Autowired
     public BuildingHandler(BuildingRepository buildingRepository) {
@@ -59,23 +66,12 @@ public class BuildingHandler implements BuildingService {
         return new BuildingDto(buildingNew.getId(), buildingNew.getName(), buildingNew.getStructure(), buildingNew.getLevel(), buildingNew.getArea(), buildingNew.getType(), buildingNew.getDescription(), buildingNew.getNumber_of_basement());
     }
 
+    @Transactional
     @Override
-    public BuildingDto updateById(String id, BuildingDto buildingDto) {
-        Optional<Building> building = buildingRepository.findById(id);
-        if(building.isEmpty()){
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorEnumConstant.BuildingNotFound.toString());
-        }
-        building.get().setName(buildingDto.getName() != null ? buildingDto.getName() : building.get().getName());
-        building.get().setStructure(buildingDto.getStructure() != null ? buildingDto.getStructure() : building.get().getStructure());
-        building.get().setLevel(buildingDto.getLevel() != null ? buildingDto.getLevel() : building.get().getLevel());
-        building.get().setArea(buildingDto.getArea() != null ? buildingDto.getArea() : building.get().getArea());
-        building.get().setType(buildingDto.getType() != null ? buildingDto.getType() : building.get().getType());
-        building.get().setDescription(buildingDto.getDescription() != null ? buildingDto.getDescription() : building.get().getDescription());
-        building.get().setNumber_of_basement(buildingDto.getNumber_of_basement() == 0 ? 0 : buildingDto.getNumber_of_basement());
-        building.get().setImage(null);
-
-        Building buildingUpdate = buildingRepository.save(building.get());
-        return new BuildingDto(buildingUpdate.getId(), buildingUpdate.getName(), buildingUpdate.getStructure(), buildingUpdate.getLevel(), buildingUpdate.getArea(), buildingUpdate.getType(), buildingUpdate.getDescription(), buildingUpdate.getNumber_of_basement());
+    public BuildingDto updateById(BuildingDto buildingDto) {
+        Building buildingEntity=modelMapper.map(buildingDto,Building.class);
+        buildingRepository.save(buildingEntity);
+        return buildingDto;
     }
 
     @Override
