@@ -1,4 +1,5 @@
 package org.example.advancedrealestate_be.controller.api.admin;
+
 import io.swagger.v3.oas.annotations.tags.Tag;
 import net.minidev.json.JSONObject;
 import org.example.advancedrealestate_be.dto.BuildingDto;
@@ -7,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.webjars.NotFoundException;
+
 
 import java.util.List;
 
@@ -63,19 +64,14 @@ public class AdminBuildingApiController {
         }
     }
 
-    @PatchMapping("/buildings/{id}")
-    private ResponseEntity<JSONObject> update(@PathVariable String id, @RequestBody BuildingDto buildingDto){
-        JSONObject data = new JSONObject();
-        try{
-            BuildingDto responseDto = buildingService.updateById(id, buildingDto);
-            data.put("data", responseDto);
-            return new ResponseEntity<>(data, HttpStatus.OK);
-        }catch (Exception error){
-            data.put("message", error.getMessage());
-            return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
 
+@PostMapping(value = "/buildings/{id}", consumes = "application/json")
+public ResponseEntity<Object> addOrUpdateBuilding(@RequestBody BuildingDto buildingDto)  {
+
+
+    return ResponseEntity.ok(buildingService.updateById(buildingDto));
+
+}
     @DeleteMapping("/buildings/{id}")
     private ResponseEntity<JSONObject> remove(@PathVariable String id){
         JSONObject data = new JSONObject();

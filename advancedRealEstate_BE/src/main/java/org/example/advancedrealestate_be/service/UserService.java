@@ -1,2 +1,4 @@
-package org.example.advancedrealestate_be.service.handler;public interface UserService {
+package org.example.advancedrealestate_be.service;
+
+public interface UserService {
 }
