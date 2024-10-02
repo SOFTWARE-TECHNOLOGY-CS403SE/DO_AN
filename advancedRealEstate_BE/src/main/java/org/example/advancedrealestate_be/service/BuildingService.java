@@ -13,7 +13,7 @@ public interface BuildingService {
 
     BuildingDto create(BuildingDto buildingDto);
 
-    BuildingDto updateById( BuildingDto buildingDto);
+    BuildingDto updateById( BuildingDto buildingDto, String id);
 
     BuildingDto deleteById(String id);
 }

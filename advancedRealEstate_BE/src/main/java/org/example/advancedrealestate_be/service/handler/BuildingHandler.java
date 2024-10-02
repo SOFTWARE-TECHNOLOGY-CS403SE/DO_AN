@@ -21,17 +21,16 @@ import java.util.stream.Collectors;
 
 @Service
 public class BuildingHandler implements BuildingService {
-    @Autowired
+
+
     BuildingRepository buildingRepository;
+    private final ModelMapper modelMapper;
 
 
     @Autowired
-    private ModelMapper modelMapper;
-
-
-    @Autowired
-    public BuildingHandler(BuildingRepository buildingRepository) {
+    public BuildingHandler(BuildingRepository buildingRepository, ModelMapper modelMapper) {
         this.buildingRepository = buildingRepository;
+        this.modelMapper = modelMapper;
     }
 
     @Override
@@ -45,39 +44,57 @@ public class BuildingHandler implements BuildingService {
     @Override
     public BuildingDto findById(String id) {
         Optional<Building> building = buildingRepository.findById(id);
-        if(building.isEmpty()){
+        if (building.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorEnumConstant.BuildingNotFound.toString());
         }
         return building.map(value -> new BuildingDto(value.getId(), value.getName(), value.getStructure(), value.getLevel(), value.getArea(), value.getType(), value.getDescription(), value.getNumber_of_basement())).orElse(null);
     }
 
-    @Override
-    public BuildingDto create(BuildingDto buildingDto) {
-        Building building = new Building();
-        building.setName(buildingDto.getName());
-        building.setStructure(buildingDto.getStructure());
-        building.setLevel(buildingDto.getLevel());
-        building.setArea(buildingDto.getArea());
-        building.setType(buildingDto.getType());
-        building.setDescription(buildingDto.getDescription());
-        building.setNumber_of_basement(buildingDto.getNumber_of_basement());
-
-        Building buildingNew = buildingRepository.save(building);
-        return new BuildingDto(buildingNew.getId(), buildingNew.getName(), buildingNew.getStructure(), buildingNew.getLevel(), buildingNew.getArea(), buildingNew.getType(), buildingNew.getDescription(), buildingNew.getNumber_of_basement());
-    }
+//    @Override
+//    public BuildingDto create(BuildingDto buildingDto) {
+//        Building building = new Building();
+//        building.setName(buildingDto.getName());
+//        building.setStructure(buildingDto.getStructure());
+//        building.setLevel(buildingDto.getLevel());
+//        building.setArea(buildingDto.getArea());
+//        building.setType(buildingDto.getType());
+//        building.setDescription(buildingDto.getDescription());
+//        building.setNumber_of_basement(buildingDto.getNumber_of_basement());
+//
+//        Building buildingNew = buildingRepository.save(building);
+//        return new BuildingDto(buildingNew.getId(), buildingNew.getName(), buildingNew.getStructure(), buildingNew.getLevel(), buildingNew.getArea(), buildingNew.getType(), buildingNew.getDescription(), buildingNew.getNumber_of_basement());
+//    }
 
     @Transactional
     @Override
-    public BuildingDto updateById(BuildingDto buildingDto) {
-        Building buildingEntity=modelMapper.map(buildingDto,Building.class);
-        buildingRepository.save(buildingEntity);
-        return buildingDto;
+    public BuildingDto create(BuildingDto buildingDto) {
+        Building buildingEntity = modelMapper.map(buildingDto, Building.class);
+        Building buildingNew = buildingRepository.save(buildingEntity);
+        return new BuildingDto(buildingNew.getId(), buildingNew.getName(), buildingNew.getStructure(), buildingNew.getLevel(), buildingNew.getArea(), buildingNew.getType(), buildingNew.getDescription(), buildingNew.getNumber_of_basement());
+    }
+
+    @Override
+    public BuildingDto updateById(BuildingDto buildingDto, String id) {
+        Optional<Building> building = buildingRepository.findById(id);
+        if (building.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorEnumConstant.BuildingNotFound.toString());
+        }
+        building.get().setName(buildingDto.getName() != null ? buildingDto.getName() : building.get().getName());
+        building.get().setStructure(buildingDto.getStructure() != null ? buildingDto.getStructure() : building.get().getStructure());
+        building.get().setLevel(buildingDto.getLevel() != null ? buildingDto.getLevel() : building.get().getLevel());
+        building.get().setArea(buildingDto.getArea() != null ? buildingDto.getArea() : building.get().getArea());
+        building.get().setType(buildingDto.getType() != null ? buildingDto.getType() : building.get().getType());
+        building.get().setDescription(buildingDto.getDescription() != null ? buildingDto.getDescription() : building.get().getDescription());
+        building.get().setNumber_of_basement(buildingDto.getNumber_of_basement() == 0 ? 0 : buildingDto.getNumber_of_basement());
+        building.get().setImage(null);
+        Building buildingUpdate = buildingRepository.save(building.get());
+        return new BuildingDto(buildingUpdate.getId(), buildingUpdate.getName(), buildingUpdate.getStructure(), buildingUpdate.getLevel(), buildingUpdate.getArea(), buildingUpdate.getType(), buildingUpdate.getDescription(), buildingUpdate.getNumber_of_basement());
     }
 
     @Override
     public BuildingDto deleteById(String id) {
         Optional<Building> building = buildingRepository.findById(id);
-        if(building.isEmpty()){
+        if (building.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorEnumConstant.BuildingNotFound.toString());
         }
         BuildingDto buildingDto = new BuildingDto(building.get().getId(), building.get().getName(), building.get().getStructure(), building.get().getLevel(), building.get().getArea(), building.get().getType(), building.get().getDescription(), building.get().getNumber_of_basement());

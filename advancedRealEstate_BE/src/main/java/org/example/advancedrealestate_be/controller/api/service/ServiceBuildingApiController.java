@@ -23,62 +23,62 @@ public class ServiceBuildingApiController {
     }
 
     @PostMapping("/services")
-    private ResponseEntity<JSONObject> create(@RequestBody ServiceDto serviceDto){
+    private ResponseEntity<JSONObject> create(@RequestBody ServiceDto serviceDto) {
         JSONObject data = new JSONObject();
-        try{
+        try {
             ServiceDto responseDto = serviceService.create(serviceDto);
             data.put("data", responseDto);
             return new ResponseEntity<>(data, HttpStatus.OK);
-        }catch (Exception error){
+        } catch (Exception error) {
             data.put("message", error.getMessage());
             return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @GetMapping("/services")
-    private ResponseEntity<JSONObject> index(){
+    private ResponseEntity<JSONObject> index() {
         JSONObject data = new JSONObject();
-        try{
+        try {
             List<ServiceDto> serviceDtoList = serviceService.findAll();
-            data.put("total" , serviceDtoList.size());
+            data.put("total", serviceDtoList.size());
             data.put("data", serviceDtoList);
             return new ResponseEntity<>(data, HttpStatus.OK);
-        }catch (Exception error){
+        } catch (Exception error) {
             data.put("message", error.getMessage());
             return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @GetMapping("/services/{id}")
-    private ResponseEntity<JSONObject> detail(@PathVariable String id){
+    private ResponseEntity<JSONObject> detail(@PathVariable String id) {
         JSONObject object = new JSONObject();
-        try{
+        try {
             ServiceDto responseDto = serviceService.findById(id);
             object.put("data", responseDto);
             return new ResponseEntity<>(object, HttpStatus.OK);
-        }catch (Exception error){
+        } catch (Exception error) {
             object.put("message", error.getMessage());
             return new ResponseEntity<>(object, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @PatchMapping("/services/{id}")
-    private ResponseEntity<JSONObject> update(@PathVariable String id, @RequestBody ServiceDto serviceDto){
+    private ResponseEntity<JSONObject> update(@PathVariable String id, @RequestBody ServiceDto serviceDto) {
         JSONObject data = new JSONObject();
-        try{
+        try {
             ServiceDto responseDto = serviceService.updateById(id, serviceDto);
             data.put("data", responseDto);
             return new ResponseEntity<>(data, HttpStatus.OK);
-        }catch (Exception error){
+        } catch (Exception error) {
             data.put("message", error.getMessage());
             return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @DeleteMapping("/services/{id}")
-    private ResponseEntity<JSONObject> remove(@PathVariable String id){
+    private ResponseEntity<JSONObject> remove(@PathVariable String id) {
         JSONObject data = new JSONObject();
-        try{
+        try {
             ServiceDto responseDto = serviceService.deleteById(id);
             data.put("data", responseDto);
             return new ResponseEntity<>(data, HttpStatus.OK);
