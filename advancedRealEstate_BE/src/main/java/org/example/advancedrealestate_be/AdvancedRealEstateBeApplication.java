@@ -12,7 +12,7 @@ public class AdvancedRealEstateBeApplication {
     public static void main(String[] args) {
         SpringApplication.run(AdvancedRealEstateBeApplication.class, args);
 
-        System.out.println("running...");
+        System.out.println("running: http://localhost:8080/");
     }
 
 }
