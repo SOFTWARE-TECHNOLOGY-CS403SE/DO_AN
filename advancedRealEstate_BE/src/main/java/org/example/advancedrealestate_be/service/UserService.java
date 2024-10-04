@@ -11,9 +11,9 @@ import java.util.Optional;
 public interface UserService {
 //    UserDto findOneByUserNameAndStatus();
 
-    UserDto register(UserDto userDto); // Ensure this method is declared here
-
-    UserDto findOneByUserNameAndStatus(String name, int status);
-
-    Optional<UserDto> findByUserName(String username);
+//    UserDto register(UserDto userDto); // Ensure this method is declared here
+//
+//    UserDto findOneByUserNameAndStatus(String name, int status);
+//
+//    Optional<UserDto> findByUserName(String username);
 }
