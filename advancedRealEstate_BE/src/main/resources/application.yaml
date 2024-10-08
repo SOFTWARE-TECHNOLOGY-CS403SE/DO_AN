@@ -24,13 +24,13 @@
 server:
   port: 8080
   servlet:
-    context-path: /identity
+    context-path: /
 
 spring:
   datasource:
-    url: ${DBMS_CONNECTION:jdbc:mysql://localhost:3307/identity_service}
+    url: ${DBMS_CONNECTION:jdbc:mysql://localhost:3306/identity_service}
     driverClassName: "com.mysql.cj.jdbc.Driver"
-    password: ${DBMS_PASSWORD:28082001}
+    password: ${DBMS_PASSWORD:123456}
     username: ${DBMS_USERNAME:root}
   jpa:
     hibernate:
@@ -41,3 +41,14 @@ jwt:
   signerKey: "1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij"
   valid-duration: 3600 # in second
   refreshable-duration: 36000 # in seconds
+
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    enable: true
+  group-configs:
+    - group: identity-service
+      paths-to-match: /api/**
