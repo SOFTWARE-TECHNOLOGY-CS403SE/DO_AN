@@ -28,5 +28,5 @@ public class User {
     String lastName;
 
     @ManyToMany
-    Set<Role> roles;
+    Set<Role> roles;  // Establish the many-to-many relationship
 }

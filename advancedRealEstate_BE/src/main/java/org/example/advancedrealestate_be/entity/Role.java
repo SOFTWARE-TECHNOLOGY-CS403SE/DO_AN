@@ -1,8 +1,6 @@
 package org.example.advancedrealestate_be.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToMany;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -17,10 +15,11 @@ import java.util.Set;
 @Entity
 public class Role {
     @Id
+    @Column(unique = true)  // Ensure the name is unique
     String name;
 
     String description;
 
-    @ManyToMany
-    Set<Permission> permissions;
+    @ManyToMany(mappedBy = "roles")  // Specify the owning side of the relationship
+    Set<Permission> permissions;  // Many-to-many relationship
 }

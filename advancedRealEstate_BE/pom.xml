@@ -8,11 +8,24 @@
         <version>3.2.2</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.devteria</groupId>
-    <artifactId>DO_AN</artifactId>
-    <name>DO_AN</name>
-    <version>0.0.1</version>
-    <description>DO_AN</description>
+    <groupId>org.example.advancedrealestate_be</groupId>
+    <artifactId>advancedRealEstate_BE</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>advancedRealEstate_BE</name>
+    <description>advancedRealEstate_BE</description>
+    <url/>
+    <licenses>
+        <license/>
+    </licenses>
+    <developers>
+        <developer/>
+    </developers>
+    <scm>
+        <connection/>
+        <developerConnection/>
+        <tag/>
+        <url/>
+    </scm>
     <properties>
         <java.version>21</java.version>
         <projectlombok-lombok.version>1.18.30</projectlombok-lombok.version>
@@ -96,6 +109,14 @@
             <groupId>org.modelmapper</groupId>
             <artifactId>modelmapper</artifactId>
             <version>2.3.5</version>
+        </dependency>
+
+<!--        lombok-->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.26</version> <!-- Check for the latest version -->
+            <scope>provided</scope>
         </dependency>
 
         <!-- Testing Dependencies -->

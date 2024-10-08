@@ -17,21 +17,17 @@ import org.example.advancedrealestate_be.repository.UserRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 
 @Configuration
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
-public class  ApplicationInitConfig {
+public class ApplicationInitConfig {
 
     PasswordEncoder passwordEncoder;
 
-    @NonFinal
     static final String ADMIN_USER_NAME = "admin";
-
-    @NonFinal
     static final String ADMIN_PASSWORD = "admin";
 
     @Bean
@@ -63,7 +59,7 @@ public class  ApplicationInitConfig {
                         .build();
 
                 userRepository.save(user);
-                log.warn("admin user has been created with default password: admin, please change it");
+                log.warn("Admin user has been created with default password: admin, please change it");
             }
             log.info("Application initialization completed .....");
         };

@@ -1,7 +1,6 @@
 package org.example.advancedrealestate_be.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -16,7 +15,7 @@ import java.util.Date;
 @Entity
 public class InvalidatedToken {
     @Id
-    String id;
+    String id;  // Consider using a UUID generator for better uniqueness
 
     Date expiryTime;
 }
