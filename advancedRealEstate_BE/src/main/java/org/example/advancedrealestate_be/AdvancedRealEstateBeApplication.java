@@ -1,5 +1,6 @@
 package org.example.advancedrealestate_be;
 
+
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
 import org.springframework.boot.SpringApplication;
@@ -9,6 +10,10 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
+
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
 @OpenAPIDefinition(info = @Info(title = "Advanced Real Estate API", version = "2.0.2", description = "Advanced Real Estate API"))
@@ -24,7 +29,7 @@ public class AdvancedRealEstateBeApplication {
 //        } catch (NoSuchAlgorithmException e) {
 //            e.printStackTrace();
 //        }
-        System.out.println("running: http://localhost:8080/");
+        System.out.println("running: http://localhost:8085/");
     }
 
 }
