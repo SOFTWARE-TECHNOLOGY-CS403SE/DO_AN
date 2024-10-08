@@ -2,33 +2,31 @@ package org.example.advancedrealestate_be.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDate;
 import java.util.Set;
 
-@Data
+@Getter
+@Setter
 @Builder
-@AllArgsConstructor
 @NoArgsConstructor
+@AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-@Table(name = "user")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    String id;
 
-    @Column(name = "username", nullable = false, unique = true)
-    private String userName;
+    @Column(name = "username", unique = true, columnDefinition = "VARCHAR(255) COLLATE utf8mb4_unicode_ci")
+    String username;
 
-    @Column(name = "fullname", nullable = false)
-    private String fullName;
+    String password;
+    String firstName;
+    LocalDate dob;
+    String lastName;
 
-    @Column(name = "password", nullable = false)
-    private String password;
-
-    @Column(name = "status", nullable = false)
-    private Integer status;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "role_id")
-    private Role role;
+    @ManyToMany
+    Set<Role> roles;
 }
