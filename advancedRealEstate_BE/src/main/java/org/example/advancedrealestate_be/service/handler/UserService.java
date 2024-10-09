@@ -16,6 +16,7 @@ import org.example.advancedrealestate_be.exception.ErrorCode;
 import org.example.advancedrealestate_be.mapper.UserMapper;
 import org.example.advancedrealestate_be.repository.RoleRepository;
 import org.example.advancedrealestate_be.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -28,7 +29,6 @@ import java.util.HashSet;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class UserService {
@@ -36,6 +36,14 @@ public class UserService {
     RoleRepository roleRepository;
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
+
+    @Autowired
+    public UserService(UserRepository userRepository, RoleRepository roleRepository, UserMapper userMapper, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.userMapper = userMapper;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public UserResponse createUser(UserCreationRequest request) {
         User user = userMapper.toUser(request);
@@ -87,7 +95,7 @@ public class UserService {
         log.info("In method get Users");
         return userRepository.findAll().stream().map(userMapper::toUserResponse).toList();
     }
-
+//ko cần đâu, tạo q
     @PreAuthorize("hasRole('ADMIN')")
     public UserResponse getUser(String id) {
         return userMapper.toUserResponse(

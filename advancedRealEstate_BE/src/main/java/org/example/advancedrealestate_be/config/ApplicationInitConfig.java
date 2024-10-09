@@ -1,23 +1,21 @@
 package org.example.advancedrealestate_be.config;
 
-import java.util.HashSet;
-
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import org.example.advancedrealestate_be.constant.PredefinedRole;
+import org.example.advancedrealestate_be.entity.Role;
+import org.example.advancedrealestate_be.entity.User;
+import org.example.advancedrealestate_be.repository.RoleRepository;
+import org.example.advancedrealestate_be.repository.UserRepository;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import org.example.advancedrealestate_be.constant.PredefinedRole;
-import org.example.advancedrealestate_be.entity.Role;
-import org.example.advancedrealestate_be.entity.User;
-import org.example.advancedrealestate_be.repository.RoleRepository;
-import org.example.advancedrealestate_be.repository.UserRepository;
-
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
-import lombok.extern.slf4j.Slf4j;
+import java.util.HashSet;
 
 @Configuration
 @RequiredArgsConstructor
@@ -25,10 +23,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ApplicationInitConfig {
 
+
     PasswordEncoder passwordEncoder;
 
-    static final String ADMIN_USER_NAME = "admin";
-    static final String ADMIN_PASSWORD = "admin";
+    static  String ADMIN_USER_NAME = "admin";
+    static  String ADMIN_PASSWORD = "admin";
 
     @Bean
     @ConditionalOnProperty(
