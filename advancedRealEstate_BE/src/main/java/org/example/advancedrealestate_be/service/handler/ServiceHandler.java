@@ -10,6 +10,7 @@ import org.example.advancedrealestate_be.service.ServiceService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -28,10 +29,11 @@ public class ServiceHandler implements ServiceService {
         this.modelMapper = modelMapper;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public List<ServiceDto> findAll() {
-        List<org.example.advancedrealestate_be.entity.Service> serviceList = serviceRepository.findAll();
-        return serviceList.stream().map(ServiceMapper::mapToService).collect(Collectors.toUnmodifiableList());
+        List<Service> serviceList = serviceRepository.findAll();
+        return serviceList.stream().map(ServiceMapper::mapToService).toList();
     }
 
     @Override
