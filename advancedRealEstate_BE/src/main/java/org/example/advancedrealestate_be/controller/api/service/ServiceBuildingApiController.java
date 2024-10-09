@@ -2,9 +2,7 @@ package org.example.advancedrealestate_be.controller.api.service;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
-import lombok.experimental.FieldDefaults;
+
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 import org.example.advancedrealestate_be.dto.ServiceDto;

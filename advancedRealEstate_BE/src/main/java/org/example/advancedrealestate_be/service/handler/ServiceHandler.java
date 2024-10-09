@@ -29,11 +29,11 @@ public class ServiceHandler implements ServiceService {
         this.modelMapper = modelMapper;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+
     @Override
     public List<ServiceDto> findAll() {
         List<Service> serviceList = serviceRepository.findAll();
-        return serviceList.stream().map(ServiceMapper::mapToService).toList();
+        return serviceList.stream().map(ServiceMapper::mapToService).collect(Collectors.toList());
     }
 
     @Override
