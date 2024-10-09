@@ -22,12 +22,13 @@ import org.springframework.web.filter.CorsFilter;
 @EnableMethodSecurity
 public class SecurityConfig {
     private final String[] PUBLIC_ENDPOINTS = {
-            "/users", "/auth/token", "/auth/introspect",
-            "/auth/logout", "/auth/refresh", "/api/**",
+            "api/users", "api/auth/token", "api/auth/introspect",
+            "api/auth/logout", "api/auth/refresh",
+//            "/api/**",
     };
     private final String[] PUBLIC_GET_ENDPOINTS = {
             "/",
-            "/api/**",
+//            "/api/**",
             "/api-docs",
             "/v3/api-docs/**",
             "/swagger-ui/**",
@@ -49,8 +50,8 @@ public class SecurityConfig {
         httpSecurity.authorizeHttpRequests(request -> request
                 .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
                 .requestMatchers(HttpMethod.GET, PUBLIC_GET_ENDPOINTS).permitAll()
-                .requestMatchers(HttpMethod.PATCH, PUBLIC_PATCH_ENDPOINTS).permitAll()
-                .requestMatchers(HttpMethod.DELETE, PUBLIC_DELETE_ENDPOINTS).permitAll()
+//                .requestMatchers(HttpMethod.PATCH, PUBLIC_PATCH_ENDPOINTS).permitAll()
+//                .requestMatchers(HttpMethod.DELETE, PUBLIC_DELETE_ENDPOINTS).permitAll()
                 .anyRequest()
                 .authenticated());
 

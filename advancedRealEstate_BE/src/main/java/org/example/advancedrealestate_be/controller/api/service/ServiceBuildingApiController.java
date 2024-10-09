@@ -1,5 +1,6 @@
 package org.example.advancedrealestate_be.controller.api.service;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import net.minidev.json.JSONObject;
 import org.example.advancedrealestate_be.dto.ServiceDto;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@SecurityRequirement(name = "bearerAuth")
 @RequestMapping("/api/admin/")
 @Tag(name = "Admin services", description = "API for service")
 public class ServiceBuildingApiController {

@@ -5,6 +5,7 @@ package org.example.advancedrealestate_be.controller.api.auth;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.*;
@@ -22,7 +23,8 @@ import lombok.extern.slf4j.Slf4j;
 
 
 @RestController
-@RequestMapping("/users")
+@SecurityRequirement(name = "bearerAuth")
+@RequestMapping("api/users")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j

@@ -2,7 +2,6 @@ package org.example.advancedrealestate_be.config;
 
 import java.util.HashSet;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -26,11 +25,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ApplicationInitConfig {
 
-    @Autowired
     PasswordEncoder passwordEncoder;
 
-    static final  String ADMIN_USER_NAME = "admin";
-    static final  String ADMIN_PASSWORD = "admin";
+    static final String ADMIN_USER_NAME = "admin";
+    static final String ADMIN_PASSWORD = "admin";
 
     @Bean
     @ConditionalOnProperty(
