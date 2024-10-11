@@ -1,3 +1,5 @@
+create database advancedRealEstate_db;
+drop database advancedRealEstate_db;
 create database identity_service;
 drop database identity_service;
 
@@ -121,6 +123,7 @@ VALUES
 ('489f6f32-1b45-4f97-82c8-01e74496cee9', 'User');
 
 
+select * from user;
 select * from user;
 select * from role, user_roles where role.name = user_roles.roles_name;
 select * from user_roles;
