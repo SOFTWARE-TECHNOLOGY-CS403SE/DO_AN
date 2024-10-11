@@ -22,13 +22,15 @@
 
 
 server:
-  port: 8085
+  port: 8080
   servlet:
-    context-path: /identity
+    context-path:
 
 spring:
+  main:
+    allow-bean-definition-overriding: true
   datasource:
-    url: ${DBMS_CONNECTION:jdbc:mysql://localhost:3307/indentity_service3}
+    url: ${DBMS_CONNECTION:jdbc:mysql://localhost:3307/identity_service3}
     driverClassName: "com.mysql.cj.jdbc.Driver"
     password: ${DBMS_PASSWORD:28082001}
     username: ${DBMS_USERNAME:root}
@@ -50,5 +52,5 @@ springdoc:
     operations-sorter: method
     enable: true
   group-configs:
-    - group: identity-service
+    - group: advancedRealEstate_BE
       paths-to-match: /api/**

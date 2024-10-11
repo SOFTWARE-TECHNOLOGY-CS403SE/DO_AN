@@ -4,10 +4,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import net.minidev.json.JSONObject;
 import org.example.advancedrealestate_be.dto.BuildingDto;
-import org.example.advancedrealestate_be.dto.MapDto;
 import org.example.advancedrealestate_be.dto.ServiceDto;
 import org.example.advancedrealestate_be.service.BuildingService;
-import org.example.advancedrealestate_be.service.MapService;
 import org.example.advancedrealestate_be.service.ServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -24,14 +22,12 @@ public class UserBuildingApiController {
 
     BuildingService buildingService;
     ServiceService serviceService;
-    private final MapService mapService;
 
 
     @Autowired
-    public UserBuildingApiController(BuildingService buildingService, ServiceService serviceService, MapService mapService) {
+    public UserBuildingApiController(BuildingService buildingService, ServiceService serviceService) {
         this.buildingService = buildingService;
         this.serviceService = serviceService;
-        this.mapService = mapService;
     }
 
     @GetMapping("/buildings")
@@ -80,33 +76,6 @@ public class UserBuildingApiController {
         JSONObject object = new JSONObject();
         try {
             ServiceDto responseDto = serviceService.findById(id);
-            object.put("data", responseDto);
-            return new ResponseEntity<>(object, HttpStatus.OK);
-        } catch (Exception error) {
-            object.put("message", error.getMessage());
-            return new ResponseEntity<>(object, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @GetMapping("/maps")
-    private ResponseEntity<JSONObject> index_map() {
-        JSONObject data = new JSONObject();
-        try {
-            List<MapDto> mapDtoList = mapService.findAll();
-            data.put("total", mapDtoList.size());
-            data.put("data", mapDtoList);
-            return new ResponseEntity<>(data, HttpStatus.OK);
-        } catch (Exception error) {
-            data.put("message", error.getMessage());
-            return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @GetMapping("/maps/{id}")
-    private ResponseEntity<JSONObject> detail_map(@PathVariable String id) {
-        JSONObject object = new JSONObject();
-        try {
-            MapDto responseDto = mapService.findById(id);
             object.put("data", responseDto);
             return new ResponseEntity<>(object, HttpStatus.OK);
         } catch (Exception error) {

@@ -13,6 +13,7 @@ import org.example.advancedrealestate_be.constant.EnumEntityConstant;
 @Setter
 public class BuildingDto {
 
+
     private String id;
     private String name;
     private String structure;
