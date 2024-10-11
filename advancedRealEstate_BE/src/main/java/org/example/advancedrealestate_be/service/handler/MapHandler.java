@@ -1,12 +1,7 @@
 package org.example.advancedrealestate_be.service.handler;
-
-
 import org.example.advancedrealestate_be.constant.ErrorEnumConstant;
-import org.example.advancedrealestate_be.dto.BuildingDto;
 import org.example.advancedrealestate_be.dto.MapDto;
-import org.example.advancedrealestate_be.entity.Building;
 import org.example.advancedrealestate_be.entity.Map;
-import org.example.advancedrealestate_be.mapper.BuildingMapper;
 import org.example.advancedrealestate_be.mapper.MapMapper;
 import org.example.advancedrealestate_be.repository.MapRepository;
 import org.example.advancedrealestate_be.service.MapService;
@@ -48,21 +43,21 @@ public class MapHandler implements MapService {
     public MapDto findById(String id) {
         Optional<Map> map = mapRepository.findById(id);
         if (map.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorEnumConstant.MapNotFound.name());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorEnumConstant.MapNotFound.toString());
         }
         return map.map(
-                value -> new MapDto(
-                value.getId(),
-                value.getMap_name(),
-                value.getLatitude(),
-                value.getLongitude(),
-                value.getAddress(),
-                value.getProvince(),
-                value.getDistrict(),
-                value.getWard(),
-                value.getDirection()
-                ))
-        .orElse(null);
+                        value -> new MapDto(
+                                value.getId(),
+                                value.getMap_name(),
+                                value.getLatitude(),
+                                value.getLongitude(),
+                                value.getAddress(),
+                                value.getProvince(),
+                                value.getDistrict(),
+                                value.getWard(),
+                                value.getDirection()
+                        ))
+                .orElse(null);
     }
 
     @Transactional
@@ -90,7 +85,7 @@ public class MapHandler implements MapService {
     public MapDto updateById(MapDto mapDto, String id) {
         Optional<Map> map = mapRepository.findById(id);
         if (map.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorEnumConstant.MapNotFound.name());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorEnumConstant.MapNotFound.toString());
         }
         map.get().setMap_name(mapDto.getMap_name() != null ? mapDto.getMap_name() : map.get().getMap_name());
         map.get().setLatitude(mapDto.getLatitude() != null ? mapDto.getLatitude() : map.get().getLatitude());
@@ -120,7 +115,7 @@ public class MapHandler implements MapService {
     public MapDto deleteById(String id) {
         Optional<Map> map = mapRepository.findById(id);
         if (map.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorEnumConstant.MapNotFound.name());
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorEnumConstant.MapNotFound.toString());
         }
         MapDto mapDto = new MapDto(
                 map.get().getId(),

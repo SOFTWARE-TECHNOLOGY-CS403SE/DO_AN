@@ -2,7 +2,6 @@ package org.example.advancedrealestate_be.service.handler;
 
 import org.example.advancedrealestate_be.constant.ErrorEnumConstant;
 import org.example.advancedrealestate_be.dto.ServiceDto;
-import org.example.advancedrealestate_be.entity.Building;
 import org.example.advancedrealestate_be.entity.Service;
 import org.example.advancedrealestate_be.mapper.ServiceMapper;
 import org.example.advancedrealestate_be.repository.ServiceRepository;
@@ -10,7 +9,6 @@ import org.example.advancedrealestate_be.service.ServiceService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
