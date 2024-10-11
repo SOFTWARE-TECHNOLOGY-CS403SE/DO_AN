@@ -4,4 +4,5 @@ public enum ErrorEnumConstant {
 
     BuildingNotFound,
     ServiceNotFound,
+    MapNotFound
 }
