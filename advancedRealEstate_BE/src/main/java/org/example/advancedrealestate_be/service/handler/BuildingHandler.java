@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 public class BuildingHandler implements BuildingService {
 
 
+    @Autowired
     BuildingRepository buildingRepository;
     private final ModelMapper modelMapper;
 

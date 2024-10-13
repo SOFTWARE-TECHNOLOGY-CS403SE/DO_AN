@@ -16,7 +16,7 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.stereotype.Component;
 
 import org.example.advancedrealestate_be.dto.request.IntrospectRequest;
-import org.example.advancedrealestate_be.service.handler.AuthenticationService;
+import org.example.advancedrealestate_be.service.handler.AuthenticationServiceHandler;
 import com.nimbusds.jose.JOSEException;
 
 @Component
@@ -25,7 +25,7 @@ public class CustomJwtDecoder implements JwtDecoder {
     private String signerKey;
 
     @Autowired
-    private AuthenticationService authenticationService;
+    private AuthenticationServiceHandler authenticationService;
 
     private NimbusJwtDecoder nimbusJwtDecoder = null;
 

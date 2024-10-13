@@ -9,7 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.advancedrealestate_be.dto.request.ApiResponse;
 import org.example.advancedrealestate_be.dto.request.RoleRequest;
 import org.example.advancedrealestate_be.dto.response.RoleResponse;
-import org.example.advancedrealestate_be.service.handler.RoleService;
+import org.example.advancedrealestate_be.service.RoleService;
+import org.example.advancedrealestate_be.service.handler.RoleServiceHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +23,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class RoleController {
+    @Autowired
     RoleService roleService;
 
     @PostMapping
