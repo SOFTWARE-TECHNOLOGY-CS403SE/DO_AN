@@ -21,7 +21,10 @@ import java.util.stream.Collectors;
 public class MapHandler implements MapService {
 
 
+    @Autowired
     private final ModelMapper modelMapper;
+
+    @Autowired
     private final MapRepository mapRepository;
 
     @Autowired

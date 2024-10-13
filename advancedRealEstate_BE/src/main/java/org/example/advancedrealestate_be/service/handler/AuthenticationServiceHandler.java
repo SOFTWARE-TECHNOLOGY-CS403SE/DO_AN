@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.StringJoiner;
 import java.util.UUID;
 
+import org.example.advancedrealestate_be.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -42,7 +43,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class AuthenticationService {
+public class AuthenticationServiceHandler implements AuthenticationService {
     UserRepository userRepository;
     InvalidatedTokenRepository invalidatedTokenRepository;
 
@@ -58,6 +59,8 @@ public class AuthenticationService {
     @Value("${jwt.refreshable-duration}")
     protected long REFRESHABLE_DURATION;
 
+
+    @Override
     public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException {
         var token = request.getToken();
         boolean isValid = true;
@@ -70,7 +73,7 @@ public class AuthenticationService {
 
         return IntrospectResponse.builder().valid(isValid).build();
     }
-
+    @Override
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         var user = userRepository
@@ -85,7 +88,7 @@ public class AuthenticationService {
 
         return AuthenticationResponse.builder().token(token).authenticated(true).build();
     }
-
+    @Override
     public void logout(LogoutRequest request) throws ParseException, JOSEException {
         try {
             var signToken = verifyToken(request.getToken(), true);
@@ -101,7 +104,7 @@ public class AuthenticationService {
             log.info("Token already expired");
         }
     }
-
+    @Override
     public AuthenticationResponse refreshToken(RefreshRequest request) throws ParseException, JOSEException {
         var signedJWT = verifyToken(request.getToken(), true);
 

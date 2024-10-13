@@ -9,7 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.advancedrealestate_be.dto.request.ApiResponse;
 import org.example.advancedrealestate_be.dto.request.PermissionRequest;
 import org.example.advancedrealestate_be.dto.response.PermissionResponse;
-import org.example.advancedrealestate_be.service.handler.PermissionService;
+import org.example.advancedrealestate_be.service.PermistionService;
+import org.example.advancedrealestate_be.service.handler.PermissionServiceHandler;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,7 +23,8 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class PermissionController {
-    PermissionService permissionService;
+    @Autowired
+    PermistionService permissionService;
 
     @PostMapping
     ApiResponse<PermissionResponse> create(@RequestBody PermissionRequest request) {

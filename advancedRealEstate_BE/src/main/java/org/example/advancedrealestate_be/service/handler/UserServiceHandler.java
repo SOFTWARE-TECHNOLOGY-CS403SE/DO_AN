@@ -2,10 +2,10 @@ package org.example.advancedrealestate_be.service.handler;
 
 
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.example.advancedrealestate_be.constant.PredefinedRole;
+import org.example.advancedrealestate_be.dto.UserDto;
 import org.example.advancedrealestate_be.dto.request.UserCreationRequest;
 import org.example.advancedrealestate_be.dto.request.UserUpdateRequest;
 import org.example.advancedrealestate_be.dto.response.UserResponse;
@@ -16,6 +16,7 @@ import org.example.advancedrealestate_be.exception.ErrorCode;
 import org.example.advancedrealestate_be.mapper.UserMapper;
 import org.example.advancedrealestate_be.repository.RoleRepository;
 import org.example.advancedrealestate_be.repository.UserRepository;
+import org.example.advancedrealestate_be.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 
@@ -27,19 +28,20 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
-public class UserService {
+public class UserServiceHandler implements UserService {
     UserRepository userRepository;
     RoleRepository roleRepository;
     UserMapper userMapper;
     PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserService(UserRepository userRepository, RoleRepository roleRepository, UserMapper userMapper, PasswordEncoder passwordEncoder) {
+    public UserServiceHandler(UserRepository userRepository, RoleRepository roleRepository, UserMapper userMapper, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.userMapper = userMapper;
@@ -102,4 +104,6 @@ public class UserService {
         return userMapper.toUserResponse(
                 userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
     }
+
+
 }

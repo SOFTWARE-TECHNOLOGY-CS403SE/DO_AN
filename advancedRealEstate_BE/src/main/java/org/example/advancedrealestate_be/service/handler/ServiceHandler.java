@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 
 @org.springframework.stereotype.Service
 public class ServiceHandler implements ServiceService {
+    @Autowired
     ServiceRepository serviceRepository;
     private final ModelMapper modelMapper;
 

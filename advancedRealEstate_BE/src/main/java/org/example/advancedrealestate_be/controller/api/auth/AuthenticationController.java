@@ -6,8 +6,9 @@ package org.example.advancedrealestate_be.controller.api.auth;
 
 import java.text.ParseException;
 
-import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.example.advancedrealestate_be.service.AuthenticationService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.example.advancedrealestate_be.dto.request.*;
 import org.example.advancedrealestate_be.dto.response.AuthenticationResponse;
 import org.example.advancedrealestate_be.dto.response.IntrospectResponse;
-import org.example.advancedrealestate_be.service.handler.AuthenticationService;
+import org.example.advancedrealestate_be.service.handler.AuthenticationServiceHandler;
 import com.nimbusds.jose.JOSEException;
 
 import lombok.AccessLevel;
@@ -30,6 +31,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Tag(name = "Auth API", description = "Auth API")
 public class AuthenticationController {
+    @Autowired
     AuthenticationService authenticationService;
 
     @PostMapping("/token")
