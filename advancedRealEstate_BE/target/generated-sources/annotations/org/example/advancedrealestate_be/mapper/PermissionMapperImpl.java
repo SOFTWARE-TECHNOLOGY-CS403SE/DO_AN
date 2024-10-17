@@ -1,6 +1,6 @@
 package org.example.advancedrealestate_be.mapper;
 
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 import org.example.advancedrealestate_be.dto.request.PermissionRequest;
 import org.example.advancedrealestate_be.dto.response.PermissionResponse;
 import org.example.advancedrealestate_be.entity.Permission;

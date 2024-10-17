@@ -2,7 +2,7 @@ package org.example.advancedrealestate_be.mapper;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
-import javax.annotation.Generated;
+import javax.annotation.processing.Generated;
 import org.example.advancedrealestate_be.dto.request.UserCreationRequest;
 import org.example.advancedrealestate_be.dto.request.UserUpdateRequest;
 import org.example.advancedrealestate_be.dto.response.PermissionResponse;

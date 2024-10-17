@@ -9,7 +9,6 @@
 - Nguyễn Khắc Hoài Nam
 - Trần Ngọc Tiến
 
-
 ```
 
 ## HƯỚNG DẪN SỬ DỤNG GIT
