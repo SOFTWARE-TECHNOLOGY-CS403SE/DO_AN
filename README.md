@@ -8,7 +8,7 @@
 - Phùng Văn Mạnh
 - Nguyễn Khắc Hoài Nam
 - Trần Ngọc Tiến
-- Trương Thị Ngọc Ánh
+
 
 ```
 

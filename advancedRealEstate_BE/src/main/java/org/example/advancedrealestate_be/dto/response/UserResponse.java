@@ -17,5 +17,12 @@ public class UserResponse {
     String firstName;
     String lastName;
     LocalDate dob;
+    String email;
+    String gender;
+    String phoneNumber;
+    String address;
+    String birthday;
+    boolean isVerify;
+    String avatar;
     Set<RoleResponse> roles;
 }

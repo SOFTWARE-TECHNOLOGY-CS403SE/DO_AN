@@ -15,11 +15,10 @@ import java.util.Set;
 @Entity
 public class Role {
     @Id
-    @Column(unique = true)  // Ensure the name is unique
     String name;
 
     String description;
 
-    @ManyToMany(mappedBy = "roles")  // Specify the owning side of the relationship
-    Set<Permission> permissions;  // Many-to-many relationship
+    @ManyToMany
+    Set<Permission> permissions;
 }

@@ -20,6 +20,7 @@ import java.util.List;
 @Tag(name = "Admin services", description = "API for service")
 @Slf4j
 public class ServiceBuildingApiController {
+    @Autowired
     ServiceService serviceService;
 
     @Autowired

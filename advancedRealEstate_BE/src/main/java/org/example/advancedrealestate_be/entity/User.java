@@ -26,7 +26,16 @@ public class User {
     String firstName;
     LocalDate dob;
     String lastName;
+    String email;
+    String gender;
+    String phoneNumber;
+    String address;
+    String birthday;
+    boolean isVerify;
+    String avatar;
 
     @ManyToMany
-    Set<Role> roles;  // Establish the many-to-many relationship
+    Set<Role> roles;
+
+
 }

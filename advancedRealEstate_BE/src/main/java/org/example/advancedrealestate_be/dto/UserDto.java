@@ -17,6 +17,8 @@ public class UserDto {
     private String fullName;
     private String password; // Keep this line if you need it for registration purposes
     private Integer status;
+    private String email;
+
     private String roleCode;
     private List<RoleDto> roles; // Add this line to store user roles
 

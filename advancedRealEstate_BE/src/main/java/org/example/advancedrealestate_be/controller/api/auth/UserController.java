@@ -8,6 +8,7 @@ import java.util.List;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 
+import org.example.advancedrealestate_be.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,46 +32,47 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class UserController {
     @Autowired
-    UserServiceHandler userServiceHandler;
+    UserService userService;
 
     @PostMapping
     ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreationRequest request) {
         return ApiResponse.<UserResponse>builder()
-                .result(userServiceHandler.createUser(request))
+                .result(userService.createUser(request))
                 .build();
     }
 
     @GetMapping
     ApiResponse<List<UserResponse>> getUsers() {
         return ApiResponse.<List<UserResponse>>builder()
-                .result(userServiceHandler.getUsers())
+                .result(userService.getUsers())
                 .build();
     }
 
     @GetMapping("/{userId}")
     ApiResponse<UserResponse> getUser(@PathVariable("userId") String userId) {
         return ApiResponse.<UserResponse>builder()
-                .result(userServiceHandler.getUser(userId))
+                .result(userService.getUser(userId))
                 .build();
     }
 
     @GetMapping("/my-info")
     ApiResponse<UserResponse> getMyInfo() {
         return ApiResponse.<UserResponse>builder()
-                .result(userServiceHandler.getMyInfo())
+                .result(userService.getMyInfo())
                 .build();
     }
 
     @DeleteMapping("/{userId}")
     ApiResponse<String> deleteUser(@PathVariable String userId) {
-        userServiceHandler.deleteUser(userId);
+        userService.deleteUser(userId);
         return ApiResponse.<String>builder().result("User has been deleted").build();
     }
 
     @PutMapping("/{userId}")
     ApiResponse<UserResponse> updateUser(@PathVariable String userId, @RequestBody UserUpdateRequest request) {
+
         return ApiResponse.<UserResponse>builder()
-                .result(userServiceHandler.updateUser(userId, request))
+                .result(userService.updateUser(userId, request))
                 .build();
     }
 }

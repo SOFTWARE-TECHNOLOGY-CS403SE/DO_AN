@@ -6,8 +6,8 @@ import org.example.advancedrealestate_be.dto.response.PermissionResponse;
 import java.util.List;
 
 public interface PermistionService {
-    public PermissionResponse create(PermissionRequest request);
-    public List<PermissionResponse> getAll();
-    public void delete(String permission);
+     PermissionResponse create(PermissionRequest request);
+    List<PermissionResponse> getAll();
+     void delete(String permission);
 
 }
