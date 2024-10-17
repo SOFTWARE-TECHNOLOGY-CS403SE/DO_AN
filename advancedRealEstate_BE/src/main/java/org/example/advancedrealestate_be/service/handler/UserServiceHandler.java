@@ -6,6 +6,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.example.advancedrealestate_be.constant.PredefinedRole;
 import org.example.advancedrealestate_be.dto.UserDto;
+import org.example.advancedrealestate_be.dto.request.UpdateInfoUserRequest;
 import org.example.advancedrealestate_be.dto.request.UserCreationRequest;
 import org.example.advancedrealestate_be.dto.request.UserUpdateRequest;
 import org.example.advancedrealestate_be.dto.response.UserResponse;
@@ -76,7 +77,7 @@ public class UserServiceHandler implements UserService {
         var context = SecurityContextHolder.getContext();
         String name = context.getAuthentication().getName();
 
-        User user = userRepository.findByUsername(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        User user = userRepository.findByEmail(name).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         return userMapper.toUserResponse(user);
     }
@@ -113,6 +114,36 @@ public class UserServiceHandler implements UserService {
         user.setRoles(new HashSet<>(roles));
 
         return userMapper.toUserResponse(userRepository.save(user));
+    }
+
+    @Override
+    public UserResponse updateUserInfo(String userId, UpdateInfoUserRequest request) {
+        User user = userRepository.findById(userId)
+        .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        user.setUsername(request.getFirstName() +" "+ request.getLastName());
+        user.setFirstName(request.getFirstName());
+        user.setLastName(request.getLastName());
+        user.setGender(request.getGender());
+        user.setPhoneNumber(request.getPhoneNumber());
+        user.setAddress(request.getAddress());
+        user.setBirthday(request.getBirthday());
+
+        User userUpdate = userRepository.save(user);
+        return new UserResponse(
+            userUpdate.getId(),
+            userUpdate.getUsername(),
+                userUpdate.getFirstName(),
+                userUpdate.getLastName(),
+                userUpdate.getDob(),
+                userUpdate.getEmail(),
+                userUpdate.getGender(),
+                userUpdate.getPhoneNumber(),
+                userUpdate.getAddress(),
+                userUpdate.getBirthday(),
+                userUpdate.isVerify(),
+                userUpdate.getAvatar(),
+                null
+        );
     }
 
 

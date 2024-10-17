@@ -2,6 +2,7 @@ package org.example.advancedrealestate_be.service;
 
 import org.example.advancedrealestate_be.dto.PasswordDTO;
 import org.example.advancedrealestate_be.dto.UserDto;
+import org.example.advancedrealestate_be.dto.request.UpdateInfoUserRequest;
 import org.example.advancedrealestate_be.dto.request.UserCreationRequest;
 import org.example.advancedrealestate_be.dto.request.UserUpdateRequest;
 import org.example.advancedrealestate_be.dto.response.UserResponse;
@@ -16,6 +17,7 @@ public interface UserService {
      UserResponse getUser(String id);
     List<UserResponse> getUsers();
     void deleteUser(String userId);
-     UserResponse updateUser(String userId, UserUpdateRequest request);
-     UserResponse createUser(UserCreationRequest request);
+    UserResponse updateUser(String userId, UserUpdateRequest request);
+    UserResponse updateUserInfo(String userId, UpdateInfoUserRequest request);
+    UserResponse createUser(UserCreationRequest request);
 }

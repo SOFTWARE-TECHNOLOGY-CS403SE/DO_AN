@@ -8,6 +8,7 @@ import java.util.List;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 
+import org.example.advancedrealestate_be.dto.request.UpdateInfoUserRequest;
 import org.example.advancedrealestate_be.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -73,6 +74,14 @@ public class UserController {
 
         return ApiResponse.<UserResponse>builder()
                 .result(userService.updateUser(userId, request))
+                .build();
+    }
+
+    @PatchMapping("/{userId}")
+    ApiResponse<UserResponse> updateUserInfo(@PathVariable String userId, @RequestBody UpdateInfoUserRequest request) {
+
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.updateUserInfo(userId, request))
                 .build();
     }
 }
