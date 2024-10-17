@@ -25,6 +25,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
@@ -35,9 +36,13 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class UserServiceHandler implements UserService {
+    @Autowired
     UserRepository userRepository;
+    @Autowired
     RoleRepository roleRepository;
+    @Autowired
     UserMapper userMapper;
+    @Autowired
     PasswordEncoder passwordEncoder;
 
     @Autowired
@@ -47,6 +52,7 @@ public class UserServiceHandler implements UserService {
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
     }
+
 
     public UserResponse createUser(UserCreationRequest request) {
         User user = userMapper.toUser(request);
@@ -74,19 +80,41 @@ public class UserServiceHandler implements UserService {
 
         return userMapper.toUserResponse(user);
     }
+//    @PreAuthorize("hasRole('ADMIN')")
+//    @PostAuthorize("returnObject.email == authentication.email")
+//    public UserResponse updateUser(String userId, UserUpdateRequest request) {
+//        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+//
+//        userMapper.updateUser(user, request);
+//        user.setPassword(passwordEncoder.encode(request.getPassword()));
+//
+//        var roles = roleRepository.findAllById(request.getRoles());
+//        user.setRoles(new HashSet<>(roles));
+//
+//        return userMapper.toUserResponse(userRepository.save(user));
+//    }
+
+
 
     @PostAuthorize("returnObject.username == authentication.name")
     public UserResponse updateUser(String userId, UserUpdateRequest request) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         userMapper.updateUser(user, request);
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
+
+
+        if (request.getPassword() != null && !request.getPassword().isEmpty()) {
+            user.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
+
 
         var roles = roleRepository.findAllById(request.getRoles());
         user.setRoles(new HashSet<>(roles));
 
         return userMapper.toUserResponse(userRepository.save(user));
     }
+
 
     @PreAuthorize("hasRole('ADMIN')")
     public void deleteUser(String userId) {

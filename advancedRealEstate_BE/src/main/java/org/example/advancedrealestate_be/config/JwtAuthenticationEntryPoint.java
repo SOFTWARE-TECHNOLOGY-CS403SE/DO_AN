@@ -9,11 +9,12 @@ import org.example.advancedrealestate_be.dto.request.ApiResponse;
 import org.example.advancedrealestate_be.exception.ErrorCode;
 import org.springframework.http.MediaType;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.stereotype.Component;
 
 
 import javax.naming.AuthenticationException;
 import java.io.IOException;
-
+@Component
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 //    @Override
 //    public void commence(

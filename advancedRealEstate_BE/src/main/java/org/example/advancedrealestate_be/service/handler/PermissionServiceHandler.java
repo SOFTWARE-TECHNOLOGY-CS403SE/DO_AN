@@ -15,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -36,7 +37,7 @@ public class PermissionServiceHandler implements PermistionService {
     @Override
     public List<PermissionResponse> getAll() {
         var permissions = permissionRepository.findAll();
-        return permissions.stream().map(permissionMapper::toPermissionResponse).toList();
+        return permissions.stream().map(permissionMapper::toPermissionResponse).collect(Collectors.toList());
     }
 
     @Override

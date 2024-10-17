@@ -12,9 +12,10 @@ import java.util.Map;
 import java.util.Optional;
 
 public interface UserService {
-    public UserResponse getUser(String id);
-    public List<UserResponse> getUsers();
-    public void deleteUser(String userId);
-    public UserResponse updateUser(String userId, UserUpdateRequest request);
-    public UserResponse createUser(UserCreationRequest request);
+     UserResponse getMyInfo();
+     UserResponse getUser(String id);
+    List<UserResponse> getUsers();
+    void deleteUser(String userId);
+     UserResponse updateUser(String userId, UserUpdateRequest request);
+     UserResponse createUser(UserCreationRequest request);
 }

@@ -9,6 +9,7 @@ import java.util.StringJoiner;
 import java.util.UUID;
 
 import org.example.advancedrealestate_be.service.AuthenticationService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -44,7 +45,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationServiceHandler implements AuthenticationService {
+    @Autowired
     UserRepository userRepository;
+    @Autowired
     InvalidatedTokenRepository invalidatedTokenRepository;
 
     @NonFinal
@@ -77,7 +80,8 @@ public class AuthenticationServiceHandler implements AuthenticationService {
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         var user = userRepository
-                .findByUsername(request.getUsername())
+                .findByEmail(request.getEmail())
+//                .findByUsername(request.getUsername())
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
@@ -101,8 +105,11 @@ public class AuthenticationServiceHandler implements AuthenticationService {
 
             invalidatedTokenRepository.save(invalidatedToken);
         } catch (AppException exception) {
-            log.info("Token already expired");
+            log.info("Token already expired ");
+            throw new AppException(ErrorCode.TOKEN_EXPIRED);
+
         }
+
     }
     @Override
     public AuthenticationResponse refreshToken(RefreshRequest request) throws ParseException, JOSEException {
@@ -116,10 +123,10 @@ public class AuthenticationServiceHandler implements AuthenticationService {
 
         invalidatedTokenRepository.save(invalidatedToken);
 
-        var username = signedJWT.getJWTClaimsSet().getSubject();
+        var email = signedJWT.getJWTClaimsSet().getSubject();
 
         var user =
-                userRepository.findByUsername(username).orElseThrow(() -> new AppException(ErrorCode.UNAUTHENTICATED));
+                userRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.UNAUTHENTICATED));
 
         var token = generateToken(user);
 
@@ -130,7 +137,7 @@ public class AuthenticationServiceHandler implements AuthenticationService {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(user.getUsername())
+                .subject(user.getEmail())
                 .issuer("example.org")
                 .issueTime(new Date())
                 .expirationTime(new Date(
