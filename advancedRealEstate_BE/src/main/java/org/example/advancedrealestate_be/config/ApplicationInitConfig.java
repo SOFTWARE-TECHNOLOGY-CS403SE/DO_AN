@@ -47,6 +47,7 @@ public class ApplicationInitConfig {
                         .build());
 
                 Role adminRole = roleRepository.save(Role.builder()
+
                         .name(PredefinedRole.ADMIN_ROLE)
                         .description("Admin role")
                         .build());
@@ -55,7 +56,7 @@ public class ApplicationInitConfig {
                 roles.add(adminRole);
 
                 User user = User.builder()
-//                        .username(ADMIN_USER_NAME)
+                        .isVerify(true)
                         .email(ADMIN_EMAIL)
                         .password(passwordEncoder.encode(ADMIN_PASSWORD))
                         .roles(roles)
