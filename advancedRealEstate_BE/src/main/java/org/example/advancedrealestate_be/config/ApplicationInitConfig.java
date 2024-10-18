@@ -5,19 +5,25 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.example.advancedrealestate_be.constant.PredefinedRole;
+import org.example.advancedrealestate_be.entity.Permission;
 import org.example.advancedrealestate_be.entity.Role;
 import org.example.advancedrealestate_be.entity.User;
+import org.example.advancedrealestate_be.repository.PermissionRepository;
 import org.example.advancedrealestate_be.repository.RoleRepository;
 import org.example.advancedrealestate_be.repository.UserRepository;
 
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Configuration
 @RequiredArgsConstructor
@@ -31,6 +37,8 @@ public class ApplicationInitConfig {
 //    static  String ADMIN_USER_NAME = "admin@gmail.com";
     static  String ADMIN_PASSWORD = "admin";
     static String ADMIN_EMAIL="admin@gmail.com";
+    @Autowired
+    PermissionRepository permissionRepository;
 
     @Bean
     @ConditionalOnProperty(
@@ -45,11 +53,21 @@ public class ApplicationInitConfig {
                         .name(PredefinedRole.USER_ROLE)
                         .description("User role")
                         .build());
+                List<Permission> permissions = Arrays.asList(
+                        new Permission("APPROVE_DATA", "Approve data"),
+                        new Permission("CREATE_DATA", "Create data"),
+                        new Permission("UPDATE_DATA", "Update data"),
+                        new Permission("DELETE_DATA", "Delete data")
+                );
+
+                permissionRepository.saveAll(permissions);
+                Set<Permission> listPermission = new HashSet<>(permissionRepository.findAll());
 
                 Role adminRole = roleRepository.save(Role.builder()
 
                         .name(PredefinedRole.ADMIN_ROLE)
                         .description("Admin role")
+                        .permissions(new HashSet<>(listPermission))
                         .build());
 
                 var roles = new HashSet<Role>();
