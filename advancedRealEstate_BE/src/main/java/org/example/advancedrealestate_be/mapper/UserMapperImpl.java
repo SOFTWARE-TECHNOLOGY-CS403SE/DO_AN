@@ -2,8 +2,10 @@ package org.example.advancedrealestate_be.mapper;
 
 import org.example.advancedrealestate_be.dto.request.UserCreationRequest;
 import org.example.advancedrealestate_be.dto.request.UserUpdateRequest;
+import org.example.advancedrealestate_be.dto.response.PermissionResponse;
 import org.example.advancedrealestate_be.dto.response.RoleResponse;
 import org.example.advancedrealestate_be.dto.response.UserResponse;
+import org.example.advancedrealestate_be.entity.Permission;
 import org.example.advancedrealestate_be.entity.Role;
 import org.example.advancedrealestate_be.entity.User;
 import org.example.advancedrealestate_be.mapper.UserMapper;
@@ -63,15 +65,30 @@ public class UserMapperImpl implements UserMapper {
                 .build();
     }
 
+    public PermissionResponse toPermissionResponse(Permission permission) {
+        if (permission == null) {
+            return null;
+        }
+
+        return PermissionResponse.builder()
+                .name(permission.getName())
+                .description(permission.getDescription())
+                .build();
+    }
+
     private RoleResponse toRoleResponse(Role role) {
         if (role == null) {
             return null; // Return null if the role is null
         }
 
+        Set<PermissionResponse> permissionResponses = role.getPermissions().stream()
+                .map(this::toPermissionResponse)
+                .collect(Collectors.toSet());
+
         return RoleResponse.builder()
                 .name(role.getName())
                 .description(role.getDescription())
-//                .permissions(role.getPermissions()) // Assuming permissions is properly mapped
+                .permissions(permissionResponses) // Assuming permissions is properly mapped
                 .build();
     }
     @Override
