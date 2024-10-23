@@ -125,11 +125,20 @@ VALUES
 
 select * from user;
 select * from user;
-select * from role, user_roles where role.name = user_roles.roles_name;
 select * from user_roles;
+select * from role_permissions;
+select * from role, user_roles, role_permissions
+where role.name = user_roles.roles_name;
+select * from role, user_roles, role_permissions
+where role.name = user_roles.roles_name AND
+role.role_name = role_permissions.role_name;
 
 ALTER TABLE user MODIFY fullname VARCHAR(255) NULL;
 ALTER TABLE user MODIFY status INT DEFAULT 1;
+
+select * from user;
+delete from user where id = '0fe2a31b-5b23-41f8-80ed-37ec58e2aa1c';
+delete from user where id = '0fe2a31b-5b23-41f8-80ed-37ec58e2aa1c';
 
 
 

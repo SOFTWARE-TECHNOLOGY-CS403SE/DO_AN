@@ -7,7 +7,9 @@ package org.example.advancedrealestate_be.controller.api.auth;
 import java.text.ParseException;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
+import net.minidev.json.JSONObject;
 import org.example.advancedrealestate_be.service.AuthenticationService;
+import org.example.advancedrealestate_be.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -33,11 +35,17 @@ import lombok.experimental.FieldDefaults;
 public class AuthenticationController {
     @Autowired
     AuthenticationService authenticationService;
+    @Autowired
+    UserService userService;
 
     @PostMapping("/token")
-    ApiResponse<AuthenticationResponse> authenticate(@RequestBody AuthenticationRequest request) {
+    ApiResponse<Object> authenticate(@RequestBody AuthenticationRequest request) {
         var result = authenticationService.authenticate(request);
-        return ApiResponse.<AuthenticationResponse>builder().result(result).build();
+        JSONObject responseObject = new JSONObject();
+        responseObject.put("infoUser", userService.getMyInfo(request.getEmail()));
+
+        responseObject.put("login", result);
+        return ApiResponse.builder().result(responseObject).build();
     }
 
     @PostMapping("/introspect")

@@ -1,9 +1,4 @@
 package org.example.advancedrealestate_be.mapper;
-
-
-
-
-
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
@@ -13,7 +8,7 @@ import org.example.advancedrealestate_be.dto.request.UserUpdateRequest;
 import org.example.advancedrealestate_be.dto.response.UserResponse;
 import org.example.advancedrealestate_be.entity.User;
 
-@Mapper(componentModel = "spring")
+//@Mapper(componentModel = "spring")
 public interface UserMapper {
     User toUser(UserCreationRequest request);
 
