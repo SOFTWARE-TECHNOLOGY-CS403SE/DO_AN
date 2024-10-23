@@ -13,8 +13,9 @@ import java.util.Map;
 import java.util.Optional;
 
 public interface UserService {
-     UserResponse getMyInfo();
-     UserResponse getUser(String id);
+    UserResponse getMyInfo();
+    UserResponse getMyInfo(String email);
+    UserResponse getUser(String id);
     List<UserResponse> getUsers();
     void deleteUser(String userId);
     UserResponse updateUser(String userId, UserUpdateRequest request);

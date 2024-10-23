@@ -25,9 +25,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.addEndpoint("/ws")
-                // Allow specific origins for WebSocket connections
-                .setAllowedOriginPatterns("http://localhost:3000")
-                .setAllowedOrigins("http://localhost:3000") // Use explicit origins if no pattern is needed
+                .setAllowedOriginPatterns("*")
+//                .setAllowedOrigins("http://localhost:3000")
                 .withSockJS();
     }
 
@@ -40,33 +39,6 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.enableSimpleBroker("/topic");
         registry.setApplicationDestinationPrefixes("/app");
-    }
-    //
-    @Bean
-    public WebMvcConfigurer corsConfig() {
-        return new WebMvcConfigurer() {
-
-            @Override
-            public void addCorsMappings(CorsRegistry registry) {
-                registry.addMapping("/ws/**")
-                        .allowedMethods("GET", "POST", "PUT", "DELETE")
-                        .allowedHeaders("*")
-                        .allowedOrigins("*");
-            }
-        };
-    }
-
-    @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-
-        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        final CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setExposedHeaders(Arrays.asList("*"));
-        configuration.addAllowedOrigin("*");
-        configuration.addAllowedMethod("*");
-        configuration.addAllowedHeader("*");
-        configuration.applyPermitDefaultValues();
-        return source;
     }
 
 

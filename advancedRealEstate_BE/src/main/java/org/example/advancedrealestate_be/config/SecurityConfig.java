@@ -29,12 +29,14 @@ public class SecurityConfig {
     private final String[] PUBLIC_ENDPOINTS = {
             "api/users", "api/auth/token", "api/auth/introspect",
             "api/auth/logout", "api/auth/refresh",
+            "ws/**"
 //            "/api/**",
     };
     private final String[] PUBLIC_GET_ENDPOINTS = {
             "/",
-//            "/api/**",
+            "ws/**",
             "/api-docs",
+            "/api/user/**",
             "/v3/api-docs/**",
             "/swagger-ui/**",
             "/swagger-ui.html",
@@ -52,56 +54,37 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity.csrf(AbstractHttpConfigurer::disable)
-//                .cors(cors -> corsConfigurationSource())
-                .authorizeHttpRequests(authorize -> authorize.requestMatchers("api/auth/**").permitAll()
-                        .requestMatchers("/ws/**").permitAll());
-//
-//                ;
 
-//        httpSecurity.authorizeHttpRequests(request -> request
-//                .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
-//                .requestMatchers(HttpMethod.GET, PUBLIC_GET_ENDPOINTS).permitAll()
-//                .requestMatchers(HttpMethod.GET,"/ws/**").permitAll()
-//
-////                .requestMatchers(HttpMethod.PATCH, PUBLIC_PATCH_ENDPOINTS).permitAll()
-////                .requestMatchers(HttpMethod.DELETE, PUBLIC_DELETE_ENDPOINTS).permitAll()
-//                .anyRequest()
-//                .authenticated());
+        httpSecurity.authorizeHttpRequests(request -> request
+                .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
+                .requestMatchers(HttpMethod.GET, PUBLIC_GET_ENDPOINTS).permitAll()
+//                .requestMatchers(HttpMethod.PATCH, PUBLIC_PATCH_ENDPOINTS).permitAll()
+//                .requestMatchers(HttpMethod.DELETE, PUBLIC_DELETE_ENDPOINTS).permitAll()
+                .anyRequest()
+                .authenticated());
 //
         httpSecurity.oauth2ResourceServer(oauth2 -> oauth2.jwt(jwtConfigurer -> jwtConfigurer
-                        .decoder(customJwtDecoder)
-                        .jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                .decoder(customJwtDecoder)
+                .jwtAuthenticationConverter(jwtAuthenticationConverter()))
                 .authenticationEntryPoint(new JwtAuthenticationEntryPoint()));
-//        httpSecurity.csrf(AbstractHttpConfigurer::disable);
-//        httpSecurity.cors(cors -> corsConfigurationSource());
+        httpSecurity.csrf(AbstractHttpConfigurer::disable);
+        httpSecurity.cors(cors -> corsConfigurationSource());
         return httpSecurity.build();
     }
 
     @Bean
-    CorsConfigurationSource corsConfigurationSource() {
+    public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList("*"));
-        configuration.setAllowedMethods(Arrays.asList("*"));
-        configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setAllowedOrigins(Arrays.asList("http://localhost:3000"));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        configuration.setAllowedHeaders(Arrays.asList("Authorization", "Content-Type"));
+        configuration.setExposedHeaders(Arrays.asList("X-Auth-Token"));
         configuration.setAllowCredentials(true);
+        configuration.setMaxAge(3600L);
+
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
-    }
-
-    @Bean
-    public CorsFilter corsFilter() {
-//        CorsConfiguration corsConfiguration = new CorsConfiguration();
-//
-//        corsConfiguration.addAllowedOrigin("*");
-//        corsConfiguration.addAllowedMethod("*");
-//        corsConfiguration.addAllowedHeader("*");
-//
-//        UrlBasedCorsConfigurationSource urlBasedCorsConfigurationSource = new UrlBasedCorsConfigurationSource();
-//        urlBasedCorsConfigurationSource.registerCorsConfiguration("/**", corsConfiguration);
-
-        return new CorsFilter(corsConfigurationSource());
     }
 
     @Bean
