@@ -13,9 +13,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
-import java.util.Date;
-import java.util.Objects;
-import java.util.Random;
+import java.util.*;
 
 @Controller
 @CrossOrigin(origins = "https://localhost:3000")
@@ -30,6 +28,8 @@ public class ChatApiController {
 
     @Autowired
     private SimpMessagingTemplate messagingTemplate;
+    private final Map<String, Set<String>> roomUsers = new HashMap<>();
+    private String bot = "Bot: ";
 
     public static String generateRandomMessageId(int length) {
         Random random = new Random();
@@ -48,10 +48,15 @@ public class ChatApiController {
         String messageId = generateRandomMessageId(9);
         JSONObject messageObject = new JSONObject();
         messageObject.put("id", messageId);
-        messageObject.put("sender", message.getSender());
+        messageObject.put("sender", message.getEmail());
         messageObject.put("content", message.getContent());
         if(Objects.equals(message.getContent(), "a")){
-            messageObject.put("bot", "hahaha");
+            messageObject.put("isPending", true);
+            messageObject.put("bot", "haha");
+        }
+        if(Objects.equals(message.getContent(), "hello")){
+            messageObject.put("isPending", true);
+            messageObject.put("bot", "Hello " + message.getSender());
         }
         messagingTemplate.convertAndSend("/topic/room/" + room, messageObject.toString());
     }
@@ -60,10 +65,33 @@ public class ChatApiController {
     public void addUser(@DestinationVariable("room") String room, Chat message, SimpMessageHeaderAccessor headerAccessor) {
         System.out.println("User joined room: " + room);
 
+        System.out.println("Message: " + message);
         JSONObject messageObject = new JSONObject();
-        messageObject.put("sender", message.getSender());
-        messageObject.put("content", message.getContent() == null ? " Chào mừng bạn đã vào room " + room : message.getContent());
+        Set<String> usersInRoom = roomUsers.getOrDefault(room, new HashSet<>());
+        usersInRoom.add(message.getEmail());
+        roomUsers.put(room, usersInRoom);
+        System.out.println(usersInRoom);
+        messageObject.put("count", usersInRoom.size());
+        messageObject.put("email", message.getEmail());
+        messageObject.put("sender", message.getEmail());
+        messageObject.put("bot", "Chào mừng " + message.getEmail() + " đã vào phòng " + room);
+        messageObject.put("content", message.getContent());
+
         headerAccessor.getSessionAttributes().put("username", message.getSender());
+
+        messagingTemplate.convertAndSend("/topic/room/" + room, messageObject.toString());
+    }
+
+
+    @MessageMapping("/leaveRoom/{room}")
+    public void userLeaveRoom(@DestinationVariable("room") String room, Chat message, SimpMessageHeaderAccessor headerAccessor) {
+
+        System.out.println("Message: " + message);
+        JSONObject messageObject = new JSONObject();
+        Set<String> usersInRoom = roomUsers.getOrDefault(room, new HashSet<>());
+        usersInRoom.remove(message.getEmail());
+        messageObject.put("bot", message.getEmail() + " đã rời phòng " + room + "!");
+        messageObject.put("count", usersInRoom.size());
 
         messagingTemplate.convertAndSend("/topic/room/" + room, messageObject.toString());
     }
