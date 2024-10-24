@@ -5,11 +5,9 @@ import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.example.advancedrealestate_be.constant.PredefinedRole;
-import org.example.advancedrealestate_be.dto.UserDto;
-import org.example.advancedrealestate_be.dto.request.UpdateInfoUserRequest;
-import org.example.advancedrealestate_be.dto.request.UserCreationRequest;
-import org.example.advancedrealestate_be.dto.request.UserUpdateRequest;
+import org.example.advancedrealestate_be.dto.request.*;
 import org.example.advancedrealestate_be.dto.response.UserResponse;
+import org.example.advancedrealestate_be.dto.response.UserRoleResponse;
 import org.example.advancedrealestate_be.entity.Role;
 import org.example.advancedrealestate_be.entity.User;
 import org.example.advancedrealestate_be.exception.AppException;
@@ -26,11 +24,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -55,6 +52,7 @@ public class UserServiceHandler implements UserService {
     }
 
 
+    @Override
     public UserResponse createUser(UserCreationRequest request) {
         User user = userMapper.toUser(request);
         user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -106,6 +104,7 @@ public class UserServiceHandler implements UserService {
 
 
     @PostAuthorize("returnObject.username == authentication.name")
+    @Override
     public UserResponse updateUser(String userId, UserUpdateRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
@@ -154,19 +153,50 @@ public class UserServiceHandler implements UserService {
         );
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
+    @Override
+    public UserRoleResponse updateRoleUser(String userId, UserRoleRequest request) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        Set<UserRoleResponse.Role> oldRoles = user.getRoles().stream()
+                .map(role -> new UserRoleResponse.Role(role.getName(),
+                        role.getPermissions().stream()
+                                .map(permission -> new UserRoleResponse.Permission(permission.getName()))
+                                .collect(Collectors.toList())))
+                .collect(Collectors.toSet());
+        List<UserRoleRequest.Role> roleNames = request.getRoles();
+        Set<Role> roles = roleNames.stream()
+            .map(roleReq -> roleRepository.findById(roleReq.getName())
+              .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND)))
+            .collect(Collectors.toSet());
+        user.setRoles(roles);
+        User userRoleUpdate = userRepository.save(user);
+
+        Set<UserRoleResponse.Role> responseRoles = roles.stream()
+            .map(role -> new UserRoleResponse.Role(role.getName(),
+                 role.getPermissions().stream()
+            .map(permission -> new UserRoleResponse.Permission(permission.getName()))
+        .collect(Collectors.toList())))
+        .collect(Collectors.toSet());
+
+        return new UserRoleResponse(userRoleUpdate.getId(), userRoleUpdate.getEmail(), responseRoles, oldRoles);
+    }
+
 
     @PreAuthorize("hasRole('ADMIN')")
+    @Override
     public void deleteUser(String userId) {
         userRepository.deleteById(userId);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
+    @Override
     public List<UserResponse> getUsers() {
         log.info("In method get Users");
         return userRepository.findAll().stream().map(userMapper::toUserResponse).collect(Collectors.toList());
     }
 //ko cần đâu, tạo q
     @PreAuthorize("hasRole('ADMIN')")
+    @Override
     public UserResponse getUser(String id) {
         return userMapper.toUserResponse(
                 userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));

@@ -8,16 +8,13 @@ import java.util.List;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 
-import org.example.advancedrealestate_be.dto.request.UpdateInfoUserRequest;
+import org.example.advancedrealestate_be.dto.request.*;
+import org.example.advancedrealestate_be.dto.response.UserRoleResponse;
 import org.example.advancedrealestate_be.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import org.example.advancedrealestate_be.dto.request.ApiResponse;
-import org.example.advancedrealestate_be.dto.request.UserCreationRequest;
-import org.example.advancedrealestate_be.dto.request.UserUpdateRequest;
 import org.example.advancedrealestate_be.dto.response.UserResponse;
-import org.example.advancedrealestate_be.service.handler.UserServiceHandler;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -82,6 +79,14 @@ public class UserController {
 
         return ApiResponse.<UserResponse>builder()
                 .result(userService.updateUserInfo(userId, request))
+                .build();
+    }
+
+    @PatchMapping("role-user/{userId}")
+    ApiResponse<UserRoleResponse> updateRoleUser(@PathVariable String userId, @RequestBody UserRoleRequest request) {
+        UserRoleResponse userRoleResponse = userService.updateRoleUser(userId, request);
+        return ApiResponse.<UserRoleResponse>builder()
+                .result(userRoleResponse)
                 .build();
     }
 }
