@@ -21,7 +21,7 @@ import java.util.List;
 
 @RestController
 @SecurityRequirement(name = "bearerAuth")
-@RequestMapping("api/roles")
+@RequestMapping("api/admin/roles")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j

@@ -5,9 +5,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import net.minidev.json.JSONObject;
 import org.example.advancedrealestate_be.dto.BuildingDto;
 import org.example.advancedrealestate_be.dto.MapDto;
+import org.example.advancedrealestate_be.dto.RoomChatDto;
 import org.example.advancedrealestate_be.dto.ServiceDto;
 import org.example.advancedrealestate_be.service.BuildingService;
 import org.example.advancedrealestate_be.service.MapService;
+import org.example.advancedrealestate_be.service.RoomChatService;
 import org.example.advancedrealestate_be.service.ServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -25,13 +27,15 @@ public class UserBuildingApiController {
     BuildingService buildingService;
     ServiceService serviceService;
     private final MapService mapService;
+    private final RoomChatService roomChatService;
 
 
     @Autowired
-    public UserBuildingApiController(BuildingService buildingService, ServiceService serviceService, MapService mapService) {
+    public UserBuildingApiController(BuildingService buildingService, ServiceService serviceService, MapService mapService, RoomChatService roomChatService) {
         this.buildingService = buildingService;
         this.serviceService = serviceService;
         this.mapService = mapService;
+        this.roomChatService = roomChatService;
     }
 
     @GetMapping("/buildings")
@@ -112,6 +116,20 @@ public class UserBuildingApiController {
         } catch (Exception error) {
             object.put("message", error.getMessage());
             return new ResponseEntity<>(object, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/room-chats")
+    ResponseEntity<JSONObject> index_roomChat() {
+        JSONObject data = new JSONObject();
+        try {
+            List<RoomChatDto> roomChatDtoList = roomChatService.findAll();
+            data.put("total", roomChatDtoList.size());
+            data.put("data", roomChatDtoList);
+            return new ResponseEntity<>(data, HttpStatus.OK);
+        } catch (Exception error) {
+            data.put("message", error.getMessage());
+            return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

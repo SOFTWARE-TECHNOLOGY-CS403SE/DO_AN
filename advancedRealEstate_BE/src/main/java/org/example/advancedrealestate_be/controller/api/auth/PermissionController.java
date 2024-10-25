@@ -6,6 +6,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import net.minidev.json.JSONObject;
 import org.example.advancedrealestate_be.dto.request.ApiResponse;
 import org.example.advancedrealestate_be.dto.request.PermissionRequest;
 import org.example.advancedrealestate_be.dto.response.PermissionResponse;
@@ -18,7 +19,7 @@ import java.util.List;
 
 @RestController
 @SecurityRequirement(name = "bearerAuth")
-@RequestMapping("api/permissions")
+@RequestMapping("api/admin/permissions")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
@@ -39,6 +40,15 @@ public class PermissionController {
                 .result(permissionService.getAll())
                 .build();
     }
+
+    @PatchMapping("/{permissionName}")
+    ApiResponse<JSONObject> update(@PathVariable String permissionName, @RequestBody PermissionRequest request) {
+        JSONObject updateObjectResponse = permissionService.updateById(permissionName, request);
+        return ApiResponse.<JSONObject>builder()
+                .result(updateObjectResponse)
+                .build();
+    }
+
 
     @DeleteMapping("/{permission}")
     ApiResponse<Void> delete(@PathVariable String permission) {

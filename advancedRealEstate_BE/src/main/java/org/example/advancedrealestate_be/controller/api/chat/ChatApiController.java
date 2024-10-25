@@ -26,8 +26,13 @@ public class ChatApiController {
 //        return chat;
 //    }
 
+    private final SimpMessagingTemplate messagingTemplate;
+
     @Autowired
-    private SimpMessagingTemplate messagingTemplate;
+    public ChatApiController(SimpMessagingTemplate messagingTemplate) {
+        this.messagingTemplate = messagingTemplate;
+    }
+
     private final Map<String, Set<String>> roomUsers = new HashMap<>();
     private String bot = "Bot: ";
 

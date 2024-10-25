@@ -21,10 +21,7 @@ import java.util.stream.Collectors;
 public class MapHandler implements MapService {
 
 
-    @Autowired
     private final ModelMapper modelMapper;
-
-    @Autowired
     private final MapRepository mapRepository;
 
     @Autowired
@@ -39,7 +36,9 @@ public class MapHandler implements MapService {
 
         List<Map> mapList = mapRepository.findAll();
 
-        return mapList.stream().map(MapMapper::mapToMap).collect(Collectors.toList());
+        return mapList.stream()
+                .map(MapMapper::mapToMap)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -49,18 +48,18 @@ public class MapHandler implements MapService {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorEnumConstant.MapNotFound.toString());
         }
         return map.map(
-                        value -> new MapDto(
-                                value.getId(),
-                                value.getMap_name(),
-                                value.getLatitude(),
-                                value.getLongitude(),
-                                value.getAddress(),
-                                value.getProvince(),
-                                value.getDistrict(),
-                                value.getWard(),
-                                value.getDirection()
-                        ))
-                .orElse(null);
+                value -> new MapDto(
+                    value.getId(),
+                    value.getMap_name(),
+                    value.getLatitude(),
+                    value.getLongitude(),
+                    value.getAddress(),
+                    value.getProvince(),
+                    value.getDistrict(),
+                    value.getWard(),
+                    value.getDirection()
+                ))
+        .orElse(null);
     }
 
     @Transactional
