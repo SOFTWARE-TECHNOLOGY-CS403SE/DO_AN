@@ -29,6 +29,7 @@ public class AdvancedRealEstateBeApplication {
 //        } catch (NoSuchAlgorithmException e) {
 //            e.printStackTrace();
 //        }
+//
         System.out.println("running: http://localhost:9090/");
     }
 
