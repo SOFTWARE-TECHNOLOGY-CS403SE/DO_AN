@@ -1,5 +1,6 @@
 package org.example.advancedrealestate_be.controller.api.admin;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import net.minidev.json.JSONObject;
@@ -9,8 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -29,9 +32,27 @@ public class AdminBuildingApiController {
     @PostMapping("/buildings")
     private ResponseEntity<JSONObject> create(@RequestBody BuildingDto buildingDto) {
         JSONObject data = new JSONObject();
+        System.out.println(buildingDto);
         try {
             BuildingDto responseDto = buildingService.create(buildingDto);
             data.put("data", responseDto);
+            return new ResponseEntity<>(data, HttpStatus.OK);
+        } catch (Exception error) {
+            data.put("message", error.getMessage());
+            return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @PostMapping(value = "/buildings/{id}/upload-image", consumes = "multipart/form-data")
+    ResponseEntity<JSONObject> uploadImage(
+            @PathVariable String id,
+            @RequestPart("image") @Schema(type = "string", format = "binary")
+            MultipartFile imageFile) throws IOException {
+
+        JSONObject data = new JSONObject();
+        try {
+            data.put("data", buildingService.uploadImage(id, imageFile));
+            data.put("message", "Upload image successfully");
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception error) {
             data.put("message", error.getMessage());

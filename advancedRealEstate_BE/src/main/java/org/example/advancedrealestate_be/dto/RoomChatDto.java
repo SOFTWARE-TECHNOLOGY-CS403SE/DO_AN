@@ -14,4 +14,6 @@ public class RoomChatDto {
     private String id;
     private String name;
     private String description;
+    private byte[] image;
+    String file_type;
 }

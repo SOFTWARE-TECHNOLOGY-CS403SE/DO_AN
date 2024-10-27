@@ -21,4 +21,6 @@ public class BuildingDto {
     private EnumEntityConstant type;
     private String description;
     private int number_of_basement;
+    private byte[] image;
+    private String file_type;
 }

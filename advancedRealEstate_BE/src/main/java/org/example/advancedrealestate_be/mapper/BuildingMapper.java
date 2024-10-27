@@ -9,7 +9,18 @@ public class BuildingMapper {
 
     public static BuildingDto mapToBuilding(Building building) {
 
-        BuildingDto buildingDto = BuildingDto.builder().id(building.getId()).name(building.getName()).structure(building.getStructure()).level(building.getLevel()).area(building.getArea()).type(building.getType()).description(building.getDescription()).number_of_basement(building.getNumber_of_basement()).build();
+        BuildingDto buildingDto = BuildingDto.builder()
+                .id(building.getId())
+                .name(building.getName())
+                .structure(building.getStructure())
+                .level(building.getLevel())
+                .area(building.getArea())
+                .type(building.getType())
+                .description(building.getDescription())
+                .number_of_basement(building.getNumber_of_basement())
+                .image(building.getImage())
+                .file_type(building.getFile_type())
+                .build();
         if (buildingDto != null) {
 
             return buildingDto;

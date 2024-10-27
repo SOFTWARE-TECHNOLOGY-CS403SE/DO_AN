@@ -36,11 +36,14 @@ public class Building {
     @Column(name = "type")
     private EnumEntityConstant type;
 
+    @Column(columnDefinition = "text")
     private String description;
     private int number_of_basement;
 
     @Lob
+    @Column(columnDefinition = "LONGBLOB")
     private byte[] image;
+    private String file_type;
 
     @CreationTimestamp
     private LocalDateTime createdOn;

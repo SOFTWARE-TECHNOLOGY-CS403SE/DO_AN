@@ -21,5 +21,7 @@ public class RoomChat {
     private String name;
     private String description;
     @Lob
+    @Column(columnDefinition = "LONGBLOB")
     private byte[] image;
+    String file_type;
 }

@@ -16,6 +16,8 @@ public class RoomChatMapper {
                 .id(roomChat.getId())
                 .name(roomChat.getName())
                 .description(roomChat.getDescription())
+                .image(roomChat.getImage())
+                .file_type(roomChat.getFile_type())
                 .build();
 
         if (roomChatDto != null) {

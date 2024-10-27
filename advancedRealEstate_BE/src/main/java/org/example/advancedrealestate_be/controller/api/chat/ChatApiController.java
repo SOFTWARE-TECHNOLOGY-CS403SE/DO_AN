@@ -3,6 +3,7 @@ package org.example.advancedrealestate_be.controller.api.chat;
 import com.nimbusds.jose.shaded.gson.JsonObject;
 import net.minidev.json.JSONObject;
 import org.example.advancedrealestate_be.model.Chat;
+import org.example.advancedrealestate_be.service.Task.ScheduledTask;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
 
 @Controller
 @CrossOrigin(origins = "https://localhost:3000")
@@ -27,10 +29,12 @@ public class ChatApiController {
 //    }
 
     private final SimpMessagingTemplate messagingTemplate;
+    private final ScheduledTask scheduledTask;
 
     @Autowired
-    public ChatApiController(SimpMessagingTemplate messagingTemplate) {
+    public ChatApiController(SimpMessagingTemplate messagingTemplate, ScheduledTask scheduledTask) {
         this.messagingTemplate = messagingTemplate;
+        this.scheduledTask = scheduledTask;
     }
 
     private final Map<String, Set<String>> roomUsers = new HashMap<>();
@@ -46,6 +50,21 @@ public class ChatApiController {
         return "Mid"+sb;
     }
 
+
+    private void awaitSend(JSONObject messageObject, String room, String message){
+        CompletableFuture.runAsync(() -> {
+            try {
+                Thread.sleep(500);
+                messageObject.put("content", null);
+                messageObject.put("bot", message);
+                messagingTemplate.convertAndSend("/topic/room/" + room, messageObject.toString());
+
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+        });
+    }
+
     @MessageMapping("/sendMessageToRoom/{room}")
     public void sendMessageToRoom(@DestinationVariable("room") String room, Chat message) {
         System.out.println("Message: " + message);
@@ -55,13 +74,12 @@ public class ChatApiController {
         messageObject.put("id", messageId);
         messageObject.put("sender", message.getEmail());
         messageObject.put("content", message.getContent());
+
         if(Objects.equals(message.getContent(), "a")){
-            messageObject.put("isPending", true);
-            messageObject.put("bot", "haha");
+            awaitSend(messageObject, room, "hahahaha");
         }
         if(Objects.equals(message.getContent(), "hello")){
-            messageObject.put("isPending", true);
-            messageObject.put("bot", "Hello " + message.getSender());
+            awaitSend(messageObject, room, "Hello " + message.getSender());
         }
         messagingTemplate.convertAndSend("/topic/room/" + room, messageObject.toString());
     }
@@ -83,6 +101,10 @@ public class ChatApiController {
         messageObject.put("content", message.getContent());
 
         headerAccessor.getSessionAttributes().put("username", message.getSender());
+
+        if(Objects.equals(room, "phòng đấu giá bất động sản cao cấp")){
+            awaitSend(messageObject, room, "Chào " + message.getEmail() + " bạn cần tôi giúp gì không?");
+        }
 
         messagingTemplate.convertAndSend("/topic/room/" + room, messageObject.toString());
     }
