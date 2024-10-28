@@ -13,11 +13,11 @@ public class BuildingMapper {
                 .id(building.getId())
                 .name(building.getName())
                 .structure(building.getStructure())
-                .level(building.getLevel())
                 .area(building.getArea())
                 .type(building.getType())
                 .description(building.getDescription())
                 .number_of_basement(building.getNumber_of_basement())
+                .price(building.getPrice())
                 .image(building.getImage())
                 .file_type(building.getFile_type())
                 .build();

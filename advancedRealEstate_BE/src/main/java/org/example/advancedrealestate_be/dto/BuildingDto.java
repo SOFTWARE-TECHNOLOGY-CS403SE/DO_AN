@@ -16,11 +16,11 @@ public class BuildingDto {
     private String id;
     private String name;
     private String structure;
-    private String level;
     private String area;
     private String type;
     private String description;
     private int number_of_basement;
+    private double price;
     private byte[] image;
     private String file_type;
 }
