@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import net.minidev.json.JSONObject;
 import org.example.advancedrealestate_be.dto.BuildingDto;
+import org.example.advancedrealestate_be.dto.request.CreateBuildingRequest;
 import org.example.advancedrealestate_be.service.BuildingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -30,11 +31,10 @@ public class AdminBuildingApiController {
     }
 
     @PostMapping("/buildings")
-    private ResponseEntity<JSONObject> create(@RequestBody BuildingDto buildingDto) {
+    private ResponseEntity<JSONObject> create(@RequestBody CreateBuildingRequest buildingRequestDto) {
         JSONObject data = new JSONObject();
-        System.out.println(buildingDto);
         try {
-            BuildingDto responseDto = buildingService.create(buildingDto);
+            BuildingDto responseDto = buildingService.create(buildingRequestDto);
             data.put("data", responseDto);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception error) {

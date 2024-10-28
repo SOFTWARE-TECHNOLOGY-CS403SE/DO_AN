@@ -3,6 +3,7 @@ package org.example.advancedrealestate_be.service.handler;
 import org.example.advancedrealestate_be.constant.ErrorEnumConstant;
 import org.example.advancedrealestate_be.dto.BuildingDto;
 import org.example.advancedrealestate_be.dto.RoomChatDto;
+import org.example.advancedrealestate_be.dto.request.CreateBuildingRequest;
 import org.example.advancedrealestate_be.entity.Building;
 import org.example.advancedrealestate_be.entity.RoomChat;
 import org.example.advancedrealestate_be.exception.AppException;
@@ -80,8 +81,8 @@ public class BuildingHandler implements BuildingService {
 
     @Transactional
     @Override
-    public BuildingDto create(BuildingDto buildingDto) {
-        Building buildingEntity = modelMapper.map(buildingDto, Building.class);
+    public BuildingDto create(CreateBuildingRequest buildingRequestDto) {
+        Building buildingEntity = modelMapper.map(buildingRequestDto, Building.class);
         Building buildingNew = buildingRepository.save(buildingEntity);
         return new BuildingDto(
                 buildingNew.getId(),
