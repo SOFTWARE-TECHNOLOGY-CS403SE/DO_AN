@@ -18,7 +18,7 @@ public class BuildingDto {
     private String structure;
     private String level;
     private String area;
-    private EnumEntityConstant type;
+    private String type;
     private String description;
     private int number_of_basement;
     private byte[] image;
