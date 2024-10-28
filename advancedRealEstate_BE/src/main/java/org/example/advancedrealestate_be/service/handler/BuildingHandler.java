@@ -53,10 +53,11 @@ public class BuildingHandler implements BuildingService {
         }
         return building.map(value -> new BuildingDto(
                 value.getId(), value.getName(),
-                value.getStructure(), value.getLevel(),
+                value.getStructure(),
                 value.getArea(), value.getType(),
                 value.getDescription(),
                 value.getNumber_of_basement(),
+                value.getPrice(),
                 value.getImage(),
                 value.getFile_type()))
         .orElse(null);
@@ -86,11 +87,11 @@ public class BuildingHandler implements BuildingService {
                 buildingNew.getId(),
                 buildingNew.getName(),
                 buildingNew.getStructure(),
-                buildingNew.getLevel(),
                 buildingNew.getArea(),
                 buildingNew.getType(),
                 buildingNew.getDescription(),
                 buildingNew.getNumber_of_basement(),
+                buildingNew.getPrice(),
                 null,
                 null
         );
@@ -104,17 +105,19 @@ public class BuildingHandler implements BuildingService {
         }
         building.get().setName(buildingDto.getName() != null ? buildingDto.getName() : building.get().getName());
         building.get().setStructure(buildingDto.getStructure() != null ? buildingDto.getStructure() : building.get().getStructure());
-        building.get().setLevel(buildingDto.getLevel() != null ? buildingDto.getLevel() : building.get().getLevel());
         building.get().setArea(buildingDto.getArea() != null ? buildingDto.getArea() : building.get().getArea());
         building.get().setType(buildingDto.getType() != null ? buildingDto.getType() : building.get().getType());
         building.get().setDescription(buildingDto.getDescription() != null ? buildingDto.getDescription() : building.get().getDescription());
         building.get().setNumber_of_basement(buildingDto.getNumber_of_basement() == 0 ? 0 : buildingDto.getNumber_of_basement());
+        building.get().setPrice(buildingDto.getPrice() == 0 ? 0 : buildingDto.getPrice());
+
         Building buildingUpdate = buildingRepository.save(building.get());
         return new BuildingDto(buildingUpdate.getId(),
                 buildingUpdate.getName(), buildingUpdate.getStructure(),
-                buildingUpdate.getLevel(), buildingUpdate.getArea(),
+                buildingUpdate.getArea(),
                 buildingUpdate.getType(), buildingUpdate.getDescription(),
                 buildingUpdate.getNumber_of_basement(),
+                buildingUpdate.getPrice(),
                 null,
                 buildingDto.getFile_type()
         );
@@ -129,10 +132,11 @@ public class BuildingHandler implements BuildingService {
         BuildingDto buildingDto = new BuildingDto(
                 building.get().getId(),
                 building.get().getName(),
-                building.get().getStructure(), building.get().getLevel(),
+                building.get().getStructure(),
                 building.get().getArea(), building.get().getType(),
                 building.get().getDescription(),
                 building.get().getNumber_of_basement(),
+                building.get().getPrice(),
                 null,
                 building.get().getFile_type()
         );
@@ -150,10 +154,11 @@ public class BuildingHandler implements BuildingService {
                 buildingUpLoad.getId(),
                 buildingUpLoad.getName(),
                 null,
-                null,null,
+                null,
                 buildingUpLoad.getType(),
                 null,
                 buildingUpLoad.getNumber_of_basement(),
+                buildingUpLoad.getPrice(),
                 null,
                 null
         );
