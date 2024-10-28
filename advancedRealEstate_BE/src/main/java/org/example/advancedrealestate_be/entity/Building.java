@@ -32,9 +32,8 @@ public class Building {
     private String level;
     private String area;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "type")
-    private EnumEntityConstant type;
+    private String type;
 
     @Column(columnDefinition = "text")
     private String description;

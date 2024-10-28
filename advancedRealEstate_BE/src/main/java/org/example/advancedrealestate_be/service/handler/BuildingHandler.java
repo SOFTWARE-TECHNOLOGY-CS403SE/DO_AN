@@ -109,7 +109,6 @@ public class BuildingHandler implements BuildingService {
         building.get().setType(buildingDto.getType() != null ? buildingDto.getType() : building.get().getType());
         building.get().setDescription(buildingDto.getDescription() != null ? buildingDto.getDescription() : building.get().getDescription());
         building.get().setNumber_of_basement(buildingDto.getNumber_of_basement() == 0 ? 0 : buildingDto.getNumber_of_basement());
-        building.get().setImage(null);
         Building buildingUpdate = buildingRepository.save(building.get());
         return new BuildingDto(buildingUpdate.getId(),
                 buildingUpdate.getName(), buildingUpdate.getStructure(),

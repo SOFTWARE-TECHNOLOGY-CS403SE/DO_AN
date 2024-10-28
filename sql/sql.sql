@@ -134,6 +134,7 @@ select * from role, user_roles, role_permissions
 where role.name = user_roles.roles_name AND
 role.role_name = role_permissions.role_name;
 select * from room_chats;
+select * from buildings;
 
 ALTER TABLE user MODIFY fullname VARCHAR(255) NULL;
 ALTER TABLE user MODIFY status INT DEFAULT 1;
