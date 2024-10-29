@@ -41,6 +41,7 @@ public class MapHandler implements MapService {
                 .collect(Collectors.toList());
     }
 
+
     @Override
     public MapDto findById(String id) {
         Optional<Map> map = mapRepository.findById(id);
@@ -64,9 +65,8 @@ public class MapHandler implements MapService {
 
     @Transactional
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     public MapDto create(MapDto MapDto) {
-        System.err.println("run...");
         Map map = modelMapper.map(MapDto, Map.class);
         Map mapNew = mapRepository.save(map);
 
@@ -83,6 +83,7 @@ public class MapHandler implements MapService {
         );
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     @Override
     public MapDto updateById(MapDto mapDto, String id) {
         Optional<Map> map = mapRepository.findById(id);
@@ -112,8 +113,8 @@ public class MapHandler implements MapService {
         );
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
     public MapDto deleteById(String id) {
         Optional<Map> map = mapRepository.findById(id);
         if (map.isEmpty()) {

@@ -32,7 +32,7 @@ public class PermissionServiceHandler implements PermistionService {
     @Autowired
     PermissionMapper permissionMapper;
 
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     @Override
     public PermissionResponse create(PermissionRequest request) {
         Permission permission = permissionMapper.toPermission(request);
@@ -62,6 +62,7 @@ public class PermissionServiceHandler implements PermistionService {
         return updateObjectResponse;
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     @Override
     public List<PermissionResponse> getAll() {
         var permissions = permissionRepository.findAll();

@@ -71,6 +71,8 @@ public class UserServiceHandler implements UserService {
         return userMapper.toUserResponse(user);
     }
 
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'STAFF')")
     @Override
     public UserResponse getMyInfo() {
         var context = SecurityContextHolder.getContext();
@@ -123,6 +125,7 @@ public class UserServiceHandler implements UserService {
         return userMapper.toUserResponse(userRepository.save(user));
     }
 
+    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'STAFF')")
     @Override
     public UserResponse updateUserInfo(String userId, UpdateInfoUserRequest request) {
         User user = userRepository.findById(userId)
@@ -198,8 +201,7 @@ public class UserServiceHandler implements UserService {
     @PreAuthorize("hasRole('ADMIN')")
     @Override
     public UserResponse getUser(String id) {
-        return userMapper.toUserResponse(
-                userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
+        return userMapper.toUserResponse(userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));
     }
 
 

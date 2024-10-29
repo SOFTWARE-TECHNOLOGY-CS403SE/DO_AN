@@ -10,6 +10,7 @@ import org.example.advancedrealestate_be.service.BuildingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -43,6 +44,7 @@ public class AdminBuildingApiController {
         }
     }
 
+
     @PostMapping(value = "/buildings/{id}/upload-image", consumes = "multipart/form-data")
     ResponseEntity<JSONObject> uploadImage(
             @PathVariable String id,
@@ -74,6 +76,7 @@ public class AdminBuildingApiController {
         }
     }
 
+
     @GetMapping("/buildings/{id}")
     private ResponseEntity<JSONObject> detail(@PathVariable String id) {
         JSONObject object = new JSONObject();
@@ -86,7 +89,6 @@ public class AdminBuildingApiController {
             return new ResponseEntity<>(object, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 
     @PatchMapping("/buildings/{id}")
     private ResponseEntity<JSONObject> update(@PathVariable String id, @RequestBody BuildingDto buildingDto) {

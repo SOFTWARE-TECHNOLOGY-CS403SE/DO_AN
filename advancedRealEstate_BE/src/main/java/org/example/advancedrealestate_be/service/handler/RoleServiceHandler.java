@@ -16,6 +16,7 @@ import org.example.advancedrealestate_be.repository.PermissionRepository;
 import org.example.advancedrealestate_be.repository.RoleRepository;
 import org.example.advancedrealestate_be.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
@@ -37,6 +38,8 @@ public class RoleServiceHandler implements RoleService {
     @Autowired
     RoleMapper roleMapper;
 
+
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     @Override
     public RoleResponse create(RoleRequest request) {
         var role = roleMapper.toRole(request);
@@ -48,6 +51,8 @@ public class RoleServiceHandler implements RoleService {
         return roleMapper.toRoleResponse(role);
     }
 
+
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @Override
     public RolePermissionResponse updateRolePermission(String roleName, RolePermissionRequest request) {
         Optional<Role> roleOptional = roleRepository.findById(roleName);
@@ -66,10 +71,13 @@ public class RoleServiceHandler implements RoleService {
         return null;
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     @Override
     public List<RoleResponse> getAll() {
         return roleRepository.findAll().stream().map(roleMapper::toRoleResponse).collect(Collectors.toList());
     }
+
+    @PreAuthorize("hasAnyRole('ADMIN')")
     @Override
     public void delete(String role) {
         roleRepository.deleteById(role);

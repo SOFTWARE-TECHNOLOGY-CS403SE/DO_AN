@@ -13,6 +13,7 @@ import org.example.advancedrealestate_be.repository.BuildingRepository;
 import org.example.advancedrealestate_be.service.BuildingService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.http.HttpStatus;
@@ -79,6 +80,7 @@ public class BuildingHandler implements BuildingService {
 //        return new BuildingDto(buildingNew.getId(), buildingNew.getName(), buildingNew.getStructure(), buildingNew.getLevel(), buildingNew.getArea(), buildingNew.getType(), buildingNew.getDescription(), buildingNew.getNumber_of_basement());
 //    }
 
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
     @Transactional
     @Override
     public BuildingDto create(CreateBuildingRequest buildingRequestDto) {
@@ -98,6 +100,7 @@ public class BuildingHandler implements BuildingService {
         );
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
     @Override
     public BuildingDto updateById(BuildingDto buildingDto, String id) {
         Optional<Building> building = buildingRepository.findById(id);
@@ -124,6 +127,7 @@ public class BuildingHandler implements BuildingService {
         );
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
     @Override
     public BuildingDto deleteById(String id) {
         Optional<Building> building = buildingRepository.findById(id);
@@ -145,6 +149,7 @@ public class BuildingHandler implements BuildingService {
         return buildingDto;
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
     @Override
     public BuildingDto uploadImage(String id, MultipartFile imageFile) throws IOException {
         Building building = buildingRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
