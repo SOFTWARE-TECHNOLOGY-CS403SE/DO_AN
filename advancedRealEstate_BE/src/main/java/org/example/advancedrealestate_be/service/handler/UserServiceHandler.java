@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -54,7 +55,15 @@ public class UserServiceHandler implements UserService {
 
     @Override
     public UserResponse createUser(UserCreationRequest request) {
+
         User user = userMapper.toUser(request);
+
+        User existUser = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+
+        if(Objects.equals(existUser.getEmail(), request.getEmail())){
+            throw new AppException(ErrorCode.USER_EXISTED);
+        }
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
         HashSet<Role> roles = new HashSet<>();

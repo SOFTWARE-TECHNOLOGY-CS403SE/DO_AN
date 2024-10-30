@@ -33,6 +33,7 @@ public class Building {
 
     @Column(name = "type")
     private String type;
+    private String status;
 
     @Column(columnDefinition = "text")
     private String description;

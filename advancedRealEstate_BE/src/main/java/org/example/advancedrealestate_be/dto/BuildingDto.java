@@ -18,6 +18,7 @@ public class BuildingDto {
     private String structure;
     private String area;
     private String type;
+    private String status;
     private String description;
     private int number_of_basement;
     private double price;
