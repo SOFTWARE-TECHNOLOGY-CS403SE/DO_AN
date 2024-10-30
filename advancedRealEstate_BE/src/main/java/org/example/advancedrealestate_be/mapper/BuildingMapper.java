@@ -15,6 +15,7 @@ public class BuildingMapper {
                 .structure(building.getStructure())
                 .area(building.getArea())
                 .type(building.getType())
+                .status(building.getStatus())
                 .description(building.getDescription())
                 .number_of_basement(building.getNumber_of_basement())
                 .price(building.getPrice())
