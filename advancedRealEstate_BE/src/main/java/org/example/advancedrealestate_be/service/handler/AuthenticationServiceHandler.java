@@ -85,6 +85,7 @@ public class AuthenticationServiceHandler implements AuthenticationService {
 
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
 
+        if(!user.isVerify()) throw new AppException(ErrorCode.UNAUTHENTICATED);
         if (!authenticated) throw new AppException(ErrorCode.UNAUTHENTICATED);
 
         var token = generateToken(user);

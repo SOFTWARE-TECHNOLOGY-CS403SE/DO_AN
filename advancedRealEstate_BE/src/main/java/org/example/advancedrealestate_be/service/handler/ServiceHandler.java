@@ -9,6 +9,7 @@ import org.example.advancedrealestate_be.service.ServiceService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -44,6 +45,7 @@ public class ServiceHandler implements ServiceService {
         return service.map(value -> new ServiceDto(value.getId(), value.getName(), value.getPrice())).orElse(null);
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     @Transactional
     @Override
     public ServiceDto create(ServiceDto serviceDto) {
@@ -52,6 +54,7 @@ public class ServiceHandler implements ServiceService {
         return new ServiceDto(serviceNew.getId(), serviceNew.getName(), serviceNew.getPrice());
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     @Override
     public ServiceDto updateById(String id, ServiceDto serviceDto) {
         Optional<org.example.advancedrealestate_be.entity.Service> service = serviceRepository.findById(id);
@@ -64,6 +67,7 @@ public class ServiceHandler implements ServiceService {
         return new ServiceDto(serviceUpdate.getId(), serviceUpdate.getName(), serviceUpdate.getPrice());
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     @Override
     public ServiceDto deleteById(String id) {
         Optional<org.example.advancedrealestate_be.entity.Service> service = serviceRepository.findById(id);

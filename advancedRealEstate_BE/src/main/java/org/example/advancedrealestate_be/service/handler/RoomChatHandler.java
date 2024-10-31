@@ -11,6 +11,7 @@ import org.example.advancedrealestate_be.repository.RoomChatRepository;
 import org.example.advancedrealestate_be.service.RoomChatService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,6 +36,7 @@ public class RoomChatHandler implements RoomChatService {
     }
 
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     @Override
     public RoomChatDto create(RoomChatDto roomChatDtoRequest) {
         RoomChat roomChat = new RoomChat();
@@ -58,6 +60,7 @@ public class RoomChatHandler implements RoomChatService {
             .collect(Collectors.toList());
     }
 
+
     @Override
     public RoomChatDto findById(String id) {
         RoomChat roomChat = roomChatRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
@@ -70,6 +73,7 @@ public class RoomChatHandler implements RoomChatService {
         );
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     @Override
     public RoomChatDto updateById(String id, RoomChatDto roomChatDtoRequest) {
         RoomChat roomChat = roomChatRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
@@ -85,6 +89,7 @@ public class RoomChatHandler implements RoomChatService {
         );
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     @Override
     public RoomChatDto deleteById(String id) {
         RoomChat roomChat = roomChatRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
@@ -98,6 +103,7 @@ public class RoomChatHandler implements RoomChatService {
         );
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     @Override
     public RoomChatDto uploadImage(String id, MultipartFile imageFile) throws IOException {
         RoomChat roomChat = roomChatRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));

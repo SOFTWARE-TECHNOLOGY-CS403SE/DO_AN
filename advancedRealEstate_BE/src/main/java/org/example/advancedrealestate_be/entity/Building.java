@@ -29,15 +29,16 @@ public class Building {
 
     private String name;
     private String structure;
-    private String level;
     private String area;
 
     @Column(name = "type")
     private String type;
+    private String status;
 
     @Column(columnDefinition = "text")
     private String description;
     private int number_of_basement;
+    private double price;
 
     @Lob
     @Column(columnDefinition = "LONGBLOB")

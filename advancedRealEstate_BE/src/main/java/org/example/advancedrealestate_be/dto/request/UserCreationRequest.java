@@ -36,8 +36,6 @@ public class UserCreationRequest {
     String email;
 
     String firstName;
-
-
     String lastName;
 
     LocalDate dob;
