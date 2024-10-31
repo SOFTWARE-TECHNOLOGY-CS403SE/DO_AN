@@ -103,7 +103,7 @@ public class UserServiceHandler implements UserService {
 
 
 
-    @PostAuthorize("returnObject.username == authentication.name")
+//    @PostAuthorize("returnObject.email == authentication.name")
     @Override
     public UserResponse updateUser(String userId, UserUpdateRequest request) {
         User user = userRepository.findById(userId)
@@ -153,7 +153,7 @@ public class UserServiceHandler implements UserService {
         );
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public UserRoleResponse updateRoleUser(String userId, UserRoleRequest request) {
         User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
