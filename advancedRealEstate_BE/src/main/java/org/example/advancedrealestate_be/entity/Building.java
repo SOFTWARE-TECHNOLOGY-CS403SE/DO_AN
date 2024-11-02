@@ -1,5 +1,6 @@
 package org.example.advancedrealestate_be.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.Data;
@@ -49,4 +50,10 @@ public class Building {
     private LocalDateTime createdOn;
     @UpdateTimestamp
     private LocalDateTime updatedOn;
+
+    @ManyToOne
+    @JoinColumn(name = "map_id", nullable = true)
+    //annotion này giúp gỡ lỗi lặp vô hạn khi mapper
+    @JsonBackReference("building-maps")
+    private Map map;
 }

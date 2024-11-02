@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import net.minidev.json.JSONObject;
 import org.example.advancedrealestate_be.dto.BuildingDto;
+import org.example.advancedrealestate_be.dto.request.BuildingUpdateRequest;
 import org.example.advancedrealestate_be.dto.request.CreateBuildingRequest;
 import org.example.advancedrealestate_be.service.BuildingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,7 +92,7 @@ public class AdminBuildingApiController {
     }
 
     @PatchMapping("/buildings/{id}")
-    private ResponseEntity<JSONObject> update(@PathVariable String id, @RequestBody BuildingDto buildingDto) {
+    private ResponseEntity<JSONObject> update(@PathVariable String id, @RequestBody BuildingUpdateRequest buildingDto) {
         JSONObject data = new JSONObject();
         try {
             BuildingDto responseDto = buildingService.updateById(buildingDto, id);
