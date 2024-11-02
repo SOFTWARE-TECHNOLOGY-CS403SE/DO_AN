@@ -4,6 +4,7 @@ package org.example.advancedrealestate_be.dto;
 import lombok.*;
 import org.example.advancedrealestate_be.constant.EnumConstant;
 import org.example.advancedrealestate_be.constant.EnumEntityConstant;
+import org.example.advancedrealestate_be.entity.Map;
 
 @Data
 @Builder
@@ -24,4 +25,5 @@ public class BuildingDto {
     private double price;
     private byte[] image;
     private String file_type;
+    private Map map;
 }
