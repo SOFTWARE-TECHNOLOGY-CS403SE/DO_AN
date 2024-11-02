@@ -114,7 +114,7 @@ public class UserServiceHandler implements UserService {
 
 
 
-    @PostAuthorize("returnObject.username == authentication.name")
+    //    @PostAuthorize("returnObject.email == authentication.name")
     @Override
     public UserResponse updateUser(String userId, UserUpdateRequest request) {
         User user = userRepository.findById(userId)
@@ -143,11 +143,20 @@ public class UserServiceHandler implements UserService {
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setGender(request.getGender());
-        user.setPhoneNumber(request.getPhoneNumber());
+        user.setPhoneNumber(request.getPhoneNumber());  
         user.setAddress(request.getAddress());
         user.setBirthday(request.getBirthday());
+        System.out.println("id: "+userId);
+        System.out.println("First Name: " + request.getFirstName());
+        System.out.println("Last Name: " + request.getLastName());
+        System.out.println("Gender: " + request.getGender());
+        System.out.println("Phone Number: " + request.getPhoneNumber());
+        System.out.println("Address: " + request.getAddress());
+        System.out.println("Birthday: " + request.getBirthday());
+
 
         User userUpdate = userRepository.save(user);
+        System.out.println("update phone: "+userUpdate.getPhoneNumber());
         return new UserResponse(
             userUpdate.getId(),
             userUpdate.getUsername(),

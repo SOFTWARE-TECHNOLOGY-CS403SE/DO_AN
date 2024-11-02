@@ -57,8 +57,7 @@ public class MapHandler implements MapService {
                     value.getAddress(),
                     value.getProvince(),
                     value.getDistrict(),
-                    value.getWard(),
-                    value.getDirection()
+                    value.getWard()
                 ))
         .orElse(null);
     }
@@ -78,8 +77,7 @@ public class MapHandler implements MapService {
                 mapNew.getAddress(),
                 mapNew.getProvince(),
                 mapNew.getDistrict(),
-                mapNew.getWard(),
-                mapNew.getDirection()
+                mapNew.getWard()
         );
     }
 
@@ -93,11 +91,10 @@ public class MapHandler implements MapService {
         map.get().setMap_name(mapDto.getMap_name() != null ? mapDto.getMap_name() : map.get().getMap_name());
         map.get().setLatitude(mapDto.getLatitude() != null ? mapDto.getLatitude() : map.get().getLatitude());
         map.get().setLongitude(mapDto.getLongitude() != null ? mapDto.getLongitude() : map.get().getLongitude());
-        map.get().setAddress(mapDto.getAddress() != null ? mapDto.getProvince() : map.get().getAddress());
+        map.get().setAddress(mapDto.getAddress() != null ? mapDto.getAddress() : map.get().getAddress());
         map.get().setProvince(mapDto.getProvince() != null ? mapDto.getProvince() : map.get().getProvince());
         map.get().setDistrict(mapDto.getDistrict() != null ? mapDto.getDistrict() : map.get().getDistrict());
         map.get().setWard(mapDto.getWard() != null ? mapDto.getWard() : map.get().getWard());
-        map.get().setDirection(mapDto.getDirection() != null ? mapDto.getDirection() : map.get().getDirection());
 
         Map mapUpdate = mapRepository.save(map.get());
         return new MapDto(
@@ -108,9 +105,7 @@ public class MapHandler implements MapService {
                 mapUpdate.getAddress(),
                 mapUpdate.getProvince(),
                 mapUpdate.getDistrict(),
-                mapUpdate.getWard(),
-                mapUpdate.getDirection()
-        );
+                mapUpdate.getWard());
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
@@ -128,9 +123,7 @@ public class MapHandler implements MapService {
                 map.get().getAddress(),
                 map.get().getProvince(),
                 map.get().getDistrict(),
-                map.get().getWard(),
-                map.get().getDirection()
-        );
+                map.get().getWard());
         mapRepository.delete(map.get());
         return mapDto;
     }
