@@ -20,8 +20,6 @@ public enum ErrorCode {
     UNAUTHORIZED(1007, "You do not have permission", HttpStatus.FORBIDDEN),
     INVALID_DOB(1008, "Your age must be at least {min}", HttpStatus.BAD_REQUEST),
     TOKEN_EXPIRED(1009,"Token already expired",HttpStatus.NOT_FOUND),
-    MAP_NOT_FOUND(404, "Map not found", HttpStatus.NOT_FOUND),
-
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

@@ -135,8 +135,6 @@ where role.name = user_roles.roles_name AND
 role.role_name = role_permissions.role_name;
 select * from room_chats;
 select * from buildings;
-select * from maps;
-ALTER TABLE maps DROP COLUMN direction;
 
 ALTER TABLE user MODIFY fullname VARCHAR(255) NULL;
 ALTER TABLE user MODIFY status INT DEFAULT 1;

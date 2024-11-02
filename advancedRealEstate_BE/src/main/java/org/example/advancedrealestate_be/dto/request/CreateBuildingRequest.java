@@ -18,5 +18,5 @@ public class CreateBuildingRequest {
     private String description;
     private int number_of_basement;
     private double price;
-    private String map_id;
+
 }

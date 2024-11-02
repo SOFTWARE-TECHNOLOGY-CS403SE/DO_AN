@@ -58,12 +58,7 @@ public class UserMapperImpl implements UserMapper {
                 .email(user.getEmail())
                 .firstName(user.getFirstName())
                 .lastName(user.getLastName())
-                .gender(user.getGender())
-                .birthday(user.getBirthday())
-                .phoneNumber(user.getPhoneNumber())
-                .address(user.getAddress())
                 .dob(user.getDob())
-                .avatar(user.getAvatar())
                 .roles(roleResponses) // Use the converted roles
                 .isVerify(user.isVerify()) // Assuming there's an isVerify method
                 .build();

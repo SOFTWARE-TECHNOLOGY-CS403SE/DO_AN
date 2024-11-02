@@ -3,17 +3,13 @@ package org.example.advancedrealestate_be.service.handler;
 import org.example.advancedrealestate_be.constant.ErrorEnumConstant;
 import org.example.advancedrealestate_be.dto.BuildingDto;
 import org.example.advancedrealestate_be.dto.RoomChatDto;
-import org.example.advancedrealestate_be.dto.request.BuildingUpdateRequest;
 import org.example.advancedrealestate_be.dto.request.CreateBuildingRequest;
 import org.example.advancedrealestate_be.entity.Building;
-import org.example.advancedrealestate_be.entity.Map;
 import org.example.advancedrealestate_be.entity.RoomChat;
-import org.example.advancedrealestate_be.entity.User;
 import org.example.advancedrealestate_be.exception.AppException;
 import org.example.advancedrealestate_be.exception.ErrorCode;
 import org.example.advancedrealestate_be.mapper.BuildingMapper;
 import org.example.advancedrealestate_be.repository.BuildingRepository;
-import org.example.advancedrealestate_be.repository.MapRepository;
 import org.example.advancedrealestate_be.service.BuildingService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,15 +30,12 @@ public class BuildingHandler implements BuildingService {
 
 
     private final BuildingRepository buildingRepository;
-    private final MapRepository mapRepository;
-
     private final ModelMapper modelMapper;
 
 
     @Autowired
-    public BuildingHandler(BuildingRepository buildingRepository, MapRepository mapRepository, ModelMapper modelMapper) {
+    public BuildingHandler(BuildingRepository buildingRepository, ModelMapper modelMapper) {
         this.buildingRepository = buildingRepository;
-        this.mapRepository = mapRepository;
         this.modelMapper = modelMapper;
     }
 
@@ -65,14 +58,12 @@ public class BuildingHandler implements BuildingService {
                 value.getStructure(),
                 value.getArea(),
                 value.getType(),
-                value.getStatus(),
+                        value.getStatus(),
                 value.getDescription(),
                 value.getNumber_of_basement(),
                 value.getPrice(),
                 value.getImage(),
-                value.getFile_type(),
-                value.getMap()
-        ))
+                value.getFile_type()))
         .orElse(null);
     }
 
@@ -96,7 +87,6 @@ public class BuildingHandler implements BuildingService {
     @Override
     public BuildingDto create(CreateBuildingRequest buildingRequestDto) {
         Building buildingEntity = modelMapper.map(buildingRequestDto, Building.class);
-        Map map = mapRepository.findById(buildingRequestDto.getMap_id()).orElseThrow(() -> new AppException(ErrorCode.MAP_NOT_FOUND));
         Building buildingNew = buildingRepository.save(buildingEntity);
         return new BuildingDto(
                 buildingNew.getId(),
@@ -109,16 +99,14 @@ public class BuildingHandler implements BuildingService {
                 buildingNew.getNumber_of_basement(),
                 buildingNew.getPrice(),
                 null,
-                null,
-                map
+                null
         );
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
     @Override
-    public BuildingDto updateById(BuildingUpdateRequest buildingDto, String id) {
+    public BuildingDto updateById(BuildingDto buildingDto, String id) {
         Optional<Building> building = buildingRepository.findById(id);
-        Map map = mapRepository.findById(buildingDto.getMap_id()).orElseThrow(() -> new AppException(ErrorCode.MAP_NOT_FOUND));
         if (building.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorEnumConstant.BuildingNotFound.toString());
         }
@@ -130,7 +118,6 @@ public class BuildingHandler implements BuildingService {
         building.get().setDescription(buildingDto.getDescription() != null ? buildingDto.getDescription() : building.get().getDescription());
         building.get().setNumber_of_basement(buildingDto.getNumber_of_basement() == 0 ? 0 : buildingDto.getNumber_of_basement());
         building.get().setPrice(buildingDto.getPrice() == 0 ? 0 : buildingDto.getPrice());
-        building.get().setMap(map);
 
         Building buildingUpdate = buildingRepository.save(building.get());
         return new BuildingDto(buildingUpdate.getId(),
@@ -142,8 +129,7 @@ public class BuildingHandler implements BuildingService {
                 buildingUpdate.getNumber_of_basement(),
                 buildingUpdate.getPrice(),
                 null,
-                buildingUpdate.getFile_type(),
-                buildingUpdate.getMap()
+                buildingDto.getFile_type()
         );
     }
 
@@ -165,8 +151,7 @@ public class BuildingHandler implements BuildingService {
                 building.get().getNumber_of_basement(),
                 building.get().getPrice(),
                 null,
-                building.get().getFile_type(),
-                building.get().getMap()
+                building.get().getFile_type()
         );
         buildingRepository.delete(building.get());
         return buildingDto;
@@ -190,8 +175,7 @@ public class BuildingHandler implements BuildingService {
                 buildingUpLoad.getNumber_of_basement(),
                 buildingUpLoad.getPrice(),
                 null,
-                null,
-                buildingUpLoad.getMap()
+                null
         );
     }
 }

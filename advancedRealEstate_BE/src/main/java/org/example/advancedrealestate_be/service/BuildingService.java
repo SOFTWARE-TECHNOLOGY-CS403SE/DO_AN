@@ -2,7 +2,6 @@ package org.example.advancedrealestate_be.service;
 
 import org.example.advancedrealestate_be.dto.BuildingDto;
 import org.example.advancedrealestate_be.dto.RoomChatDto;
-import org.example.advancedrealestate_be.dto.request.BuildingUpdateRequest;
 import org.example.advancedrealestate_be.dto.request.CreateBuildingRequest;
 import org.example.advancedrealestate_be.entity.Building;
 import org.springframework.web.multipart.MultipartFile;
@@ -18,7 +17,7 @@ public interface BuildingService {
 
     BuildingDto create(CreateBuildingRequest buildingRequestDto);
 
-    BuildingDto updateById(BuildingUpdateRequest buildingDto, String id);
+    BuildingDto updateById( BuildingDto buildingDto, String id);
 
     BuildingDto deleteById(String id);
 

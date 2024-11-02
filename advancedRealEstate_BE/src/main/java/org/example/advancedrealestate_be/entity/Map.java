@@ -1,15 +1,15 @@
 package org.example.advancedrealestate_be.entity;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -32,13 +32,10 @@ public class Map {
     private String province;
     private String district;
     private String ward;
+    private String direction;
 
     @CreationTimestamp
     private LocalDateTime createdOn;
     @UpdateTimestamp
     private LocalDateTime updatedOn;
-
-    @OneToMany(mappedBy = "map", cascade = CascadeType.REMOVE)
-    @JsonManagedReference("map-buildings")
-    private List<Building> buildings = new ArrayList<>();
 }

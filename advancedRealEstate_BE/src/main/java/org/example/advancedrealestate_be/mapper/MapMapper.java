@@ -20,6 +20,7 @@ public class MapMapper {
                 .province(map.getProvince())
                 .district(map.getDistrict())
                 .ward(map.getWard())
+                .direction(map.getDirection())
                 .build();
         if (mapDto != null) {
 

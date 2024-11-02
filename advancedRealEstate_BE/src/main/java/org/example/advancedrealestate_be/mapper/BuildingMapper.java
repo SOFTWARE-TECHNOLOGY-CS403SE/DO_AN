@@ -21,7 +21,6 @@ public class BuildingMapper {
                 .price(building.getPrice())
                 .image(building.getImage())
                 .file_type(building.getFile_type())
-                .map(building.getMap())
                 .build();
         if (buildingDto != null) {
 
