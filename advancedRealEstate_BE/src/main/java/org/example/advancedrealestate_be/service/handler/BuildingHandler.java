@@ -96,7 +96,7 @@ public class BuildingHandler implements BuildingService {
     @Override
     public BuildingDto create(CreateBuildingRequest buildingRequestDto) {
         Building buildingEntity = modelMapper.map(buildingRequestDto, Building.class);
-        Map map = mapRepository.findById(buildingRequestDto.getMap_id()).orElseThrow(() -> new AppException(ErrorCode.MAP_NOT_FOUND));
+        Map map = mapRepository.findById(buildingRequestDto.getMap_id()).orElse(null);
         Building buildingNew = buildingRepository.save(buildingEntity);
         return new BuildingDto(
                 buildingNew.getId(),
@@ -118,7 +118,7 @@ public class BuildingHandler implements BuildingService {
     @Override
     public BuildingDto updateById(BuildingUpdateRequest buildingDto, String id) {
         Optional<Building> building = buildingRepository.findById(id);
-        Map map = mapRepository.findById(buildingDto.getMap_id()).orElseThrow(() -> new AppException(ErrorCode.MAP_NOT_FOUND));
+        Map map = mapRepository.findById(buildingDto.getMap_id()).orElse(null);
         if (building.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorEnumConstant.BuildingNotFound.toString());
         }

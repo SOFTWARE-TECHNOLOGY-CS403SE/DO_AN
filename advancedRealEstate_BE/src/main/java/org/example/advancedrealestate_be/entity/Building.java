@@ -1,6 +1,7 @@
 package org.example.advancedrealestate_be.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.Data;
@@ -12,6 +13,8 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -56,4 +59,8 @@ public class Building {
     //annotion này giúp gỡ lỗi lặp vô hạn khi mapper
     @JsonBackReference("building-maps")
     private Map map;
+
+    @OneToMany(mappedBy = "building", cascade = CascadeType.REMOVE)
+    @JsonManagedReference("building-auctions")
+    private List<Auction> auctions = new ArrayList<>();
 }

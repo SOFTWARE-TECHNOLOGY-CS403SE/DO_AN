@@ -142,6 +142,8 @@ ALTER TABLE room_chats MODIFY image LONGBLOB;
 ALTER TABLE room_chats MODIFY image MEDIUMBLOB;
 ALTER TABLE buildings MODIFY description text;
 SHOW COLUMNS FROM room_chats;
+ALTER TABLE maps DROP COLUMN direction;
+
 
 select * from user;
 delete from user where id = '0fe2a31b-5b23-41f8-80ed-37ec58e2aa1c';
