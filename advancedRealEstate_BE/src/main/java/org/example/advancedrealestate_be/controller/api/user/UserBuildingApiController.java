@@ -7,10 +7,7 @@ import org.example.advancedrealestate_be.dto.BuildingDto;
 import org.example.advancedrealestate_be.dto.MapDto;
 import org.example.advancedrealestate_be.dto.RoomChatDto;
 import org.example.advancedrealestate_be.dto.ServiceDto;
-import org.example.advancedrealestate_be.service.BuildingService;
-import org.example.advancedrealestate_be.service.MapService;
-import org.example.advancedrealestate_be.service.RoomChatService;
-import org.example.advancedrealestate_be.service.ServiceService;
+import org.example.advancedrealestate_be.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,14 +25,16 @@ public class UserBuildingApiController {
     ServiceService serviceService;
     private final MapService mapService;
     private final RoomChatService roomChatService;
+    private final AuctionService auctionService;
 
 
     @Autowired
-    public UserBuildingApiController(BuildingService buildingService, ServiceService serviceService, MapService mapService, RoomChatService roomChatService) {
+    public UserBuildingApiController(BuildingService buildingService, ServiceService serviceService, MapService mapService, RoomChatService roomChatService, AuctionService auctionService) {
         this.buildingService = buildingService;
         this.serviceService = serviceService;
         this.mapService = mapService;
         this.roomChatService = roomChatService;
+        this.auctionService = auctionService;
     }
 
     @GetMapping("/buildings")
@@ -133,4 +132,18 @@ public class UserBuildingApiController {
         }
     }
 
+    @GetMapping("/auctions")
+    private ResponseEntity<JSONObject> index_auction() {
+        JSONObject responseObject = new JSONObject();
+        responseObject.put("data", auctionService.findAll());
+        responseObject.put("total", auctionService.findAll().size());
+        return new ResponseEntity<>(responseObject, HttpStatus.OK);
+    }
+
+    @GetMapping("/auctions/{id}")
+    private ResponseEntity<JSONObject> detail_auction(@PathVariable String id) {
+        JSONObject responseObject = new JSONObject();
+        responseObject.put("data", auctionService.findById(id));
+        return new ResponseEntity<>(responseObject, HttpStatus.OK);
+    }
 }

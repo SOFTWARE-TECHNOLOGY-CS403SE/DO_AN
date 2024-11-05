@@ -100,6 +100,7 @@ public class AdminBuildingApiController {
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception error) {
             data.put("message", error.getMessage());
+            System.out.println(error);
             return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
