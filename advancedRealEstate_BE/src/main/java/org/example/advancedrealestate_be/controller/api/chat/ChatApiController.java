@@ -14,6 +14,10 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
@@ -50,7 +54,6 @@ public class ChatApiController {
         return "Mid"+sb;
     }
 
-
     private void awaitSend(JSONObject messageObject, String room, String message){
         CompletableFuture.runAsync(() -> {
             try {
@@ -71,9 +74,14 @@ public class ChatApiController {
         System.out.println("Room: " + room);
         String messageId = generateRandomMessageId(9);
         JSONObject messageObject = new JSONObject();
+        ZonedDateTime currentTimeInVN = ZonedDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String currentDateTime = currentTimeInVN.format(formatter);
         messageObject.put("id", messageId);
         messageObject.put("sender", message.getEmail());
         messageObject.put("content", message.getContent());
+        messageObject.put("currentDateTime", currentDateTime);
+        System.out.println("Ngày và giờ hiện tại (có giây): " + currentDateTime);
 
         if(Objects.equals(message.getContent(), "a")){
             awaitSend(messageObject, room, "hahahaha");
@@ -83,6 +91,49 @@ public class ChatApiController {
         }
         messagingTemplate.convertAndSend("/topic/room/" + room, messageObject.toString());
     }
+
+    @MessageMapping("/sendBidToRoom/{room}")
+    public void sendBidToRoom(@DestinationVariable("room") String room, Chat message) {
+        System.out.println("Message: " + message);
+        System.out.println("Room: " + room);
+        ZonedDateTime currentTimeInVN = ZonedDateTime.now(ZoneId.of("Asia/Ho_Chi_Minh"));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String currentDateTime = currentTimeInVN.format(formatter);
+        String messageId = generateRandomMessageId(9);
+        JSONObject messageObject = new JSONObject();
+
+        messageObject.put("id", messageId);
+        messageObject.put("sender", message.getEmail());
+        messageObject.put("content", message.getContent());
+        messageObject.put("currentDateTime", currentDateTime);
+        messageObject.put("roomUser", room);
+
+        messagingTemplate.convertAndSend("/topic/room/" + room, messageObject.toString());
+    }
+
+    @MessageMapping("/userJoinAuction/{room}")
+    public void userJoinAuction(@DestinationVariable("room") String room, Chat message, SimpMessageHeaderAccessor headerAccessor) {
+        System.out.println("User joined room: " + room);
+
+        System.out.println("Message: " + message);
+        JSONObject messageObject = new JSONObject();
+        Set<String> usersInRoom = roomUsers.getOrDefault(room, new HashSet<>());
+        usersInRoom.add(message.getEmail());
+        roomUsers.put(room, usersInRoom);
+        System.out.println(usersInRoom);
+        messageObject.put("count", usersInRoom.size());
+
+        if(message.getContent() != null){
+            messageObject.put("email", message.getEmail());
+            messageObject.put("sender", message.getEmail());
+            messageObject.put("bot", "Chào mừng " + message.getEmail() + " đã vào phòng " + room);
+            messageObject.put("content", message.getContent());
+        }
+        headerAccessor.getSessionAttributes().put("username", message.getSender());
+
+        messagingTemplate.convertAndSend("/topic/room/" + room, messageObject.toString());
+    }
+
 
     @MessageMapping("/addUser/{room}")
     public void addUser(@DestinationVariable("room") String room, Chat message, SimpMessageHeaderAccessor headerAccessor) {

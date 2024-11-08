@@ -24,6 +24,7 @@ public class Chat {
     public enum MessageType {
         CHAT,
         JOIN,
-        LEAVE
+        LEAVE,
+        AUCTION
     }
 }
