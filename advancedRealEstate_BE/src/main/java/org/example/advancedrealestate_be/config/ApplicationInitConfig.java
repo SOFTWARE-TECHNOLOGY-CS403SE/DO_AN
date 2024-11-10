@@ -74,7 +74,7 @@ public class ApplicationInitConfig {
                 roles.add(adminRole);
 
                 User user = User.builder()
-                        .isVerify(true)
+//                        .isVerify(true)
                         .email(ADMIN_EMAIL)
                         .password(passwordEncoder.encode(ADMIN_PASSWORD))
                         .roles(roles)

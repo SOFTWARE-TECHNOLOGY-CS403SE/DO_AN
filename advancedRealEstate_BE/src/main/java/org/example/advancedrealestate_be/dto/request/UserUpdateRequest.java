@@ -5,11 +5,14 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
 import org.example.advancedrealestate_be.validator.DobConstraint;
 
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
+
+import org.example.advancedrealestate_be.repository.RoleRepository;
 
 @Data
 @Builder
@@ -17,26 +20,18 @@ import java.util.Set;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserUpdateRequest {
-   String username;
-    String firstName;
-    String lastName;
-    String gender;
-    String phoneNumber;
+    String user_name;
+    String first_name;
+    String last_name;
+    Integer status;
+    String phone_number;
+    LocalDate birthday;
+//    String avatar;
     String address;
-    String birthday;
-    boolean isVerify;
-    String avatar;
-
-    @DobConstraint(min = 18, message = "INVALID_DOB")
-    LocalDate dob;
-
+//    String id_role;
     @NotNull
     private String email;
 
-    @Size(min = 6)
-    private String password;
-
-    private Set<String> roles;
-
+//    private Set<RoleRepository> roles;
 
 }

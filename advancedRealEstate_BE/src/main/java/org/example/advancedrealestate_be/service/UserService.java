@@ -12,8 +12,9 @@ public interface UserService {
     UserResponse getUser(String id);
     List<UserResponse> getUsers();
     void deleteUser(String userId);
-    UserResponse updateUser(String userId, UserUpdateRequest request);
+    String updateUser(String userId, UserUpdateRequest request);
+    String updatePasswordUser(String userId, UserUpdatePasswordRequest request);
     UserResponse updateUserInfo(String userId, UpdateInfoUserRequest request);
     UserRoleResponse updateRoleUser(String userId, UserRoleRequest request);
-    UserResponse createUser(UserCreationRequest request);
+    String createUser(UserCreationRequest request);
 }

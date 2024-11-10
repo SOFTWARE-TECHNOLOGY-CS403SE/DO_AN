@@ -1,6 +1,11 @@
 package org.example.advancedrealestate_be.mapper;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.example.advancedrealestate_be.dto.request.UserCreationRequest;
+import org.example.advancedrealestate_be.dto.request.UserUpdatePasswordRequest;
 import org.example.advancedrealestate_be.dto.request.UserUpdateRequest;
 import org.example.advancedrealestate_be.dto.response.PermissionResponse;
 import org.example.advancedrealestate_be.dto.response.RoleResponse;
@@ -8,15 +13,10 @@ import org.example.advancedrealestate_be.dto.response.UserResponse;
 import org.example.advancedrealestate_be.entity.Permission;
 import org.example.advancedrealestate_be.entity.Role;
 import org.example.advancedrealestate_be.entity.User;
-import org.example.advancedrealestate_be.mapper.UserMapper;
 import org.example.advancedrealestate_be.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
 @Component
 public class UserMapperImpl implements UserMapper {
     @Autowired
@@ -31,13 +31,16 @@ public class UserMapperImpl implements UserMapper {
         }
 
         User user = new User();
-        user.setUsername(request.getUsername());
+        user.setUser_name(request.getUser_name());
         user.setPassword(request.getPassword()); // Note: Password should be encoded later
         user.setEmail(request.getEmail());
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setDob(request.getDob());
-
+        user.setFirst_name(request.getFirst_name());
+        user.setLast_name(request.getLast_name());
+        user.setBirthday(request.getBirthday());
+        user.setAddress(request.getAddress());
+        user.setPhone_number(request.getPhone_number());
+//        user.setAvatar(request.getAvatar());
+        user.setStatus(request.getStatus());
         // Add additional fields as necessary
         return user;
     }
@@ -54,18 +57,17 @@ public class UserMapperImpl implements UserMapper {
 
         return UserResponse.builder()
                 .id(user.getId())
-                .username(user.getUsername())
+                .user_name(user.getUser_name())
                 .email(user.getEmail())
-                .firstName(user.getFirstName())
-                .lastName(user.getLastName())
-                .gender(user.getGender())
+                .first_name(user.getFirst_name())
+                .last_name(user.getLast_name())
                 .birthday(user.getBirthday())
-                .phoneNumber(user.getPhoneNumber())
+                .phone_number(user.getPhone_number())
+                .status(user.getStatus())
                 .address(user.getAddress())
-                .dob(user.getDob())
-                .avatar(user.getAvatar())
+//                .avatar(user.getAvatar())
                 .roles(roleResponses) // Use the converted roles
-                .isVerify(user.isVerify()) // Assuming there's an isVerify method
+//                .isVerify(user.isVerify()) // Assuming there's an isVerify method
                 .build();
     }
 
@@ -103,66 +105,38 @@ public class UserMapperImpl implements UserMapper {
         }
 
         // Update fields based on request
-        if (request.getUsername() != null) {
-            user.setUsername(request.getUsername());
+        if (request.getUser_name() != null) {
+            user.setUser_name(request.getUser_name());
         }
 
-        if (request.getFirstName() != null) {
-            user.setFirstName(request.getFirstName());
+        if (request.getFirst_name() != null) {
+            user.setFirst_name(request.getFirst_name());
         }
 
-        if (request.getLastName() != null) {
-            user.setLastName(request.getLastName());
+        if (request.getLast_name() != null) {
+            user.setLast_name(request.getLast_name());
         }
 
-        // Consider renaming `dob` to `birthday` for clarity
-        if (request.getDob() != null) {
-            user.setDob(request.getDob());
+        if (request.getStatus() != null) {
+            user.setStatus(request.getStatus());
         }
 
-        // Update the password if provided; ensure it's encoded in the service layer
-        if (request.getPassword() != null && !request.getPassword().isEmpty()) {
-            String encodedPassword = passwordEncoder.encode(request.getPassword());
-            user.setPassword(encodedPassword);
-        }
-
-        // Handle roles update if provided
-        if (request.getRoles() != null) {
-            // Assuming roles is a List or Set of role IDs
-            Set<Role> roles = new HashSet<>();
-            for (String roleId : request.getRoles()) {
-                roleRepository.findById(roleId).ifPresent(roles::add);
-            }
-            user.setRoles(roles);
-        }
 
         // Add any additional fields you need to update
         if (request.getAddress() != null) {
             user.setAddress(request.getAddress());
         }
 
-        if (request.getAvatar() != null) {
-            user.setAvatar(request.getAvatar());
-        }
+//        if (request.getAvatar() != null) {
+//            user.setAvatar(request.getAvatar());
+//        }
 
         if (request.getEmail() != null) {
             user.setEmail(request.getEmail());
         }
 
-        if (request.getGender() != null) {
-            user.setGender(request.getGender());
+        if (request.getPhone_number() != null) {
+            user.setPhone_number(request.getPhone_number());
         }
-
-        if (request.isVerify() != false) {
-            user.setVerify(request.isVerify());
-        }
-
-        if (request.getPhoneNumber() != null) {
-            user.setPhoneNumber(request.getPhoneNumber());
-        }
-
-//        // Consider adding a timestamp for updates (e.g., lastModified)
-//        user.setLastModified(LocalDateTime.now());
     }
-
 }

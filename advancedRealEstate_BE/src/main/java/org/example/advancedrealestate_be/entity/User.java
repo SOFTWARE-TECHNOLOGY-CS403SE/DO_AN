@@ -19,22 +19,20 @@ public class User {
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
 
-//    @Column(name = "username", unique = true, columnDefinition = "VARCHAR(255) COLLATE utf8mb4_unicode_ci")
-    String username;
+    String first_name;
+    String last_name;
+    String user_name;
     String password;
-    String firstName;
-    LocalDate dob;
-    String lastName;
+    Integer status;
     String email;
-    String gender;
-    String phoneNumber;
-    String address;
-    String birthday;
-    boolean isVerify;
+    String phone_number;
+    LocalDate birthday;
+    @Lob
     String avatar;
+    String address;
+    String hash_reset;
+    String id_role;
 
     @ManyToMany
     Set<Role> roles;
-
-
 }

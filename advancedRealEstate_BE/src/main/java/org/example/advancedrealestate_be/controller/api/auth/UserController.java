@@ -12,6 +12,7 @@ import org.example.advancedrealestate_be.dto.request.*;
 import org.example.advancedrealestate_be.dto.response.UserRoleResponse;
 import org.example.advancedrealestate_be.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import org.example.advancedrealestate_be.dto.response.UserResponse;
@@ -35,7 +36,7 @@ public class UserController {
     @PostMapping
     ApiResponse<UserResponse> createUser(@RequestBody @Valid UserCreationRequest request) {
         return ApiResponse.<UserResponse>builder()
-                .result(userService.createUser(request))
+                .message(userService.createUser(request))
                 .build();
     }
 
@@ -68,9 +69,19 @@ public class UserController {
 
     @PutMapping("/{userId}")
     ApiResponse<UserResponse> updateUser(@PathVariable String userId, @RequestBody UserUpdateRequest request) {
-
+        System.out.println("ID User: " + userId);
+        System.out.println("Request: " + request);
         return ApiResponse.<UserResponse>builder()
-                .result(userService.updateUser(userId, request))
+                .message(userService.updateUser(userId, request))
+                .build();
+    }
+
+    @PutMapping("/reset-password/{userId}")
+    ApiResponse<UserResponse> updateUser(@PathVariable String userId, @RequestBody UserUpdatePasswordRequest request) {
+        System.out.println("ID User: " + userId);
+        System.out.println("Request: " + request);
+        return ApiResponse.<UserResponse>builder()
+                .message(userService.updatePasswordUser(userId, request))
                 .build();
     }
 

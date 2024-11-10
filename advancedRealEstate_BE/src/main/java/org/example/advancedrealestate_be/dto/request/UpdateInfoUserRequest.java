@@ -5,10 +5,9 @@ import lombok.Getter;
 @Getter
 public class UpdateInfoUserRequest {
 
-    String firstName;
-    String lastName;
-    String gender;
-    String phoneNumber;
+    String first_name;
+    String last_name;
+    String phone_number;
     String address;
     String birthday;
 }

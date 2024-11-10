@@ -25,10 +25,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -54,14 +52,13 @@ public class UserServiceHandler implements UserService {
 
 
     @Override
-    public UserResponse createUser(UserCreationRequest request) {
+    public String createUser(UserCreationRequest request) {
 
         User user = userMapper.toUser(request);
+        System.out.println(userRepository.findByEmail(request.getEmail()));
 
-        User existUser = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-
-        if(Objects.equals(existUser.getEmail(), request.getEmail())){
+        Optional<User> existUser = userRepository.findByEmail(request.getEmail());
+        if(existUser.isPresent()){
             throw new AppException(ErrorCode.USER_EXISTED);
         }
         user.setPassword(passwordEncoder.encode(request.getPassword()));
@@ -77,7 +74,9 @@ public class UserServiceHandler implements UserService {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
 
-        return userMapper.toUserResponse(user);
+//        return userMapper.toUserResponse(user);
+
+        return "Đã thêm mới thành công!";
     }
 
 
@@ -116,22 +115,29 @@ public class UserServiceHandler implements UserService {
 
     //    @PostAuthorize("returnObject.email == authentication.name")
     @Override
-    public UserResponse updateUser(String userId, UserUpdateRequest request) {
+    public String updateUser(String userId, UserUpdateRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         userMapper.updateUser(user, request);
 
+//        var roles = roleRepository.findAllById(request.getRoles());
+//        user.setRoles(new HashSet<>(roles));
+        userRepository.save(user);
+//        return userMapper.toUserResponse(userRepository.save(user));
+        return "Đã cập nhập thành công!";
+    }
 
-        if (request.getPassword() != null && !request.getPassword().isEmpty()) {
-            user.setPassword(passwordEncoder.encode(request.getPassword()));
-        }
+    @Override
+    public String updatePasswordUser(String userId, UserUpdatePasswordRequest request) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        System.out.println(user.getPassword());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        System.out.println(user);
 
-
-        var roles = roleRepository.findAllById(request.getRoles());
-        user.setRoles(new HashSet<>(roles));
-
-        return userMapper.toUserResponse(userRepository.save(user));
+        userRepository.save(user);
+        return "Đã cập nhập thành công!";
     }
 
     @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'STAFF')")
@@ -139,38 +145,33 @@ public class UserServiceHandler implements UserService {
     public UserResponse updateUserInfo(String userId, UpdateInfoUserRequest request) {
         User user = userRepository.findById(userId)
         .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        user.setUsername(request.getFirstName() +" "+ request.getLastName());
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setGender(request.getGender());
-        user.setPhoneNumber(request.getPhoneNumber());  
+        user.setUser_name(request.getFirst_name() +" "+ request.getLast_name());
+        user.setFirst_name(request.getFirst_name());
+        user.setLast_name(request.getLast_name());
+        user.setPhone_number(request.getPhone_number());
         user.setAddress(request.getAddress());
-        user.setBirthday(request.getBirthday());
+        user.setBirthday(LocalDate.parse(request.getBirthday()));
         System.out.println("id: "+userId);
-        System.out.println("First Name: " + request.getFirstName());
-        System.out.println("Last Name: " + request.getLastName());
-        System.out.println("Gender: " + request.getGender());
-        System.out.println("Phone Number: " + request.getPhoneNumber());
+        System.out.println("First Name: " + request.getFirst_name());
+        System.out.println("Last Name: " + request.getLast_name());
+        System.out.println("Phone Number: " + request.getPhone_number());
         System.out.println("Address: " + request.getAddress());
         System.out.println("Birthday: " + request.getBirthday());
 
-
         User userUpdate = userRepository.save(user);
-        System.out.println("update phone: "+userUpdate.getPhoneNumber());
+        System.out.println("update phone: "+userUpdate.getPhone_number());
         return new UserResponse(
             userUpdate.getId(),
-            userUpdate.getUsername(),
-                userUpdate.getFirstName(),
-                userUpdate.getLastName(),
-                userUpdate.getDob(),
-                userUpdate.getEmail(),
-                userUpdate.getGender(),
-                userUpdate.getPhoneNumber(),
-                userUpdate.getAddress(),
-                userUpdate.getBirthday(),
-                userUpdate.isVerify(),
-                userUpdate.getAvatar(),
-                null
+            userUpdate.getFirst_name(),
+            userUpdate.getLast_name(),
+            userUpdate.getUser_name(),
+            userUpdate.getStatus(),
+            userUpdate.getEmail(),
+            userUpdate.getPhone_number(),
+            userUpdate.getBirthday(),
+            // userUpdate.getAvatar(),
+            userUpdate.getAddress(),
+            null
         );
     }
 
