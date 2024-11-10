@@ -8,12 +8,15 @@ import org.example.advancedrealestate_be.dto.response.AuctionResponse;
 import org.example.advancedrealestate_be.entity.Auction;
 import org.example.advancedrealestate_be.entity.Building;
 import org.example.advancedrealestate_be.entity.Map;
+import org.example.advancedrealestate_be.entity.User;
 import org.example.advancedrealestate_be.exception.AppException;
 import org.example.advancedrealestate_be.exception.ErrorCode;
 import org.example.advancedrealestate_be.mapper.AuctionMapper;
 import org.example.advancedrealestate_be.mapper.BuildingMapper;
+import org.example.advancedrealestate_be.repository.AuctionDetailRepository;
 import org.example.advancedrealestate_be.repository.AuctionRepository;
 import org.example.advancedrealestate_be.repository.BuildingRepository;
+import org.example.advancedrealestate_be.repository.UserRepository;
 import org.example.advancedrealestate_be.service.AuctionService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,13 +31,17 @@ import java.util.stream.Collectors;
 public class AuctionHandler implements AuctionService {
 
     private final AuctionRepository auctionRepository;
+    private final AuctionDetailRepository auctionDetailRepository;
     private final BuildingRepository buildingRepository;
+    private final UserRepository userRepository;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public AuctionHandler(AuctionRepository auctionRepository, BuildingRepository buildingRepository, ModelMapper modelMapper) {
+    public AuctionHandler(AuctionRepository auctionRepository, AuctionDetailRepository auctionDetailRepository, BuildingRepository buildingRepository, UserRepository userRepository, ModelMapper modelMapper) {
         this.auctionRepository = auctionRepository;
+        this.auctionDetailRepository = auctionDetailRepository;
         this.buildingRepository = buildingRepository;
+        this.userRepository = userRepository;
         this.modelMapper = modelMapper;
     }
 
@@ -59,8 +66,10 @@ public class AuctionHandler implements AuctionService {
                 auction.getStart_time(),
                 auction.getEnd_time(),
                 auction.getDescription(),
+                auction.isActive(),
                 auction.getBuilding(),
-                auction.getBuilding().getMap()
+                auction.getBuilding().getMap(),
+                auction.getUserCreatedBy()
         );
     }
 
@@ -79,13 +88,16 @@ public class AuctionHandler implements AuctionService {
     public JSONObject updateById(String id, AuctionRequest auctionRequest) {
         JSONObject responseObject = new JSONObject();
         Building building = buildingRepository.findById(auctionRequest.getBuilding_id()).orElse(null);
+        User user = userRepository.findById(auctionRequest.getUserCreatedBy()).orElse(null);
         Auction auction = auctionRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.AUCTION_NOT_FOUND));
         auction.setName(auctionRequest.getName());
         auction.setStart_date(auctionRequest.getStart_date());
         auction.setStart_time(auctionRequest.getStart_time());
         auction.setEnd_time(auctionRequest.getEnd_time());
         auction.setDescription(auctionRequest.getDescription());
+        auction.setActive(auctionRequest.isActive());
         auction.setBuilding(building);
+        auction.setUserCreatedBy(user);
         Auction auctionUpdated = auctionRepository.save(auction);
         responseObject.put("data", auctionUpdated);
         responseObject.put("message", "Update successfully!");

@@ -18,11 +18,11 @@ import java.util.List;
 @RestController
 @SecurityRequirement(name = "bearerAuth")
 @RequestMapping("/api/user")
-@Tag(name = "User buildings", description = "API for user")
+@Tag(name = "API for all user", description = "API public")
 public class UserBuildingApiController {
 
-    BuildingService buildingService;
-    ServiceService serviceService;
+    private final BuildingService buildingService;
+    private final ServiceService serviceService;
     private final MapService mapService;
     private final RoomChatService roomChatService;
     private final AuctionService auctionService;

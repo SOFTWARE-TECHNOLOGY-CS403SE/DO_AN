@@ -1,4 +1,4 @@
-package org.example.advancedrealestate_be.dto.request;
+package org.example.advancedrealestate_be.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;

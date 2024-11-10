@@ -141,9 +141,15 @@ ALTER TABLE user MODIFY status INT DEFAULT 1;
 ALTER TABLE room_chats MODIFY image LONGBLOB;
 ALTER TABLE room_chats MODIFY image MEDIUMBLOB;
 ALTER TABLE buildings MODIFY description text;
+ALTER TABLE room_chats MODIFY description text;
+ALTER TABLE auctions MODIFY description text;
+ALTER TABLE auction_details MODIFY note text;
 SHOW COLUMNS FROM room_chats;
 ALTER TABLE maps DROP COLUMN direction;
-
+ALTER TABLE auctions DROP COLUMN user_created_by;
+ALTER TABLE auctions DROP FOREIGN KEY FK9pn743f5qmm5ua1ixoi0o7efn;
+ALTER TABLE auction_details DROP COLUMN note;
+SHOW INDEX FROM auctions;
 
 select * from user;
 delete from user where id = '0fe2a31b-5b23-41f8-80ed-37ec58e2aa1c';

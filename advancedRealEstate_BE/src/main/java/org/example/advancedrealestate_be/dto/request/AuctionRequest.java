@@ -17,5 +17,7 @@ public class AuctionRequest {
     private String start_time;
     private String end_time;
     private String description;
+    private boolean isActive;
     private String building_id;
+    private String userCreatedBy;
 }

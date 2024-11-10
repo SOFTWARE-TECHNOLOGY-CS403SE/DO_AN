@@ -19,6 +19,7 @@ public class RoomChat {
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
     private String name;
+    @Column(columnDefinition = "text")
     private String description;
     @Lob
     @Column(columnDefinition = "LONGBLOB")

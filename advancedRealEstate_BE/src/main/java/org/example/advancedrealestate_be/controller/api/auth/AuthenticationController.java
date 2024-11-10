@@ -2,6 +2,7 @@ package org.example.advancedrealestate_be.controller.api.auth;
 import java.text.ParseException;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import net.minidev.json.JSONObject;
+import org.example.advancedrealestate_be.dto.response.ApiResponse;
 import org.example.advancedrealestate_be.service.AuthenticationService;
 import org.example.advancedrealestate_be.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

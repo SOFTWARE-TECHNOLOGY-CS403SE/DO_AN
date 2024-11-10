@@ -150,7 +150,7 @@ public class UserServiceHandler implements UserService {
         user.setLast_name(request.getLast_name());
         user.setPhone_number(request.getPhone_number());
         user.setAddress(request.getAddress());
-        user.setBirthday(LocalDate.parse(request.getBirthday()));
+        user.setBirthday(LocalDate.parse(request.getBirthday()).toString());
         System.out.println("id: "+userId);
         System.out.println("First Name: " + request.getFirst_name());
         System.out.println("Last Name: " + request.getLast_name());

@@ -16,9 +16,9 @@ public interface AuctionService {
 
     AuctionResponse findById(String id);
 
-    JSONObject create(AuctionRequest auctionRequest);
+    JSONObject create(AuctionRequest dto);
 
-    JSONObject updateById(String id, AuctionRequest auctionRequest);
+    JSONObject updateById(String id, AuctionRequest dto);
 
     JSONObject deleteById(String id);
 }

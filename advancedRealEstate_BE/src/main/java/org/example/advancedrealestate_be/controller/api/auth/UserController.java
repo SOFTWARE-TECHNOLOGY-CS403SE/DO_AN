@@ -1,14 +1,11 @@
 package org.example.advancedrealestate_be.controller.api.auth;
-
-
-
-
 import java.util.List;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 
 import org.example.advancedrealestate_be.dto.request.*;
+import org.example.advancedrealestate_be.dto.response.ApiResponse;
 import org.example.advancedrealestate_be.dto.response.UserRoleResponse;
 import org.example.advancedrealestate_be.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;

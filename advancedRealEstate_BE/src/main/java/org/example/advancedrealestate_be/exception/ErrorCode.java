@@ -22,7 +22,8 @@ public enum ErrorCode {
     TOKEN_EXPIRED(1009,"Token already expired",HttpStatus.NOT_FOUND),
     MAP_NOT_FOUND(404, "Map not found", HttpStatus.NOT_FOUND),
     AUCTION_NOT_FOUND(404, "Auction not found", HttpStatus.NOT_FOUND),
-
+    AUCTION_DETAIL_NOT_FOUND(404, "Auction detail not found", HttpStatus.NOT_FOUND),
+    AUCTION_HISTORY_NOT_FOUND(404, "Auction history not found", HttpStatus.NOT_FOUND),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

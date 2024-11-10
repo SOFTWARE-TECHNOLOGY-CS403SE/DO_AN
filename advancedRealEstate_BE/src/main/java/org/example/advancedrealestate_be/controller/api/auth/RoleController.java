@@ -6,14 +6,12 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.example.advancedrealestate_be.dto.request.ApiResponse;
+import org.example.advancedrealestate_be.dto.response.ApiResponse;
 import org.example.advancedrealestate_be.dto.request.RolePermissionRequest;
 import org.example.advancedrealestate_be.dto.request.RoleRequest;
 import org.example.advancedrealestate_be.dto.response.RolePermissionResponse;
 import org.example.advancedrealestate_be.dto.response.RoleResponse;
-import org.example.advancedrealestate_be.dto.response.UserRoleResponse;
 import org.example.advancedrealestate_be.service.RoleService;
-import org.example.advancedrealestate_be.service.handler.RoleServiceHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

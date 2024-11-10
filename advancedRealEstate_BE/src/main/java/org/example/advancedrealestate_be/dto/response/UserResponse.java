@@ -21,7 +21,7 @@ public class UserResponse {
     Integer status;
     String email;
     String phone_number;
-    LocalDate birthday;
+    String birthday;
 //    @Lob
     // String avatar;
     String address;

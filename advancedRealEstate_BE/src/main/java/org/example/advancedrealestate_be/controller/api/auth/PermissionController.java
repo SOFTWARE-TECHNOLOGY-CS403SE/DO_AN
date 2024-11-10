@@ -7,11 +7,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
-import org.example.advancedrealestate_be.dto.request.ApiResponse;
+import org.example.advancedrealestate_be.dto.response.ApiResponse;
 import org.example.advancedrealestate_be.dto.request.PermissionRequest;
 import org.example.advancedrealestate_be.dto.response.PermissionResponse;
 import org.example.advancedrealestate_be.service.PermistionService;
-import org.example.advancedrealestate_be.service.handler.PermissionServiceHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
