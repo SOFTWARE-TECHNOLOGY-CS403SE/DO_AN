@@ -1,4 +1,5 @@
 package org.example.advancedrealestate_be.mapper;
+import org.example.advancedrealestate_be.dto.request.UserUpdatePasswordRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;

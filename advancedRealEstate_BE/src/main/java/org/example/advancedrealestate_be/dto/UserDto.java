@@ -13,8 +13,8 @@ import java.util.List;
 @Setter
 public class UserDto {
     private Long id;
-    private String userName;
-    private String fullName;
+    private String user_name;
+    private String full_name;
     private String password; // Keep this line if you need it for registration purposes
     private Integer status;
     private String email;

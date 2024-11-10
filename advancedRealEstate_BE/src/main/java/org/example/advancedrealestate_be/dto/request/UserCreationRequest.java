@@ -1,6 +1,8 @@
 package org.example.advancedrealestate_be.dto.request;
 
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Lob;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -15,6 +17,7 @@ import lombok.experimental.FieldDefaults;
 import org.example.advancedrealestate_be.validator.DobConstraint;
 
 import java.time.LocalDate;
+import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -25,7 +28,7 @@ public class UserCreationRequest {
 
     @NotBlank(message = "USERNAME_REQUIRED")
     @Size(min = 4, message = "USERNAME_TOO_SHORT")
-    String username;
+    String user_name;
 
     @Size(min = 6, message = "INVALID_PASSWORD")
     String password;
@@ -35,8 +38,14 @@ public class UserCreationRequest {
     @Size(min = 4, message = "EMAIL_TOO_SHORT")
     String email;
 
-    String firstName;
-    String lastName;
-
-    LocalDate dob;
+    String first_name;
+    String last_name;
+    Integer status;
+    String phone_number;
+    LocalDate birthday;
+//    @Lob
+//    String avatar;
+    String address;
+//    String hash_reset;
+//    String id_role;
 }

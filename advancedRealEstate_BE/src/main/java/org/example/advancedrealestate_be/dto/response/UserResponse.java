@@ -1,5 +1,7 @@
 package org.example.advancedrealestate_be.dto.response;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Lob;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -13,16 +15,16 @@ import java.util.Set;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UserResponse {
     String id;
-    String username;
-    String firstName;
-    String lastName;
-    LocalDate dob;
+    String first_name;
+    String last_name;
+    String user_name;
+    Integer status;
     String email;
-    String gender;
-    String phoneNumber;
+    String phone_number;
+    LocalDate birthday;
+//    @Lob
+    // String avatar;
     String address;
-    String birthday;
-    boolean isVerify;
-    String avatar;
+//    String id_role;
     Set<RoleResponse> roles;
 }
