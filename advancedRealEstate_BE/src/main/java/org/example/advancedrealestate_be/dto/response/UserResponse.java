@@ -22,8 +22,7 @@ public class UserResponse {
     String email;
     String phone_number;
     LocalDate birthday;
-//    @Lob
-    // String avatar;
+    String avatar;
     String address;
 //    String id_role;
     Set<RoleResponse> roles;

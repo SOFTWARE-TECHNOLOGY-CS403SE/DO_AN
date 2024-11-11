@@ -6,13 +6,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
-
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
-//    boolean existsByUserName(String user_name);
-//
-//
-//    Optional<User> findByUsername(String user_name);
-
+    Page<User> findAll(Pageable pageable);
     Optional<User> findByEmail(String email);
 }

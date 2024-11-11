@@ -15,6 +15,7 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.example.advancedrealestate_be.validator.DobConstraint;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -43,9 +44,6 @@ public class UserCreationRequest {
     Integer status;
     String phone_number;
     LocalDate birthday;
-//    @Lob
-//    String avatar;
+    MultipartFile avatar;
     String address;
-//    String hash_reset;
-//    String id_role;
 }
