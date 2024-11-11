@@ -40,13 +40,6 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    @PostMapping(consumes = "multipart/form-data")
-    ApiResponse<UserResponse> createUser(@ModelAttribute @Valid UserCreationRequest request) {
-        return ApiResponse.<UserResponse>builder()
-                .message(userService.createUser(request))
-                .build();
-    }
-
     @GetMapping
     ApiResponse<Map<String, Object>> getUsers(
             @RequestParam(defaultValue = "1") int page,
@@ -75,25 +68,11 @@ public class UserController {
                 .build();
     }
 
-
-    @GetMapping("/{userId}")
-    ApiResponse<UserResponse> getUser(@PathVariable("userId") String userId) {
+    @PostMapping(consumes = "multipart/form-data")
+    ApiResponse<UserResponse> createUser(@ModelAttribute @Valid UserCreationRequest request) {
         return ApiResponse.<UserResponse>builder()
-                .result(userService.getUser(userId))
+                .message(userService.createUser(request))
                 .build();
-    }
-
-    @GetMapping("/my-info")
-    ApiResponse<UserResponse> getMyInfo() {
-        return ApiResponse.<UserResponse>builder()
-                .result(userService.getMyInfo())
-                .build();
-    }
-
-    @DeleteMapping("/{userId}")
-    ApiResponse<String> deleteUser(@PathVariable String userId) {
-        userService.deleteUser(userId);
-        return ApiResponse.<String>builder().result("User has been deleted").build();
     }
 
     @PutMapping("/{userId}")
@@ -114,19 +93,39 @@ public class UserController {
                 .build();
     }
 
-    @PatchMapping("/{userId}")
-    ApiResponse<UserResponse> updateUserInfo(@PathVariable String userId, @RequestBody UpdateInfoUserRequest request) {
+    @DeleteMapping("/{userId}")
+    ApiResponse<String> deleteUser(@PathVariable String userId) {
+        userService.deleteUser(userId);
+        return ApiResponse.<String>builder().result("User has been deleted").build();
+    }
 
+    @GetMapping("/{userId}")
+    ApiResponse<UserResponse> getUser(@PathVariable("userId") String userId) {
         return ApiResponse.<UserResponse>builder()
-                .result(userService.updateUserInfo(userId, request))
+                .result(userService.getUser(userId))
                 .build();
     }
 
-    @PatchMapping("role-user/{userId}")
-    ApiResponse<UserRoleResponse> updateRoleUser(@PathVariable String userId, @RequestBody UserRoleRequest request) {
-        UserRoleResponse userRoleResponse = userService.updateRoleUser(userId, request);
-        return ApiResponse.<UserRoleResponse>builder()
-                .result(userRoleResponse)
+    @GetMapping("/my-info")
+    ApiResponse<UserResponse> getMyInfo() {
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.getMyInfo())
                 .build();
     }
+
+//    @PatchMapping("/{userId}")
+//    ApiResponse<UserResponse> updateUserInfo(@PathVariable String userId, @RequestBody UpdateInfoUserRequest request) {
+//
+//        return ApiResponse.<UserResponse>builder()
+//                .result(userService.updateUserInfo(userId, request))
+//                .build();
+//    }
+
+//    @PatchMapping("role-user/{userId}")
+//    ApiResponse<UserRoleResponse> updateRoleUser(@PathVariable String userId, @RequestBody UserRoleRequest request) {
+//        UserRoleResponse userRoleResponse = userService.updateRoleUser(userId, request);
+//        return ApiResponse.<UserRoleResponse>builder()
+//                .result(userRoleResponse)
+//                .build();
+//    }
 }

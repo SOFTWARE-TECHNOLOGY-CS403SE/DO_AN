@@ -3,7 +3,6 @@ package org.example.advancedrealestate_be.service;
 import org.example.advancedrealestate_be.dto.request.*;
 import org.example.advancedrealestate_be.dto.response.UserResponse;
 import org.example.advancedrealestate_be.dto.response.UserRoleResponse;
-import org.example.advancedrealestate_be.entity.User;
 import org.springframework.data.domain.Page;
 
 import java.util.List;
