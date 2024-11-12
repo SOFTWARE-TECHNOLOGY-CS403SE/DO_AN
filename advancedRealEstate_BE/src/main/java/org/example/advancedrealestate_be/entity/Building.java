@@ -6,8 +6,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.advancedrealestate_be.constant.EnumConstant;
-import org.example.advancedrealestate_be.constant.EnumEntityConstant;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -63,4 +61,10 @@ public class Building {
     @OneToMany(mappedBy = "building", cascade = CascadeType.REMOVE)
     @JsonManagedReference("building-auctions")
     private List<Auction> auctions = new ArrayList<>();
+    
+    @OneToMany(mappedBy = "building", cascade = CascadeType.ALL)
+    private List<Devices> devices;
+
+    @OneToMany(mappedBy = "building", cascade = CascadeType.ALL)
+    private List<Contracts> contracts;
 }

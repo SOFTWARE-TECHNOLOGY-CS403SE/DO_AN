@@ -1,5 +1,4 @@
 package org.example.advancedrealestate_be.config;
-
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -11,15 +10,12 @@ import org.example.advancedrealestate_be.entity.User;
 import org.example.advancedrealestate_be.repository.PermissionRepository;
 import org.example.advancedrealestate_be.repository.RoleRepository;
 import org.example.advancedrealestate_be.repository.UserRepository;
-
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;

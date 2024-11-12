@@ -3,20 +3,36 @@ package org.example.advancedrealestate_be.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Set;
 
-@Getter
-@Setter
-@Builder
+//@Getter
+//@Setter
+//@Builder
+//@NoArgsConstructor
+//@Table(name = "user")
+//@AllArgsConstructor
+//@FieldDefaults(level = AccessLevel.PRIVATE)
+//@Entity
+
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@Builder
 @Entity
+@Table(name = "user")
+@Getter
+@Setter
 public class User {
+//    @Id
+//    @GeneratedValue(strategy = GenerationType.UUID)
+
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
     String id;
 
     String first_name;
@@ -34,4 +50,8 @@ public class User {
 
     @ManyToMany
     Set<Role> roles;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Contracts> contracts;
+
 }
