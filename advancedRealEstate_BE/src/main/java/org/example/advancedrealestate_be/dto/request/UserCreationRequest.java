@@ -43,7 +43,7 @@ public class UserCreationRequest {
     String last_name;
     Integer status;
     String phone_number;
-    LocalDate birthday;
+    String birthday;
     MultipartFile avatar;
     String address;
 }

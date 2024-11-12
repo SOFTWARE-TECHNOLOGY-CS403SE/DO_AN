@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
-import org.example.advancedrealestate_be.dto.request.ApiResponse;
 import org.example.advancedrealestate_be.dto.request.DeleteTypeBuildingsRequest;
 import org.example.advancedrealestate_be.dto.request.TypeBuildingCreateResquest;
 import org.example.advancedrealestate_be.dto.request.TypeBuildingUpdateResquest;
