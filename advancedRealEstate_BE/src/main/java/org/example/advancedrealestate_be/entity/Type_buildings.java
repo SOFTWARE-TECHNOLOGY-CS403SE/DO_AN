@@ -22,7 +22,7 @@ public class Type_buildings {
     private String type_name;
     private Double price;
     private int status;
-    @OneToMany(mappedBy = "type_buildings", cascade = CascadeType.ALL)
-    private List<Building> building;
+//    @OneToMany(mappedBy = "type_buildings", cascade = CascadeType.ALL)
+//    private List<Building> building;
 
 }
