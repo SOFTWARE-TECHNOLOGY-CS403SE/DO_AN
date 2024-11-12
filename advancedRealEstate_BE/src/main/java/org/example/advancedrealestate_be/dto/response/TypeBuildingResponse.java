@@ -10,6 +10,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class TypeBuildingResponse {
     String id;
-    String name;
+    String type_name;
     Integer status;
+    Double price;
 }

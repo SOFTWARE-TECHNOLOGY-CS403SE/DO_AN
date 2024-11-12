@@ -1,5 +1,6 @@
 package org.example.advancedrealestate_be.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
@@ -27,6 +28,10 @@ public class Devices {
     private String description;
 
     @ManyToOne
-    @JoinColumn(name="building_id")
+    @JoinColumn(name="id_building")
     private Building building;
+
+    @ManyToOne
+    @JoinColumn(name="id_category")
+    private Category category;
 }

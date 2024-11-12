@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.minidev.json.JSONObject;
 import org.example.advancedrealestate_be.dto.request.*;
 import org.example.advancedrealestate_be.dto.response.CategoryResponse;
-import org.example.advancedrealestate_be.dto.response.TypeBuildingResponse;
 import org.example.advancedrealestate_be.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -19,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -27,44 +27,50 @@ import java.util.Map;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
-@Tag(name="Category Device")
+@Tag(name="Admin Category Device")
 public class CategoryApiController {
     @Autowired
     CategoryService categoryService;
     @GetMapping
-    public ResponseEntity<JSONObject> getAllTypeBuildings(@RequestParam(defaultValue = "1") int page,
-                                                          @RequestParam(defaultValue = "5") int size) {
-        JSONObject data = new JSONObject();
-        // Lấy dữ liệu người dùng với phân trang
-        Page<CategoryResponse> pageResult = categoryService.getCategory(page, size);
+    public ResponseEntity<JSONObject> getAllCategory(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size) {
 
-        // Tạo đối tượng response chứa thông tin phân trang và danh sách người dùng
+        JSONObject data = new JSONObject();
         Map<String, Object> response = new HashMap<>();
 
-        // Metadata về phân trang
-        Map<String, Object> pagination = new HashMap<>();
-        pagination.put("total", pageResult.getTotalElements());
-        pagination.put("per_page", pageResult.getSize());
-        pagination.put("current_page", pageResult.getNumber() + 1);
-        pagination.put("last_page", pageResult.getTotalPages());
-        pagination.put("from", (pageResult.getNumber() * pageResult.getSize()) + 1);
-        pagination.put("to", Math.min((pageResult.getNumber() + 1) * pageResult.getSize(), pageResult.getTotalElements()));
-
-        response.put("pagination", pagination);
-        response.put("data", pageResult.getContent());
-
         try {
+            if (page == null || size == null) {
+                List<CategoryResponse> categories = categoryService.getAllCategories();
+
+                response.put("data", categories);
+            } else {
+                Page<CategoryResponse> pageResult = categoryService.getCategory(page, size);
+
+                Map<String, Object> pagination = new HashMap<>();
+                pagination.put("total", pageResult.getTotalElements());
+                pagination.put("per_page", pageResult.getSize());
+                pagination.put("current_page", pageResult.getNumber() + 1);
+                pagination.put("last_page", pageResult.getTotalPages());
+                pagination.put("from", (pageResult.getNumber() * pageResult.getSize()) + 1);
+                pagination.put("to", Math.min((pageResult.getNumber() + 1) * pageResult.getSize(), pageResult.getTotalElements()));
+
+                response.put("pagination", pagination);
+                response.put("data", pageResult.getContent());
+            }
+
             data.put("status", 200);
             data.put("data", response);
             return new ResponseEntity<>(data, HttpStatus.OK);
-        }catch (Exception error){
+        } catch (Exception error) {
             data.put("message", error.getMessage());
             return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+
     @PostMapping
-    public ResponseEntity<JSONObject> createTypeBuilding(@Valid @RequestBody CategoryCreateRequest request) {
+    public ResponseEntity<JSONObject> createCategory(@Valid @RequestBody CategoryCreateRequest request) {
         JSONObject data = new JSONObject();
         try{
             //trả message từ service về cho controller trả ra cho client
@@ -79,7 +85,7 @@ public class CategoryApiController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<JSONObject> updateTypeBuilding(@Valid @PathVariable String id, @RequestBody CategoryUpdateRequest request) {
+    public ResponseEntity<JSONObject> updateCategory(@Valid @PathVariable String id, @RequestBody CategoryUpdateRequest request) {
         JSONObject data = new JSONObject();
         try {
             String response = categoryService.updateCategory(id, request);
@@ -93,7 +99,7 @@ public class CategoryApiController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<JSONObject> deleteTypeBuilding(@PathVariable String id) {
+    public ResponseEntity<JSONObject> deleteCategory(@PathVariable String id) {
         JSONObject data = new JSONObject();
         try {
             String response = categoryService.deleteCategory(id);
@@ -107,7 +113,7 @@ public class CategoryApiController {
     }
 
     @DeleteMapping("/delete-all")
-    public ResponseEntity<JSONObject> deleteAllTypeBuilding(@Valid @RequestBody DeleteCategoryRequest request) {
+    public ResponseEntity<JSONObject> deleteAllCategory(@Valid @RequestBody DeleteCategoryRequest request) {
         JSONObject data = new JSONObject();
         try {
             String response = categoryService.deleteCategorys(request);
