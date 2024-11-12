@@ -21,9 +21,8 @@ public class UserResponse {
     Integer status;
     String email;
     String phone_number;
-    String birthday;
-//    @Lob
-    // String avatar;
+    LocalDate birthday;
+    String avatar;
     String address;
 //    String id_role;
     Set<RoleResponse> roles;

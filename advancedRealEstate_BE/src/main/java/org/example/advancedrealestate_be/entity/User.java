@@ -26,8 +26,7 @@ public class User {
     Integer status;
     String email;
     String phone_number;
-    String birthday;
-    @Lob
+    LocalDate birthday;
     String avatar;
     String address;
     String hash_reset;
