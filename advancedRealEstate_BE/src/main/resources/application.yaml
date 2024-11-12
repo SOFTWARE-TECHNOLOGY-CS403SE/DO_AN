@@ -27,9 +27,9 @@ spring:
   main:
     allow-bean-definition-overriding: true
   datasource:
-    url: ${DBMS_CONNECTION:jdbc:mysql://localhost:3306/identity_service}
+    url: ${DBMS_CONNECTION:jdbc:mysql://localhost:3307/identity_service4}
     driverClassName: "com.mysql.cj.jdbc.Driver"
-    password: ${DBMS_PASSWORD:123456}
+    password: ${DBMS_PASSWORD:28082001}
     username: ${DBMS_USERNAME:root}
   jpa:
     hibernate:

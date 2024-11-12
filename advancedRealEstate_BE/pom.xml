@@ -178,6 +178,25 @@
             <version>2.3.3</version>
         </dependency>
 
+ <!-- datetime library-->
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>2.10.10</version>
+        </dependency>
+
+<!--        khanh-->
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct</artifactId>
+            <version>1.5.5.Final</version> <!-- or the latest version -->
+        </dependency>
+        <dependency>
+            <groupId>org.mapstruct</groupId>
+            <artifactId>mapstruct-processor</artifactId>
+            <version>1.5.5.Final</version>
+            <scope>provided</scope>
+        </dependency>
 
     </dependencies>
 

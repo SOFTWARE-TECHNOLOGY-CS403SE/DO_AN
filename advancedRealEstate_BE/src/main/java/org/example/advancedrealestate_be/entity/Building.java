@@ -1,23 +1,23 @@
 package org.example.advancedrealestate_be.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.example.advancedrealestate_be.constant.EnumConstant;
-import org.example.advancedrealestate_be.constant.EnumEntityConstant;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Entity
-@Table(name = "buildings")
+@Table(name = "building")
 @Getter
 @Setter
 public class Building {
@@ -49,4 +49,26 @@ public class Building {
     private LocalDateTime createdOn;
     @UpdateTimestamp
     private LocalDateTime updatedOn;
+
+    @OneToMany(mappedBy = "building", cascade = CascadeType.ALL)
+    private List<Auctions> auctions;
+
+    @OneToMany(mappedBy = "building", cascade = CascadeType.ALL)
+    private List<Maintenances> maintenances;
+
+    @ManyToOne
+    @JoinColumn(name = "building_type_id")
+    private Type_buildings type_buildings;
+
+    @ManyToOne
+    @JoinColumn(name = "map_id", nullable = true)
+    //annotion này giúp gỡ lỗi lặp vô hạn khi mapper
+    @JsonBackReference("building-maps")
+    private Map map;
+
+    @OneToMany(mappedBy = "building", cascade = CascadeType.ALL)
+    private List<Devices> devices;
+
+    @OneToMany(mappedBy = "building", cascade = CascadeType.ALL)
+    private List<Contracts> contracts;
 }

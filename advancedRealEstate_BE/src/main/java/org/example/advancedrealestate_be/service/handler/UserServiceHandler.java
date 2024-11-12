@@ -25,10 +25,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -58,10 +55,10 @@ public class UserServiceHandler implements UserService {
 
         User user = userMapper.toUser(request);
 
-        User existUser = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-
-        if(Objects.equals(existUser.getEmail(), request.getEmail())){
+//        User existUser = userRepository.findByEmail(request.getEmail())
+//                .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+        Optional<User> existUser = userRepository.findByEmail(request.getEmail());
+        if(existUser.isPresent()){
             throw new AppException(ErrorCode.USER_EXISTED);
         }
         user.setPassword(passwordEncoder.encode(request.getPassword()));
