@@ -3,6 +3,7 @@ package org.example.advancedrealestate_be.service;
 import org.example.advancedrealestate_be.dto.request.*;
 import org.example.advancedrealestate_be.dto.response.UserResponse;
 import org.example.advancedrealestate_be.dto.response.UserRoleResponse;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -17,4 +18,5 @@ public interface UserService {
     UserResponse updateUserInfo(String userId, UpdateInfoUserRequest request);
     UserRoleResponse updateRoleUser(String userId, UserRoleRequest request);
     String createUser(UserCreationRequest request);
+    Page<UserResponse> getUsers(int page, int size);
 }

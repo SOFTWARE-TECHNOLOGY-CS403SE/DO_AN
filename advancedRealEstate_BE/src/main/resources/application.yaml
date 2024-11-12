@@ -22,17 +22,15 @@
 
 
 server:
-  port: 8080
-  servlet:
-    context-path: /
-
+  port: 9090
+  host: localhost
 spring:
   main:
     allow-bean-definition-overriding: true
   datasource:
     url: ${DBMS_CONNECTION:jdbc:mysql://localhost:3306/identity_service}
     driverClassName: "com.mysql.cj.jdbc.Driver"
-    password: ${DBMS_PASSWORD:123456}
+    password: ${DBMS_PASSWORD:}
     username: ${DBMS_USERNAME:root}
   jpa:
     hibernate:

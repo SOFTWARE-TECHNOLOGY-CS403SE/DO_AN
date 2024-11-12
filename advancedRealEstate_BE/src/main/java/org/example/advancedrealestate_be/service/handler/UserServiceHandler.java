@@ -19,16 +19,24 @@ import org.example.advancedrealestate_be.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
-
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
@@ -50,6 +58,7 @@ public class UserServiceHandler implements UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
+    private static final String IMAGE_DIRECTORY = "IMAGE";
 
     @Override
     public String createUser(UserCreationRequest request) {
@@ -63,13 +72,33 @@ public class UserServiceHandler implements UserService {
         }
         user.setPassword(passwordEncoder.encode(request.getPassword()));
 
+        MultipartFile avatar = request.getAvatar();
+        if (avatar != null && !avatar.isEmpty()) {
+            // Kiểm tra và tạo thư mục "IMAGE" nếu chưa tồn tại
+            File directory = new File(IMAGE_DIRECTORY);
+            if (!directory.exists()) {
+                directory.mkdirs();
+            }
+
+            // Lưu ảnh vào thư mục "IMAGE"
+            String fileName = avatar.getOriginalFilename();
+            Path filePath = Paths.get(IMAGE_DIRECTORY, fileName);
+            try {
+                avatar.transferTo(filePath);
+                // Bạn có thể lưu đường dẫn vào DB nếu cần
+                user.setAvatar(filePath.toString());
+            } catch (IOException e) {
+                throw new RuntimeException("Lưu ảnh thất bại", e);
+            }
+        }
+
         HashSet<Role> roles = new HashSet<>();
         roleRepository.findById(PredefinedRole.USER_ROLE).ifPresent(roles::add);
 
         user.setRoles(roles);
 
         try {
-            user = userRepository.save(user);
+            userRepository.save(user);
         } catch (DataIntegrityViolationException exception) {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
@@ -78,7 +107,6 @@ public class UserServiceHandler implements UserService {
 
         return "Đã thêm mới thành công!";
     }
-
 
     @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'STAFF')")
     @Override
@@ -169,7 +197,7 @@ public class UserServiceHandler implements UserService {
             userUpdate.getEmail(),
             userUpdate.getPhone_number(),
             userUpdate.getBirthday(),
-            // userUpdate.getAvatar(),
+            userUpdate.getAvatar(),
             userUpdate.getAddress(),
             null
         );
@@ -216,6 +244,21 @@ public class UserServiceHandler implements UserService {
         log.info("In method get Users");
         return userRepository.findAll().stream().map(userMapper::toUserResponse).collect(Collectors.toList());
     }
+
+    @Override
+    public Page<UserResponse> getUsers(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<User> userPage = userRepository.findAll(pageable);
+
+        // Chuyển đổi Page<User> thành List<UserResponse>
+        List<UserResponse> userResponses = userPage.getContent().stream()
+                .map(userMapper::toUserResponse)
+                .collect(Collectors.toList());
+
+        // Tạo đối tượng Page<UserResponse> từ List<UserResponse> và thông tin phân trang của Page<User>
+        return new PageImpl<>(userResponses, pageable, userPage.getTotalElements());
+    }
+
 //ko cần đâu, tạo q
     @PreAuthorize("hasRole('ADMIN')")
     @Override

@@ -1,5 +1,6 @@
 package org.example.advancedrealestate_be.mapper;
 
+import java.nio.file.Paths;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -15,6 +16,7 @@ import org.example.advancedrealestate_be.entity.Role;
 import org.example.advancedrealestate_be.entity.User;
 import org.example.advancedrealestate_be.repository.RoleRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 @Component
@@ -24,6 +26,13 @@ public class UserMapperImpl implements UserMapper {
 
     @Autowired
     PasswordEncoder passwordEncoder;
+    @Value("${server.port}")
+    private String serverPort;
+    @Value("${server.host}")
+    private String serverHost;
+
+    private String url = "http://";
+
     @Override
     public User toUser(UserCreationRequest request) {
         if (request == null) {
@@ -54,6 +63,12 @@ public class UserMapperImpl implements UserMapper {
         Set<RoleResponse> roleResponses = user.getRoles().stream()
                 .map(this::toRoleResponse) // Convert Role to RoleResponse
                 .collect(Collectors.toSet());
+        String avatarUrl = null;
+
+        if (user.getAvatar() != null) {
+            String fileName = Paths.get(user.getAvatar()).getFileName().toString();
+            avatarUrl = url + serverHost +":"+ serverPort +"/api/user/" + fileName;
+        }
 
         return UserResponse.builder()
                 .id(user.getId())
@@ -65,9 +80,8 @@ public class UserMapperImpl implements UserMapper {
                 .phone_number(user.getPhone_number())
                 .status(user.getStatus())
                 .address(user.getAddress())
-//                .avatar(user.getAvatar())
+                .avatar(avatarUrl)
                 .roles(roleResponses) // Use the converted roles
-//                .isVerify(user.isVerify()) // Assuming there's an isVerify method
                 .build();
     }
 
