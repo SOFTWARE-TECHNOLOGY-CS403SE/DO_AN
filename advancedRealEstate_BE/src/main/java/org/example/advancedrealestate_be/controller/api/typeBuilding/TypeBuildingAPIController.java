@@ -1,6 +1,7 @@
 package org.example.advancedrealestate_be.controller.api.typeBuilding;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -11,7 +12,6 @@ import org.example.advancedrealestate_be.dto.request.DeleteTypeBuildingsRequest;
 import org.example.advancedrealestate_be.dto.request.TypeBuildingCreateResquest;
 import org.example.advancedrealestate_be.dto.request.TypeBuildingUpdateResquest;
 import org.example.advancedrealestate_be.dto.response.TypeBuildingResponse;
-import org.example.advancedrealestate_be.dto.response.UserResponse;
 import org.example.advancedrealestate_be.service.TypeBuildingService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -28,7 +28,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
-public class TypeBuildingController {
+@Tag(name="Type Building")
+public class TypeBuildingAPIController {
     @Autowired
     TypeBuildingService typeBuildingService;
     @GetMapping
