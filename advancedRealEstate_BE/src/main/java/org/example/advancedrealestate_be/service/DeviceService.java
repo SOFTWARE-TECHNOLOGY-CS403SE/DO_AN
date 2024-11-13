@@ -1,9 +1,8 @@
 package org.example.advancedrealestate_be.service;
 
 import org.example.advancedrealestate_be.dto.request.DeviceRequest;
-import org.example.advancedrealestate_be.dto.request.InvoiceRequest;
 import org.example.advancedrealestate_be.dto.response.DeviceResponse;
-import org.example.advancedrealestate_be.dto.response.InvoiceResponse;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -13,4 +12,5 @@ public interface DeviceService {
     List<DeviceResponse> getAllDevice();
     DeviceResponse updateDevice(String id, DeviceRequest request);
     void deleteDevice(String id);
+    Page<DeviceResponse> getDevice(int page, int size);
 }

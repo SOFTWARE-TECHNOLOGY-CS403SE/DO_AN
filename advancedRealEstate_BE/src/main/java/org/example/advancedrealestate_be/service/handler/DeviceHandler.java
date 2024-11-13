@@ -1,12 +1,18 @@
 package org.example.advancedrealestate_be.service.handler;
 
 import org.example.advancedrealestate_be.dto.request.DeviceRequest;
+import org.example.advancedrealestate_be.dto.response.CategoryResponse;
 import org.example.advancedrealestate_be.dto.response.DeviceResponse;
+import org.example.advancedrealestate_be.entity.Category;
 import org.example.advancedrealestate_be.entity.Devices;
 import org.example.advancedrealestate_be.mapper.DeviceMapper;
 import org.example.advancedrealestate_be.repository.DeviceRepository;
 import org.example.advancedrealestate_be.service.DeviceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -59,5 +65,17 @@ public class DeviceHandler implements DeviceService {
     @Override
     public void deleteDevice(String id) {
         deviceRepository.deleteById(id);
+    }
+
+    @Override
+    public Page<DeviceResponse> getDevice(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<Devices> categoryPage = deviceRepository.findAll(pageable);
+
+        List<DeviceResponse> deviceResponses = categoryPage.getContent().stream()
+                .map(deviceMapper::toResponse)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(deviceResponses, pageable, categoryPage.getTotalElements());
     }
 }

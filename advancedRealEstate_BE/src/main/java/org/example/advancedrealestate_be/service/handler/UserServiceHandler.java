@@ -239,7 +239,7 @@ public class UserServiceHandler implements UserService {
 
     @PreAuthorize("hasRole('ADMIN')")
     @Override
-    public List<UserResponse> getUsers() {
+    public List<UserResponse> getAllUsers() {
         log.info("In method get Users");
         return userRepository.findAll().stream().map(userMapper::toUserResponse).collect(Collectors.toList());
     }

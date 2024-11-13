@@ -16,7 +16,7 @@ public class TypeBuilding {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     String id;
-
-    String name;
+    String type_name;
+    Double price;
     Integer status;
 }

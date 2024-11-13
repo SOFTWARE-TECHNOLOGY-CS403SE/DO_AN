@@ -21,5 +21,8 @@ public class DeviceResponse {
     private int status;
     private double price;
     private String description;
-    private String buildingId;
+    private String id_building;
+    private String building_name;
+    private String id_category;
+    private String category_name;
 }
