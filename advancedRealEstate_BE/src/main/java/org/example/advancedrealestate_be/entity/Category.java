@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Getter
 @Setter
 @Builder
@@ -19,4 +21,7 @@ public class Category {
 
     String category_name;
     Integer status;
+
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL)
+    private List<Devices> devices;
 }

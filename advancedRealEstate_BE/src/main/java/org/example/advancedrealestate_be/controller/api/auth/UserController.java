@@ -2,6 +2,7 @@ package org.example.advancedrealestate_be.controller.api.auth;
 import java.util.List;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 import org.example.advancedrealestate_be.dto.request.*;
@@ -33,31 +34,41 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
+@Tag(name = "Admin User")
 public class UserController {
     @Autowired
     UserService userService;
 
     @GetMapping
     ApiResponse<Map<String, Object>> getUsers(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "5") int size) {
-        // Lấy dữ liệu người dùng với phân trang
-        Page<UserResponse> pageResult = userService.getUsers(page, size);
+            @RequestParam(defaultValue = "1") Integer page,
+            @RequestParam(defaultValue = "5") Integer size) {
 
         // Tạo đối tượng response chứa thông tin phân trang và danh sách người dùng
         Map<String, Object> response = new HashMap<>();
+        if (page == 0) {
+            // Nếu không truyền page hoặc size, lấy toàn bộ dữ liệu người dùng
+            List<UserResponse> users = userService.getAllUsers(); // Giả sử userService có phương thức getAllUsers()
 
-        // Metadata về phân trang
-        Map<String, Object> pagination = new HashMap<>();
-        pagination.put("total", pageResult.getTotalElements());
-        pagination.put("per_page", pageResult.getSize());
-        pagination.put("current_page", pageResult.getNumber() + 1);
-        pagination.put("last_page", pageResult.getTotalPages());
-        pagination.put("from", (pageResult.getNumber() * pageResult.getSize()) + 1);
-        pagination.put("to", Math.min((pageResult.getNumber() + 1) * pageResult.getSize(), pageResult.getTotalElements()));
+            // Thêm dữ liệu vào response
+            response.put("data", users);
+        } else {
+            // Lấy dữ liệu người dùng với phân trang
+            Page<UserResponse> pageResult = userService.getUsers(page, size);
 
-        response.put("pagination", pagination);
-        response.put("data", pageResult.getContent());
+            // Metadata về phân trang
+            Map<String, Object> pagination = new HashMap<>();
+            pagination.put("total", pageResult.getTotalElements());
+            pagination.put("per_page", pageResult.getSize());
+            pagination.put("current_page", pageResult.getNumber() + 1);
+            pagination.put("last_page", pageResult.getTotalPages());
+            pagination.put("from", (pageResult.getNumber() * pageResult.getSize()) + 1);
+            pagination.put("to", Math.min((pageResult.getNumber() + 1) * pageResult.getSize(), pageResult.getTotalElements()));
+
+            // Thêm metadata và dữ liệu vào response
+            response.put("pagination", pagination);
+            response.put("data", pageResult.getContent());
+        }
 
         // Trả về đối tượng ApiResponse chứa phân trang và dữ liệu
         return ApiResponse.<Map<String, Object>>builder()

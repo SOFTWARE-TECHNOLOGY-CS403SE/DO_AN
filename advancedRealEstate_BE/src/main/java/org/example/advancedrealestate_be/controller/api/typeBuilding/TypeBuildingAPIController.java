@@ -28,7 +28,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
-@Tag(name="Type Building")
+@Tag(name="Admin Type Building")
 public class TypeBuildingAPIController {
     @Autowired
     TypeBuildingService typeBuildingService;

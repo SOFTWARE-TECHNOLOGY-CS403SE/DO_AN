@@ -1,6 +1,4 @@
 package org.example.advancedrealestate_be.entity;
-
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;

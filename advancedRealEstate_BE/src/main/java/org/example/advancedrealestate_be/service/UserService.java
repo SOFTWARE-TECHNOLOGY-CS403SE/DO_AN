@@ -11,7 +11,7 @@ public interface UserService {
     UserResponse getMyInfo();
     UserResponse getMyInfo(String email);
     UserResponse getUser(String id);
-    List<UserResponse> getUsers();
+    List<UserResponse> getAllUsers();
     void deleteUser(String userId);
     String updateUser(String userId, UserUpdateRequest request);
     String updatePasswordUser(String userId, UserUpdatePasswordRequest request);
@@ -19,4 +19,5 @@ public interface UserService {
     UserRoleResponse updateRoleUser(String userId, UserRoleRequest request);
     String createUser(UserCreationRequest request);
     Page<UserResponse> getUsers(int page, int size);
+
 }

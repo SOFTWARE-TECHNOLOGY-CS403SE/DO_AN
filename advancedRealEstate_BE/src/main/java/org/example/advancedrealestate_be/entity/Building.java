@@ -62,8 +62,9 @@ public class Building {
     @JsonManagedReference("building-auctions")
     private List<Auction> auctions = new ArrayList<>();
     
-    @OneToMany(mappedBy = "building", cascade = CascadeType.ALL)
-    private List<Devices> devices;
+//    @OneToMany(mappedBy = "building", cascade = CascadeType.ALL)
+//    @JsonManagedReference("device-buidings")
+//    private List<Devices> devices;
 
     @OneToMany(mappedBy = "building", cascade = CascadeType.ALL)
     private List<Contracts> contracts;

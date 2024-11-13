@@ -12,8 +12,10 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class TypeBuildingCreateResquest {
     @NotBlank(message = "Name is required and cannot be empty")
-    String name;
+    String type_name;
 
     @NotNull(message = "Status cannot be null")
     Integer status;
+    @NotNull(message = "Price cannot be null")
+    Double price;
 }

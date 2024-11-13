@@ -99,4 +99,9 @@ public class CategoryServiceHandler implements CategoryService {
         }
         return "Deleted successfully!";
     }
+
+    @Override
+    public List<CategoryResponse> getAllCategories() {
+        return categoryRepository.findAll().stream().map(categoryMapper::toResponse).collect(Collectors.toList());
+    }
 }
