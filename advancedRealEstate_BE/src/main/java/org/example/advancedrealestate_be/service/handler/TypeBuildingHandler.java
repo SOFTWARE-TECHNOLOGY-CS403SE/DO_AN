@@ -7,9 +7,7 @@ import org.example.advancedrealestate_be.dto.request.DeleteTypeBuildingsRequest;
 import org.example.advancedrealestate_be.dto.request.TypeBuildingCreateResquest;
 import org.example.advancedrealestate_be.dto.request.TypeBuildingUpdateResquest;
 import org.example.advancedrealestate_be.dto.response.TypeBuildingResponse;
-import org.example.advancedrealestate_be.dto.response.UserResponse;
 import org.example.advancedrealestate_be.entity.TypeBuilding;
-import org.example.advancedrealestate_be.entity.User;
 import org.example.advancedrealestate_be.exception.AppException;
 import org.example.advancedrealestate_be.exception.ErrorCode;
 import org.example.advancedrealestate_be.mapper.TypeBuildingMapper;
@@ -58,10 +56,10 @@ public class TypeBuildingHandler implements TypeBuildingService {
     @Override
     public String updateTypeBuilding(String typeBuildingId, TypeBuildingUpdateResquest request) {
         try{
-            TypeBuilding building = typeBuildingRepository.findById(typeBuildingId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-            typeBuildingMapper.toUpdateRequest(building,request);
+            TypeBuilding typeBuilding = typeBuildingRepository.findById(typeBuildingId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+            typeBuildingMapper.toUpdateRequest(typeBuilding,request);
 
-            typeBuildingRepository.save(building);
+            typeBuildingRepository.save(typeBuilding);
         } catch (DataIntegrityViolationException exception) {
             throw new AppException(ErrorCode.USER_EXISTED);
         }

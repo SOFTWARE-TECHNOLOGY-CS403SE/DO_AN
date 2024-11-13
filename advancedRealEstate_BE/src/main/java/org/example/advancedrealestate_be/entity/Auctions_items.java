@@ -20,8 +20,4 @@ public class Auctions_items {
 
     private String item_name;
     private String item_description;
-
-    @ManyToOne
-    @JoinColumn(name = "auction_id")  // Link to Auctions entity
-    private Auctions auction;
 }

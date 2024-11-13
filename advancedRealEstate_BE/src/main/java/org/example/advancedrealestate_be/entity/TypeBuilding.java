@@ -1,22 +1,28 @@
 package org.example.advancedrealestate_be.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
 
-@Getter
-@Setter
-@Builder
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+import lombok.*;
+import org.hibernate.annotations.GenericGenerator;
+
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@Builder
 @Entity
 @Table(name = "type_buildings")
+@Getter
+@Setter
 public class TypeBuilding {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    String id;
 
-    String name;
-    Integer status;
+    @Id
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
+    private String id;
+    private String name;
+    private Double price;
+    private int status;
 }
