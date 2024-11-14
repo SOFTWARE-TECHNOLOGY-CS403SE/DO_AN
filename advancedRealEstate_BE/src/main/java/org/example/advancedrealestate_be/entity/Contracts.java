@@ -1,5 +1,6 @@
 package org.example.advancedrealestate_be.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -25,26 +26,30 @@ public class Contracts {
     private String contract_name;
     private String contract_details;
 
+    // Foreign key linking to Customers
     @ManyToOne
-    @JoinColumn(name = "customer_id")  // Foreign key linking to Customers
+    @JoinColumn(name = "customer_id")
     private Customers customer;
 
-
+    // Foreign key linking to Building
     @ManyToOne
-    @JoinColumn(name = "building_id")  // Foreign key linking to Customers
+    @JoinColumn(name = "building_id")
     private Building building;
 
     @ManyToOne
-    @JoinColumn(name="user_id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @OneToMany(mappedBy = "contracts", cascade = CascadeType.ALL)
-    private List<Transactions> transactions;
+    private List<Transactions> transactions = new ArrayList<>();
 
     @OneToMany(mappedBy = "contracts", cascade = CascadeType.ALL)
-    private List<Invoices> invoices;
+    private List<Invoices> invoices = new ArrayList<>();
 
-    @OneToMany(mappedBy = "contract", cascade = CascadeType.REMOVE)
-    @JsonManagedReference("contract-contract-details")
-    private List<Contract_details> contract_detailsList = new ArrayList<>();
+    // Correct field reference to the contract details
+    @ManyToOne
+    @JoinColumn(name = "contract_detail_id", nullable = true)
+    @JsonBackReference("contract-detail-contracts")
+    private Contract_details contractDetails;
 }
+

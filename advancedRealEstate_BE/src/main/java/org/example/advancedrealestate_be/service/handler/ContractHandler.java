@@ -164,7 +164,7 @@ public class ContractHandler implements ContractService {
                 .orElseThrow(() -> new RuntimeException("Contract not found"));
 
         contract.setContract_name(request.getContractName());
-        contract.setContract_details(request.getContractDetails());
+//        contract.setContract_details(request.getContractDetails());
         // Set other fields based on the request data as necessary
 
         contract = contractRepository.save(contract);

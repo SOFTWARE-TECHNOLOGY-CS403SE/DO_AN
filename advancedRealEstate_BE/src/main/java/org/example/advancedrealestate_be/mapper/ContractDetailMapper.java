@@ -4,9 +4,12 @@ package org.example.advancedrealestate_be.mapper;
 import org.example.advancedrealestate_be.dto.request.ContractDetailRequest;
 import org.example.advancedrealestate_be.dto.response.ContractDetailResponse;
 import org.example.advancedrealestate_be.entity.Contract_details;
+import org.example.advancedrealestate_be.repository.ContractDetailsRepository;
 import org.example.advancedrealestate_be.repository.ContractReposetory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
 
 @Component
 public class ContractDetailMapper {
@@ -20,8 +23,15 @@ public class ContractDetailMapper {
         contractDetails.setNote(request.getNote());
         contractDetails.setAmount(request.getAmount());
 
-        // Fetch and set the related contract
-        contractReposetory.findById(request.getContractId()).ifPresent(contractDetails::setContract);
+        // Fetch the related contract and add it to the contractsList
+        contractReposetory.findById(request.getContractId()).ifPresent(contract -> {
+            // Initialize contractsList if it is null
+            if (contractDetails.getContractsList() == null) {
+                contractDetails.setContractsList(new ArrayList<>());
+            }
+            // Add the fetched contract to the contractsList
+            contractDetails.getContractsList().add(contract);
+        });
         return contractDetails;
     }
 
@@ -34,3 +44,4 @@ public class ContractDetailMapper {
                 .build();
     }
 }
+

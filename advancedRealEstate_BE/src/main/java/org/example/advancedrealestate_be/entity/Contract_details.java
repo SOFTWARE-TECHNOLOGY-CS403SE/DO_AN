@@ -5,6 +5,10 @@ import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -18,13 +22,14 @@ public class Contract_details {
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
+
     private String description;
     private String note;
     private Double amount;
 
-    @ManyToOne
-    @JoinColumn(name = "contract_id", nullable = true)
-    //annotion này giúp gỡ lỗi lặp vô hạn khi mapper
-    @JsonBackReference("contract-detail-contracts")
-    private Contracts contract;
+    // Correct the mappedBy to use the actual field name in Contracts entity
+    @OneToMany(mappedBy = "contractDetails", cascade = CascadeType.REMOVE)
+    @JsonManagedReference("contract-contract-details")
+    private List<Contracts> contractsList = new ArrayList<>();
 }
+

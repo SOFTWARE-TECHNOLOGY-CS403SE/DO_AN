@@ -13,4 +13,5 @@ public class ContractDetailResponse {
     private String description;
     private String note;
     private Double amount;
+    private String contractId;
 }
