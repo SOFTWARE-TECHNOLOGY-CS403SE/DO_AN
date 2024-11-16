@@ -13,7 +13,7 @@ import java.util.List;
 public class ContractResponse {
     private String id;
     private String contractName;
-    private String contractDetails;
+//    private String contractDetails;
     private String customerId;
     private String buildingId;
     private String userId;

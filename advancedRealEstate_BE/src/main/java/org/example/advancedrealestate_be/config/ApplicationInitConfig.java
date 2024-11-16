@@ -27,7 +27,7 @@ import java.util.Set;
 @Slf4j
 public class ApplicationInitConfig {
 
-
+    @Autowired
     PasswordEncoder passwordEncoder;
 
 //    static  String ADMIN_USER_NAME = "admin@gmail.com";
