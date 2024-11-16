@@ -2,17 +2,13 @@ package org.example.advancedrealestate_be.service.handler;
 
 import net.minidev.json.JSONObject;
 import org.example.advancedrealestate_be.dto.request.AuctionRequest;
-import org.example.advancedrealestate_be.dto.request.BuildingUpdateRequest;
-import org.example.advancedrealestate_be.dto.request.CreateBuildingRequest;
 import org.example.advancedrealestate_be.dto.response.AuctionResponse;
 import org.example.advancedrealestate_be.entity.Auction;
 import org.example.advancedrealestate_be.entity.Building;
-import org.example.advancedrealestate_be.entity.Map;
 import org.example.advancedrealestate_be.entity.User;
 import org.example.advancedrealestate_be.exception.AppException;
 import org.example.advancedrealestate_be.exception.ErrorCode;
 import org.example.advancedrealestate_be.mapper.AuctionMapper;
-import org.example.advancedrealestate_be.mapper.BuildingMapper;
 import org.example.advancedrealestate_be.repository.AuctionDetailRepository;
 import org.example.advancedrealestate_be.repository.AuctionRepository;
 import org.example.advancedrealestate_be.repository.BuildingRepository;

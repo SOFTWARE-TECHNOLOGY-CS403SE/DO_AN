@@ -7,43 +7,50 @@ import org.example.advancedrealestate_be.dto.BuildingDto;
 import org.example.advancedrealestate_be.dto.MapDto;
 import org.example.advancedrealestate_be.dto.RoomChatDto;
 import org.example.advancedrealestate_be.dto.ServiceDto;
+import org.example.advancedrealestate_be.dto.response.AuctionResponse;
+import org.example.advancedrealestate_be.dto.response.BuildingResponse;
 import org.example.advancedrealestate_be.service.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @SecurityRequirement(name = "bearerAuth")
 @RequestMapping("/api/user")
 @Tag(name = "API for all user", description = "API public")
 public class UserBuildingApiController {
-
+    @Autowired
     private final BuildingService buildingService;
-    private final ServiceService serviceService;
-    private final MapService mapService;
-    private final RoomChatService roomChatService;
+    @Autowired
     private final AuctionService auctionService;
-
+    @Autowired
+    private final MapService mapService;
+    @Autowired
+    private final RoomChatService roomChatService;
 
     @Autowired
-    public UserBuildingApiController(BuildingService buildingService, ServiceService serviceService, MapService mapService, RoomChatService roomChatService, AuctionService auctionService) {
+    public UserBuildingApiController(BuildingService buildingService, AuctionService auctionService, MapService mapService, RoomChatService roomChatService) {
         this.buildingService = buildingService;
-        this.serviceService = serviceService;
+        this.auctionService = auctionService;
         this.mapService = mapService;
         this.roomChatService = roomChatService;
-        this.auctionService = auctionService;
     }
 
-    @GetMapping("/buildings")
-    private ResponseEntity<JSONObject> index() {
+    @GetMapping(value = "/buildings")
+    public ResponseEntity<JSONObject> getAllBuildings() {
         JSONObject data = new JSONObject();
+
         try {
-            List<BuildingDto> buildingDtoList = buildingService.findAll();
-            data.put("total", buildingDtoList.size());
-            data.put("data", buildingDtoList);
+            List<BuildingResponse> allBuilding = buildingService.getAllBuildings();
+
+            data.put("status", 200);
+            data.put("data", allBuilding);
             return new ResponseEntity<>(data, HttpStatus.OK);
         } catch (Exception error) {
             data.put("message", error.getMessage());
@@ -51,12 +58,12 @@ public class UserBuildingApiController {
         }
     }
 
-    @GetMapping("/buildings/{id}")
+    @GetMapping(value = "/buildings/{id}")
     private ResponseEntity<JSONObject> detail(@PathVariable String id) {
         JSONObject object = new JSONObject();
         try {
-            BuildingDto buildingDto = buildingService.findById(id);
-            object.put("data", buildingDto);
+            List<BuildingResponse> buildingResponse = buildingService.findById(id);
+            object.put("data", buildingResponse);
             return new ResponseEntity<>(object, HttpStatus.OK);
         } catch (Exception error) {
             object.put("message", error.getMessage());
@@ -64,34 +71,7 @@ public class UserBuildingApiController {
         }
     }
 
-    @GetMapping("/services")
-    private ResponseEntity<JSONObject> index_service() {
-        JSONObject data = new JSONObject();
-        try {
-            List<ServiceDto> serviceDtoList = serviceService.findAll();
-            data.put("total", serviceDtoList.size());
-            data.put("data", serviceDtoList);
-            return new ResponseEntity<>(data, HttpStatus.OK);
-        } catch (Exception error) {
-            data.put("message", error.getMessage());
-            return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @GetMapping("/services/{id}")
-    private ResponseEntity<JSONObject> detail_service(@PathVariable String id) {
-        JSONObject object = new JSONObject();
-        try {
-            ServiceDto responseDto = serviceService.findById(id);
-            object.put("data", responseDto);
-            return new ResponseEntity<>(object, HttpStatus.OK);
-        } catch (Exception error) {
-            object.put("message", error.getMessage());
-            return new ResponseEntity<>(object, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @GetMapping("/maps")
+    @GetMapping(value = "/maps")
     private ResponseEntity<JSONObject> index_map() {
         JSONObject data = new JSONObject();
         try {
@@ -105,7 +85,7 @@ public class UserBuildingApiController {
         }
     }
 
-    @GetMapping("/maps/{id}")
+    @GetMapping(value = "/maps/{id}")
     private ResponseEntity<JSONObject> detail_map(@PathVariable String id) {
         JSONObject object = new JSONObject();
         try {
@@ -118,7 +98,7 @@ public class UserBuildingApiController {
         }
     }
 
-    @GetMapping("/room-chats")
+    @GetMapping(value = "/room-chats")
     ResponseEntity<JSONObject> index_roomChat() {
         JSONObject data = new JSONObject();
         try {
@@ -146,4 +126,31 @@ public class UserBuildingApiController {
         responseObject.put("data", auctionService.findById(id));
         return new ResponseEntity<>(responseObject, HttpStatus.OK);
     }
+
+//    @GetMapping("/services")
+//    private ResponseEntity<JSONObject> index_service() {
+//        JSONObject data = new JSONObject();
+//        try {
+//            List<ServiceDto> serviceDtoList = serviceService.findAll();
+//            data.put("total", serviceDtoList.size());
+//            data.put("data", serviceDtoList);
+//            return new ResponseEntity<>(data, HttpStatus.OK);
+//        } catch (Exception error) {
+//            data.put("message", error.getMessage());
+//            return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
+//
+//    @GetMapping("/services/{id}")
+//    private ResponseEntity<JSONObject> detail_service(@PathVariable String id) {
+//        JSONObject object = new JSONObject();
+//        try {
+//            ServiceDto responseDto = serviceService.findById(id);
+//            object.put("data", responseDto);
+//            return new ResponseEntity<>(object, HttpStatus.OK);
+//        } catch (Exception error) {
+//            object.put("message", error.getMessage());
+//            return new ResponseEntity<>(object, HttpStatus.INTERNAL_SERVER_ERROR);
+//        }
+//    }
 }

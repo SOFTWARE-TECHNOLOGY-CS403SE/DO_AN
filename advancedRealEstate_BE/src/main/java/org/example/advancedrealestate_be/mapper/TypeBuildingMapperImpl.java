@@ -15,7 +15,7 @@ public class TypeBuildingMapperImpl implements TypeBuildingMapper {
         }
 
         TypeBuilding typeBuilding = new TypeBuilding();
-        typeBuilding.setName(request.getType_name());
+        typeBuilding.setType_name(request.getType_name());
         typeBuilding.setPrice(request.getPrice());
         typeBuilding.setStatus(request.getStatus());
 
@@ -29,7 +29,7 @@ public class TypeBuildingMapperImpl implements TypeBuildingMapper {
         }
 
         if (request.getType_name() != null) {
-            typeBuilding.setName(request.getType_name());
+            typeBuilding.setType_name(request.getType_name());
         }
 
         if (request.getPrice() != null) {
@@ -50,7 +50,7 @@ public class TypeBuildingMapperImpl implements TypeBuildingMapper {
 
         return TypeBuildingResponse.builder()
                 .id(typeBuilding.getId())
-                .type_name(typeBuilding.getName())
+                .type_name(typeBuilding.getType_name())
                 .price(typeBuilding.getPrice())
                 .status(typeBuilding.getStatus())
                 .build();

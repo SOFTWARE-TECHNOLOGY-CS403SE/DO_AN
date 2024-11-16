@@ -1,197 +1,216 @@
 package org.example.advancedrealestate_be.service.handler;
 
-import org.example.advancedrealestate_be.constant.ErrorEnumConstant;
-import org.example.advancedrealestate_be.dto.BuildingDto;
-import org.example.advancedrealestate_be.dto.RoomChatDto;
-import org.example.advancedrealestate_be.dto.request.BuildingUpdateRequest;
-import org.example.advancedrealestate_be.dto.request.CreateBuildingRequest;
-import org.example.advancedrealestate_be.entity.Building;
-import org.example.advancedrealestate_be.entity.Map;
-import org.example.advancedrealestate_be.entity.RoomChat;
-import org.example.advancedrealestate_be.entity.User;
+import org.example.advancedrealestate_be.dto.request.BuildingCreateRequest;
+import org.example.advancedrealestate_be.dto.request.BuildingUpdateImageRequest;
+import org.example.advancedrealestate_be.dto.request.BuildingUpdateResquest;
+import org.example.advancedrealestate_be.dto.request.DeleteBuildingRequest;
+import org.example.advancedrealestate_be.dto.response.BuildingResponse;
+import org.example.advancedrealestate_be.entity.*;
 import org.example.advancedrealestate_be.exception.AppException;
 import org.example.advancedrealestate_be.exception.ErrorCode;
 import org.example.advancedrealestate_be.mapper.BuildingMapper;
 import org.example.advancedrealestate_be.repository.BuildingRepository;
-import org.example.advancedrealestate_be.repository.MapRepository;
 import org.example.advancedrealestate_be.service.BuildingService;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.server.ResponseStatusException;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
 public class BuildingHandler implements BuildingService {
 
-
-    private final BuildingRepository buildingRepository;
-    private final MapRepository mapRepository;
-
-    private final ModelMapper modelMapper;
-
+    @Autowired
+    BuildingRepository buildingRepository;
 
     @Autowired
-    public BuildingHandler(BuildingRepository buildingRepository, MapRepository mapRepository, ModelMapper modelMapper) {
+    BuildingMapper buildingMapper;
+
+    public BuildingHandler(BuildingRepository buildingRepository, BuildingMapper buildingMapper) {
         this.buildingRepository = buildingRepository;
-        this.mapRepository = mapRepository;
-        this.modelMapper = modelMapper;
+        this.buildingMapper = buildingMapper;
     }
 
-    @Override
-    public List<BuildingDto> findAll() {
-
-        List<Building> buildingList = buildingRepository.findAll();
-
-        return buildingList.stream().map(BuildingMapper::mapToBuilding).collect(Collectors.toList());
-    }
-
-    @Override
-    public BuildingDto findById(String id) {
-        Optional<Building> building = buildingRepository.findById(id);
-        if (building.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorEnumConstant.BuildingNotFound.toString());
-        }
-        return building.map(value -> new BuildingDto(
-                value.getId(), value.getName(),
-                value.getStructure(),
-                value.getArea(),
-                value.getType(),
-                value.getStatus(),
-                value.getDescription(),
-                value.getNumber_of_basement(),
-                value.getPrice(),
-                value.getImage(),
-                value.getFile_type(),
-                value.getMap()
-        ))
-        .orElse(null);
-    }
-
+    private static final String IMAGE_DIRECTORY = "uploads/buiding/images/";
 //    @Override
-//    public BuildingDto create(BuildingDto buildingDto) {
-//        Building building = new Building();
-//        building.setName(buildingDto.getName());
-//        building.setStructure(buildingDto.getStructure());
-//        building.setLevel(buildingDto.getLevel());
-//        building.setArea(buildingDto.getArea());
-//        building.setType(buildingDto.getType());
-//        building.setDescription(buildingDto.getDescription());
-//        building.setNumber_of_basement(buildingDto.getNumber_of_basement());
+//    public String createBuilding(BuildingCreateRequest request) {
+//        Building building = buildingMapper.toRequest(request);
 //
-//        Building buildingNew = buildingRepository.save(building);
-//        return new BuildingDto(buildingNew.getId(), buildingNew.getName(), buildingNew.getStructure(), buildingNew.getLevel(), buildingNew.getArea(), buildingNew.getType(), buildingNew.getDescription(), buildingNew.getNumber_of_basement());
+//        try {
+//            List<MultipartFile> images = request.getImage();
+//            if (images != null && !images.isEmpty()) {
+//                // Kiểm tra và tạo thư mục "IMAGE" nếu chưa tồn tại
+//                File directory = new File(IMAGE_DIRECTORY);
+//                if (!directory.exists()) {
+//                    directory.mkdirs();
+//                }
+//
+//                // Lưu ảnh vào thư mục "IMAGE" và lưu đường dẫn vào DB
+//                List<String> imagePaths = new ArrayList<>();
+//                for (MultipartFile image : images) {
+//                    String fileName = image.getOriginalFilename();
+//                    Path filePath = Paths.get(IMAGE_DIRECTORY, fileName);
+//                    try {
+//                        image.transferTo(filePath);
+//                        imagePaths.add(filePath.toString());
+//                    } catch (IOException e) {
+//                        throw new RuntimeException("Lưu ảnh thất bại", e);
+//                    }
+//                }
+//                building.setImage(String.join(";", imagePaths));
+//            }
+//            buildingRepository.save(building);
+//        } catch (DataIntegrityViolationException exception) {
+//            throw new AppException(ErrorCode.USER_EXISTED);
+//        }
+//
+//        return "Đã thêm mới thành công!";
 //    }
-
-    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
-    @Transactional
     @Override
-    public BuildingDto create(CreateBuildingRequest buildingRequestDto) {
-        Building buildingEntity = modelMapper.map(buildingRequestDto, Building.class);
-        Map map = mapRepository.findById(buildingRequestDto.getMap_id()).orElse(null);
-        Building buildingNew = buildingRepository.save(buildingEntity);
-        return new BuildingDto(
-                buildingNew.getId(),
-                buildingNew.getName(),
-                buildingNew.getStructure(),
-                buildingNew.getArea(),
-                buildingNew.getType(),
-                buildingNew.getStatus(),
-                buildingNew.getDescription(),
-                buildingNew.getNumber_of_basement(),
-                buildingNew.getPrice(),
-                null,
-                null,
-                map
-        );
-    }
+    public String createBuilding(BuildingCreateRequest request) {
+        Building building = buildingMapper.toRequest(request);
 
-    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
-    @Override
-    public BuildingDto updateById(BuildingUpdateRequest buildingDto, String id) {
-        Optional<Building> building = buildingRepository.findById(id);
-        Map map = mapRepository.findById(buildingDto.getMap_id()).orElse(null);
-        if (building.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorEnumConstant.BuildingNotFound.toString());
+        try {
+            List<MultipartFile> images = request.getImage();
+            if (images != null && !images.isEmpty()) {
+                // Đường dẫn thư mục lưu trữ
+                String uploadDir = "uploads/buiding/images/";
+                File directory = new File(uploadDir);
+                if (!directory.exists()) {
+                    directory.mkdirs();
+                }
+
+                // Lưu ảnh và đường dẫn
+                List<String> imagePaths = new ArrayList<>();
+                for (MultipartFile image : images) {
+                    String originalFilename = image.getOriginalFilename();
+                    String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+                    String fileName = UUID.randomUUID().toString() + fileExtension;
+                    Path filePath = Paths.get(uploadDir, fileName);
+                    try {
+                        Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+                        imagePaths.add(filePath.toString());
+                    } catch (IOException e) {
+                        throw new RuntimeException("Lưu ảnh thất bại: " + e.getMessage());
+                    }
+                }
+                building.setImage(String.join(";", imagePaths));
+            }
+            buildingRepository.save(building);
+        } catch (DataIntegrityViolationException exception) {
+            throw new AppException(ErrorCode.USER_EXISTED);
         }
-        building.get().setName(buildingDto.getName() != null ? buildingDto.getName() : building.get().getName());
-        building.get().setStructure(buildingDto.getStructure() != null ? buildingDto.getStructure() : building.get().getStructure());
-        building.get().setArea(buildingDto.getArea() != null ? buildingDto.getArea() : building.get().getArea());
-        building.get().setType(buildingDto.getType() != null ? buildingDto.getType() : building.get().getType());
-        building.get().setStatus(buildingDto.getStatus() != null ? buildingDto.getStatus() : building.get().getStatus());
-        building.get().setDescription(buildingDto.getDescription() != null ? buildingDto.getDescription() : building.get().getDescription());
-        building.get().setNumber_of_basement(buildingDto.getNumber_of_basement() == 0 ? 0 : buildingDto.getNumber_of_basement());
-        building.get().setPrice(buildingDto.getPrice() == 0 ? 0 : buildingDto.getPrice());
-        building.get().setMap(map);
 
-        Building buildingUpdate = buildingRepository.save(building.get());
-        return new BuildingDto(buildingUpdate.getId(),
-                buildingUpdate.getName(), buildingUpdate.getStructure(),
-                buildingUpdate.getArea(),
-                buildingUpdate.getType(),
-                buildingUpdate.getStatus(),
-                buildingUpdate.getDescription(),
-                buildingUpdate.getNumber_of_basement(),
-                buildingUpdate.getPrice(),
-                null,
-                buildingUpdate.getFile_type(),
-                buildingUpdate.getMap()
-        );
+        return "Đã thêm mới thành công!";
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
+
     @Override
-    public BuildingDto deleteById(String id) {
-        Optional<Building> building = buildingRepository.findById(id);
-        if (building.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorEnumConstant.BuildingNotFound.toString());
+    public String updateBuilding(String buildingId, BuildingUpdateResquest request) {
+        try{
+            Building building = buildingRepository.findById(buildingId).orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
+            buildingMapper.toUpdateRequest(building,request);
+
+            buildingRepository.save(building);
+        } catch (DataIntegrityViolationException exception) {
+            throw new AppException(ErrorCode.USER_EXISTED);
         }
-        BuildingDto buildingDto = new BuildingDto(
-                building.get().getId(),
-                building.get().getName(),
-                building.get().getStructure(),
-                building.get().getArea(),
-                building.get().getType(),
-                building.get().getStatus(),
-                building.get().getDescription(),
-                building.get().getNumber_of_basement(),
-                building.get().getPrice(),
-                null,
-                building.get().getFile_type(),
-                building.get().getMap()
-        );
-        buildingRepository.delete(building.get());
-        return buildingDto;
+
+        return "Đã cập nhật thành công!";
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
     @Override
-    public BuildingDto uploadImage(String id, MultipartFile imageFile) throws IOException {
-        Building building = buildingRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
-        building.setImage(imageFile.getBytes());
-        building.setFile_type(imageFile.getContentType());
-        Building buildingUpLoad = buildingRepository.save(building);
-        return new BuildingDto(
-                buildingUpLoad.getId(),
-                buildingUpLoad.getName(),
-                null,
-                null,
-                buildingUpLoad.getType(),
-                buildingUpLoad.getStatus(),
-                null,
-                buildingUpLoad.getNumber_of_basement(),
-                buildingUpLoad.getPrice(),
-                null,
-                null,
-                buildingUpLoad.getMap()
-        );
+    public String updateImageBuilding(String buildingId, BuildingUpdateImageRequest request) {
+        // Tìm tòa nhà theo ID
+        Building building = buildingRepository.findById(buildingId).orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
+        try {
+            List<MultipartFile> images = request.getImage();
+            if (images != null && !images.isEmpty()) {
+                // Lưu các ảnh mới
+                String uploadDir = "uploads/buiding/images/";
+                File directory = new File(uploadDir);
+                if (!directory.exists()) {
+                    directory.mkdirs();
+                }
+
+                List<String> imagePaths = new ArrayList<>();
+                for (MultipartFile image : images) {
+                    String originalFilename = image.getOriginalFilename();
+                    String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
+                    String fileName = UUID.randomUUID() + fileExtension;
+                    Path filePath = Paths.get(uploadDir, fileName);
+                    Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+                    imagePaths.add(filePath.toString());
+                }
+                // Cập nhật đường dẫn ảnh trong đối tượng Building
+                building.setImage(String.join(";", imagePaths));
+            }
+
+            // Lưu tòa nhà với thông tin ảnh mới
+            buildingRepository.save(building);
+        } catch (IOException e) {
+            throw new RuntimeException("Cập nhật ảnh thất bại: " + e.getMessage());
+        }
+
+        return "Cập nhật hình ảnh thành công!";
     }
+
+    @Override
+    public String deleteBuilding(String buildingId) {
+        Building building = buildingRepository.findById(buildingId).orElseThrow(() -> new AppException(ErrorCode.BUILDING_NOT_FOUND));
+        buildingRepository.delete(building);
+        return "Đã xóa thành công!";
+    }
+
+    @Override
+    public Page<BuildingResponse> getBuilding(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<Building> buildingPage = buildingRepository.findAll(pageable);
+
+        List<BuildingResponse> buildingResponses = buildingPage.getContent().stream()
+                .map(buildingMapper::toResponse)
+                .collect(Collectors.toList());
+
+        // Tạo đối tượng Page<TypeBuildingResponse> từ List<TypeBuildingResponse> và thông tin phân trang của Page<User>
+        return new PageImpl<>(buildingResponses, pageable, buildingPage.getTotalElements());
+    }
+
+    @Override
+    public String deleteBuildings(DeleteBuildingRequest request) {
+        for (String id : request.getIds()) {
+            if (buildingRepository.existsById(id)) {
+                buildingRepository.deleteById(id);
+            } else {
+                throw new RuntimeException("TypeBuilding with ID " + id + " does not exist");
+            }
+        }
+        return "Deleted successfully!";
+    }
+
+    @Override
+    public List<BuildingResponse> getAllBuildings() {
+        return buildingRepository.findAll().stream().map(buildingMapper::toResponse).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<BuildingResponse> findById(String id) {
+        return buildingRepository.findById(id).stream().map(buildingMapper::toResponse).collect(Collectors.toList());
+    }
+
+
 }

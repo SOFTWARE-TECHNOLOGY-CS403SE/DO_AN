@@ -11,6 +11,7 @@ import net.minidev.json.JSONObject;
 import org.example.advancedrealestate_be.dto.request.DeleteTypeBuildingsRequest;
 import org.example.advancedrealestate_be.dto.request.TypeBuildingCreateResquest;
 import org.example.advancedrealestate_be.dto.request.TypeBuildingUpdateResquest;
+import org.example.advancedrealestate_be.dto.response.CategoryResponse;
 import org.example.advancedrealestate_be.dto.response.TypeBuildingResponse;
 import org.example.advancedrealestate_be.service.TypeBuildingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -33,32 +35,35 @@ public class TypeBuildingAPIController {
     @Autowired
     TypeBuildingService typeBuildingService;
     @GetMapping
-    public ResponseEntity<JSONObject> getAllTypeBuildings(@RequestParam(defaultValue = "1") int page,
-                                                          @RequestParam(defaultValue = "5") int size) {
+    public ResponseEntity<JSONObject> getAllTypeBuildings(@RequestParam(required = false) Integer page,
+                                                          @RequestParam(required = false) Integer size) {
         JSONObject data = new JSONObject();
-        // Lấy dữ liệu người dùng với phân trang
-        Page<TypeBuildingResponse> pageResult = typeBuildingService.getTypeBuilding(page, size);
-
-        // Tạo đối tượng response chứa thông tin phân trang và danh sách người dùng
         Map<String, Object> response = new HashMap<>();
 
-        // Metadata về phân trang
-        Map<String, Object> pagination = new HashMap<>();
-        pagination.put("total", pageResult.getTotalElements());
-        pagination.put("per_page", pageResult.getSize());
-        pagination.put("current_page", pageResult.getNumber() + 1);
-        pagination.put("last_page", pageResult.getTotalPages());
-        pagination.put("from", (pageResult.getNumber() * pageResult.getSize()) + 1);
-        pagination.put("to", Math.min((pageResult.getNumber() + 1) * pageResult.getSize(), pageResult.getTotalElements()));
-
-        response.put("pagination", pagination);
-        response.put("data", pageResult.getContent());
-
         try {
+            if (page == null || size == null) {
+                List<TypeBuildingResponse> allTypeBuilding = typeBuildingService.getAllTypeBuilding();
+
+                response.put("data", allTypeBuilding);
+            } else {
+                Page<TypeBuildingResponse> pageResult = typeBuildingService.getTypeBuilding(page, size);
+
+                Map<String, Object> pagination = new HashMap<>();
+                pagination.put("total", pageResult.getTotalElements());
+                pagination.put("per_page", pageResult.getSize());
+                pagination.put("current_page", pageResult.getNumber() + 1);
+                pagination.put("last_page", pageResult.getTotalPages());
+                pagination.put("from", (pageResult.getNumber() * pageResult.getSize()) + 1);
+                pagination.put("to", Math.min((pageResult.getNumber() + 1) * pageResult.getSize(), pageResult.getTotalElements()));
+
+                response.put("pagination", pagination);
+                response.put("data", pageResult.getContent());
+            }
+
             data.put("status", 200);
             data.put("data", response);
             return new ResponseEntity<>(data, HttpStatus.OK);
-        }catch (Exception error){
+        } catch (Exception error) {
             data.put("message", error.getMessage());
             return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
         }

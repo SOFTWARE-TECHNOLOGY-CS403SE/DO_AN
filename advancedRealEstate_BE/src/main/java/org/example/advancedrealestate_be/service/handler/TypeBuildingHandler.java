@@ -102,4 +102,9 @@ public class TypeBuildingHandler implements TypeBuildingService {
         }
         return "Deleted successfully!";
     }
+
+    @Override
+    public List<TypeBuildingResponse> getAllTypeBuilding() {
+        return typeBuildingRepository.findAll().stream().map(typeBuildingMapper::toResponse).collect(Collectors.toList());
+    }
 }
