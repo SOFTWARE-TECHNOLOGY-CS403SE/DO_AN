@@ -23,4 +23,5 @@ public class AuctionResponse {
     private Building building;
     private Map map;
     private User userCreatedBy;
+    private String identity_key;
 }

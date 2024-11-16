@@ -5,6 +5,8 @@ import org.example.advancedrealestate_be.dto.request.AuctionDetailRequest;
 import org.example.advancedrealestate_be.dto.request.AuctionHistoryRequest;
 import org.example.advancedrealestate_be.dto.response.AuctionDetailResponse;
 import org.example.advancedrealestate_be.dto.response.AuctionHistoryResponse;
+import org.example.advancedrealestate_be.entity.Auction;
+import org.example.advancedrealestate_be.entity.AuctionHistory;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
@@ -25,4 +27,6 @@ public interface AuctionHistoryService {
     JSONObject updateById(String id, AuctionHistoryRequest dto);
 
     JSONObject deleteById(String id);
+
+    void handleBidMessage(AuctionHistoryRequest dto);
 }

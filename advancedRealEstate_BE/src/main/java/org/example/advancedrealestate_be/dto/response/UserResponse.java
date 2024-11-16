@@ -20,6 +20,7 @@ public class UserResponse {
     String user_name;
     Integer status;
     String email;
+    String gender;
     String phone_number;
     String birthday;
     String avatar;

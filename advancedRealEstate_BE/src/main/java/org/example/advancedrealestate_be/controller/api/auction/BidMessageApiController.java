@@ -27,6 +27,7 @@ public class BidMessageApiController {
 
     private final SimpMessagingTemplate messagingTemplate;
     private final AuctionHistoryService auctionHistoryService;
+
     private final ScheduledTask scheduledTask;
     private final Map<String, Set<String>> roomUsers = new HashMap<>();
 
@@ -65,12 +66,12 @@ public class BidMessageApiController {
         messageObject.put("currentDateTime", currentDateTime);
         messageObject.put("roomUser", room);
         messageObject.put("isSendBid", true);
-//        AuctionHistoryRequest dto = new AuctionHistoryRequest();
-//        dto.setMessageBidId(messageObject.get("id").toString());
-//        dto.setBidTime(messageObject.get("currentDateTime").toString());
-//        dto.setBidAmount(bidMessage.getBidAmount());
-//        dto.setAuction_id(bidMessage.getAuction_id());
-//        dto.setClient_id(bidMessage.getClient_id());
+        AuctionHistoryRequest dto = new AuctionHistoryRequest();
+        dto.setMessageBidId(messageObject.get("id").toString());
+        dto.setBidTime(messageObject.get("currentDateTime").toString());
+        dto.setBidAmount(bidMessage.getBidAmount());
+        dto.setAuction_id(bidMessage.getAuction_id());
+        dto.setClient_id(bidMessage.getClient_id());
 //        auctionHistoryService.handleBidMessage(dto);
 
         messagingTemplate.convertAndSend("/topic/room/" + room, messageObject.toString());

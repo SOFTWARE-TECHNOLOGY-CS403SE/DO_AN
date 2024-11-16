@@ -24,6 +24,7 @@ public enum ErrorCode {
     AUCTION_NOT_FOUND(404, "Auction not found", HttpStatus.NOT_FOUND),
     AUCTION_DETAIL_NOT_FOUND(404, "Auction detail not found", HttpStatus.NOT_FOUND),
     AUCTION_HISTORY_NOT_FOUND(404, "Auction history not found", HttpStatus.NOT_FOUND),
+    AUCTION_HISTORY_LIST_IS_EMPTY(400, "Auction history list is empty", HttpStatus.NOT_FOUND),
     ;
 
     ErrorCode(int code, String message, HttpStatusCode statusCode) {

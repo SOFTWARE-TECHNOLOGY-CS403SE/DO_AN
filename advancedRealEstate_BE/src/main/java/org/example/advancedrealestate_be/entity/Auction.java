@@ -34,6 +34,7 @@ public class Auction {
     @Column(columnDefinition = "text")
     private String description;
     private boolean isActive;
+    private String identity_key;
 
     @CreationTimestamp
     private LocalDateTime createdOn;

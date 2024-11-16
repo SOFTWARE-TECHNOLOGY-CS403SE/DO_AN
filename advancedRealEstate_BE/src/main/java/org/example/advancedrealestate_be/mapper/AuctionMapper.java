@@ -28,6 +28,7 @@ public class AuctionMapper {
                 .building(auction.getBuilding())
                 .map(map)
                 .userCreatedBy(user)
+                .identity_key(auction.getIdentity_key())
                 .build();
         if (auctionResponse != null) {
 

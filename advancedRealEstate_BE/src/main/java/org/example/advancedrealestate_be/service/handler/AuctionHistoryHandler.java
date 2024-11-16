@@ -21,9 +21,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 
 @Service
@@ -35,6 +35,7 @@ public class AuctionHistoryHandler implements AuctionHistoryService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final AuctionRepository auctionRepository;
+    private final Lock lock = new ReentrantLock();
     @Autowired
     public AuctionHistoryHandler(AuctionDetailRepository auctionDetailRepository, AuctionHistoryRepository auctionHistoryRepository, UserRepository userRepository, ModelMapper modelMapper, AuctionRepository auctionRepository) {
         this.auctionDetailRepository = auctionDetailRepository;
@@ -97,6 +98,10 @@ public class AuctionHistoryHandler implements AuctionHistoryService {
     @Override
     public JSONObject handleBidMessages(List<AuctionHistoryRequest> dtos) {
         JSONObject responseObject = new JSONObject();
+        if(dtos.isEmpty()){
+            System.err.println("dtos null");
+            throw new AppException(ErrorCode.AUCTION_HISTORY_LIST_IS_EMPTY);
+        }
         List<AuctionHistory> auctionHistoryList = dtos.stream().map(dto -> {
             Auction auction = auctionRepository.findById(dto.getAuction_id()).orElse(null);
             User client = userRepository.findById(dto.getClient_id()).orElse(null);
@@ -106,31 +111,90 @@ public class AuctionHistoryHandler implements AuctionHistoryService {
             auctionHistory.setMessageBidId(dto.getMessageBidId());
             auctionHistory.setAuction(auction);
             auctionHistory.setClient(client);
+            assert auction != null;
+            auctionHistory.setIdentity_key(auction.getIdentity_key());
             return auctionHistory;
         }).collect(Collectors.toList());
+        if(auctionHistoryList.isEmpty()){
+            return responseObject;
+        }
         List<AuctionHistory>  auctionHistoryListNew = auctionHistoryRepository.saveAll(auctionHistoryList);
-        handleClientWin(auctionHistoryListNew);
+
+        List<AuctionHistory> allHistories = auctionHistoryRepository.findAll();
+        Set<String> uniqueHistoryKeys = new HashSet<>();
+        List<AuctionHistory> duplicateHistories = new ArrayList<>();
+        for (AuctionHistory history : allHistories) {
+            String key = history.getBidAmount() + "-" + history.getIdentity_key();
+            if (!uniqueHistoryKeys.add(key)) {
+                duplicateHistories.add(history);
+            }
+        }
+        auctionHistoryRepository.deleteAll(duplicateHistories);
+        handleClientWin(allHistories);
         responseObject.put("message", "Create auction histories successfully");
+
         return responseObject;
     }
 
     public void handleClientWin(List<AuctionHistory> auctionHistoryListNew) {
-        Optional<AuctionHistory> maxBidAmount = auctionHistoryListNew.stream()
-        .max(Comparator.comparing(AuctionHistory::getBidAmount));
-        AuctionHistory clientWin= maxBidAmount.orElse(null);
-        AuctionDetail auctionDetail = new AuctionDetail();
-        assert clientWin != null;
-        String auctionName = clientWin.getAuction() == null ? null : clientWin.getAuction().getName();
-        Auction auction = clientWin.getAuction() == null ? null : clientWin.getAuction();
-        User client = clientWin.getClient() == null ? null : clientWin.getClient();
-        auctionDetail.setStatus("notConfirmed");
-        auctionDetail.setNote("Bạn là người chiến thắng trong phiên đấu giá: " + auctionName);
-        auctionDetail.setResult("win");
-        auctionDetail.setBidAmount(clientWin.getBidAmount());
-        auctionDetail.setAuction(auction);
-        auctionDetail.setClient(client);
-        AuctionDetail auctionDetailNew = auctionDetailRepository.save(auctionDetail);
+        double maxBidAmount = auctionHistoryListNew.stream()
+        .mapToDouble(AuctionHistory::getBidAmount).max().orElse(0);
+        if(maxBidAmount <= 0){
+            System.err.println("maxBidAmount = 0");
+            throw new AppException(ErrorCode.AUCTION_HISTORY_LIST_IS_EMPTY);
+        }
+        Map<User, AuctionHistory> highestBidByUser = auctionHistoryListNew.stream()
+        .collect(Collectors.toMap(AuctionHistory::getClient,
+            auctionHistory -> auctionHistory,
+            (existing, replacement) -> existing.getBidAmount() >=
+            replacement.getBidAmount() ? existing : replacement
+        ));
+        List<AuctionDetail> auctionDetailListNew = highestBidByUser.values().stream().map(auctionHistory -> {
+            AuctionDetail auctionDetail = new AuctionDetail();
+            String auctionName = auctionHistory.getAuction() != null ? auctionHistory.getAuction().getName() : null;
+            Auction auction = auctionHistory.getAuction();
+            User client = auctionHistory.getClient();
 
+            auctionDetail.setAuction(auction);
+            auctionDetail.setClient(client);
+            auctionDetail.setStatus("notConfirmed");
+            auctionDetail.setBidAmount(auctionHistory.getBidAmount());
+            auctionDetail.setIdentity_key(auction.getIdentity_key());
+            if (auctionHistory.getBidAmount() == maxBidAmount) {
+                auctionDetail.setResult("win");
+                auctionDetail.setNote("Xin chúc mừng bạn là người chiến thắng trong phiên " + auctionName);
+            }
+            if(auctionHistory.getBidAmount() < maxBidAmount){
+                auctionDetail.setResult("lose");
+                auctionDetail.setNote("Bạn đã thua cuộc trong phiên " + auctionName + ", chúc bạn may mắn lần sau!");
+            }
+            return auctionDetail;
+        }).collect(Collectors.toList());
+        auctionDetailRepository.saveAll(auctionDetailListNew);
+        List<AuctionDetail> allAuctionDetail = auctionDetailRepository.findAll();
+        Set<String> uniqueDetailKeys = new HashSet<>();
+        List<AuctionDetail> duplicateDetails = new ArrayList<>();
+        for (AuctionDetail detail : allAuctionDetail) {
+            String key = detail.getBidAmount() + "-" + detail.getIdentity_key();
+            if (!uniqueDetailKeys.add(key)) {
+                duplicateDetails.add(detail);
+            }
+        }
+        auctionDetailRepository.deleteAll(duplicateDetails);
+    }
+
+    @Override
+    public void handleBidMessage(AuctionHistoryRequest dto) {
+        AuctionHistory auctionHistory = new AuctionHistory();
+        Auction auction = auctionRepository.findById(dto.getAuction_id()).orElse(null);
+        User client = userRepository.findById(dto.getClient_id()).orElse(null);
+        auctionHistory.setMessageBidId(dto.getMessageBidId());
+        auctionHistory.setBidTime(dto.getBidTime());
+        auctionHistory.setBidAmount(dto.getBidAmount());
+        auctionHistory.setAuction(auction);
+        auctionHistory.setClient(client);
+//        auctionHistory.setIdentity_history_key();
+        AuctionHistory auctionHistoryNew = auctionHistoryRepository.save(auctionHistory);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
@@ -179,4 +243,5 @@ public class AuctionHistoryHandler implements AuctionHistoryService {
         responseObject.put("message", "Delete successfully!");
         return responseObject;
     }
+
 }

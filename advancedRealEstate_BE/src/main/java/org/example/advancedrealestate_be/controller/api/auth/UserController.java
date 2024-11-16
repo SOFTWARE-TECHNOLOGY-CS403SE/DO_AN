@@ -121,13 +121,13 @@ public class UserController {
                 .build();
     }
 
-//    @PatchMapping("/{userId}")
-//    ApiResponse<UserResponse> updateUserInfo(@PathVariable String userId, @RequestBody UpdateInfoUserRequest request) {
-//
-//        return ApiResponse.<UserResponse>builder()
-//                .result(userService.updateUserInfo(userId, request))
-//                .build();
-//    }
+    @PatchMapping("/{userId}")
+    ApiResponse<UserResponse> updateUserInfo(@PathVariable String userId, @RequestBody UpdateInfoUserRequest request) {
+
+        return ApiResponse.<UserResponse>builder()
+                .result(userService.updateUserInfo(userId, request))
+                .build();
+    }
 
 //    @PatchMapping("role-user/{userId}")
 //    ApiResponse<UserRoleResponse> updateRoleUser(@PathVariable String userId, @RequestBody UserRoleRequest request) {

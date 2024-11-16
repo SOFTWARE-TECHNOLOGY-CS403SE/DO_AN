@@ -29,6 +29,7 @@ public class AuctionDetail {
     private String result;
     private double bidAmount;
     private String status;
+    private String identity_key;
 
     @ManyToOne
     @JoinColumn(name = "auction_id", nullable = true)

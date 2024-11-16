@@ -40,6 +40,7 @@ public class User {
     String user_name;
     String password;
     Integer status;
+    String gender;
     String email;
     String phone_number;
     String birthday;

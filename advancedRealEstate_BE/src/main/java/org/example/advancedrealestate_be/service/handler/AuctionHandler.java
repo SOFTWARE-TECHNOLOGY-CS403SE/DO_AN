@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -67,9 +68,10 @@ public class AuctionHandler implements AuctionService {
                 auction.getEnd_time(),
                 auction.getDescription(),
                 auction.isActive(),
-                auction.getBuilding(),
-                auction.getBuilding().getMap(),
-                auction.getUserCreatedBy()
+                auction.getBuilding() != null ? auction.getBuilding() : null,
+                auction.getBuilding() != null ? auction.getBuilding().getMap() : null,
+                auction.getUserCreatedBy(),
+                auction.getIdentity_key()
         );
     }
 
@@ -77,10 +79,31 @@ public class AuctionHandler implements AuctionService {
     @Override
     public JSONObject create(AuctionRequest auctionRequest) {
         JSONObject responseObject = new JSONObject();
-        Auction auction = modelMapper.map(auctionRequest, Auction.class);
+        Auction auction = new Auction();
+        User userCreatedBy = userRepository.findById(auctionRequest.getUserCreatedBy()).orElse(null);
+//        Building building = buildingRepository.findById(auctionRequest.getBuilding_id()).orElse(null);
+        auction.setName(auctionRequest.getName());
+        auction.setStart_date(auctionRequest.getStart_date());
+        auction.setStart_time(auctionRequest.getStart_time());
+        auction.setEnd_time(auctionRequest.getEnd_time());
+        auction.setDescription(auctionRequest.getDescription());
+        auction.setActive(false);
+        auction.setUserCreatedBy(userCreatedBy);
+        auction.setIdentity_key(generateAuctionIdKey(10));
+//        auction.setBuilding(building);
         Auction auctionNew = auctionRepository.save(auction);
         responseObject.put("data", auctionNew);
         return responseObject;
+    }
+
+    public static String generateAuctionIdKey(int length) {
+        Random random = new Random();
+        StringBuilder key = new StringBuilder();
+
+        for (int i = 0; i < length; i++) {
+            key.append(random.nextInt(length));
+        }
+        return "Aid"+key;
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','STAFF')")

@@ -177,16 +177,11 @@ public class UserServiceHandler implements UserService {
         user.setLast_name(request.getLast_name());
         user.setPhone_number(request.getPhone_number());
         user.setAddress(request.getAddress());
-        user.setBirthday(LocalDate.parse(request.getBirthday()).toString());
-        System.out.println("id: "+userId);
-        System.out.println("First Name: " + request.getFirst_name());
-        System.out.println("Last Name: " + request.getLast_name());
-        System.out.println("Phone Number: " + request.getPhone_number());
-        System.out.println("Address: " + request.getAddress());
-        System.out.println("Birthday: " + request.getBirthday());
+        user.setBirthday(request.getBirthday());
+        user.setGender(request.getGender());
 
         User userUpdate = userRepository.save(user);
-        System.out.println("update phone: "+userUpdate.getPhone_number());
+        System.out.println("update phone: "+userUpdate.getGender());
         return new UserResponse(
             userUpdate.getId(),
             userUpdate.getFirst_name(),
@@ -196,6 +191,7 @@ public class UserServiceHandler implements UserService {
             userUpdate.getEmail(),
             userUpdate.getPhone_number(),
             userUpdate.getBirthday(),
+            userUpdate.getGender(),
             userUpdate.getAvatar(),
             userUpdate.getAddress(),
             null

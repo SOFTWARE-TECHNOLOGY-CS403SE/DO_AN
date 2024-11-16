@@ -77,6 +77,7 @@ public class UserMapperImpl implements UserMapper {
                 .first_name(user.getFirst_name())
                 .last_name(user.getLast_name())
                 .birthday(user.getBirthday())
+                .gender(user.getGender())
                 .phone_number(user.getPhone_number())
                 .status(user.getStatus())
                 .address(user.getAddress())
