@@ -2,7 +2,9 @@ package org.example.advancedrealestate_be.service;
 
 import org.example.advancedrealestate_be.dto.request.ContractRequest;
 import org.example.advancedrealestate_be.dto.response.ContractResponse;
+import org.example.advancedrealestate_be.dto.response.CustomerResponse;
 import org.example.advancedrealestate_be.entity.Contracts;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 
@@ -20,7 +22,7 @@ public interface ContractService {
    ContractResponse getContractById(String id);
     ContractResponse updateContract(String id, ContractRequest request);
     void deleteContract(String id);
-    List<ContractResponse> getAllContracts();
+    Page<ContractResponse> getAllContracts(int page, int size);
     void deleteContracts(List<String> ids);
 
 }

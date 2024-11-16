@@ -2,6 +2,7 @@ package org.example.advancedrealestate_be.service.handler;
 
 import org.example.advancedrealestate_be.dto.request.ContractRequest;
 import org.example.advancedrealestate_be.dto.response.ContractResponse;
+import org.example.advancedrealestate_be.dto.response.CustomerResponse;
 import org.example.advancedrealestate_be.entity.Building;
 import org.example.advancedrealestate_be.entity.Contracts;
 import org.example.advancedrealestate_be.entity.Customers;
@@ -13,6 +14,10 @@ import org.example.advancedrealestate_be.repository.CustomersRepository;
 import org.example.advancedrealestate_be.repository.UserRepository;
 import org.example.advancedrealestate_be.service.ContractService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -178,11 +183,19 @@ public class ContractHandler implements ContractService {
     }
 
     // List all contracts
+
+
     @Override
-    public List<ContractResponse> getAllContracts() {
-        return contractRepository.findAll().stream()
+    public Page<ContractResponse> getAllContracts(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<Contracts> contractsPage = contractRepository.findAll(pageable);
+
+        List<ContractResponse> contractResponses= contractsPage.getContent().stream()
                 .map(contractMapper::toResponse)
                 .collect(Collectors.toList());
+
+        // Tạo đối tượng Page<TypeBuildingResponse> từ List<TypeBuildingResponse> và thông tin phân trang của Page<User>
+        return new PageImpl<>(contractResponses, pageable, contractsPage.getTotalElements());
     }
 
     // Add this method to your ContractHandler class

@@ -3,15 +3,22 @@ package org.example.advancedrealestate_be.service.handler;
 
 import org.example.advancedrealestate_be.dto.request.CustomerRequest;
 import org.example.advancedrealestate_be.dto.response.CustomerResponse;
+import org.example.advancedrealestate_be.dto.response.TypeBuildingResponse;
 import org.example.advancedrealestate_be.entity.Customers;
+import org.example.advancedrealestate_be.entity.TypeBuilding;
 import org.example.advancedrealestate_be.mapper.CustomerMapper;
 import org.example.advancedrealestate_be.repository.CustomersRepository;
 import org.example.advancedrealestate_be.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class CustomerHandler implements CustomerService {
@@ -68,19 +75,32 @@ public class CustomerHandler implements CustomerService {
     }
 
     @Override
+    public Page<CustomerResponse> getAllCustomers(int page, int size) {
+        Pageable pageable = PageRequest.of(page - 1, size);
+        Page<Customers> customersPage = customersRepository.findAll(pageable);
+
+        List<CustomerResponse> customerResponses= customersPage.getContent().stream()
+                .map(customerMapper::toResponse)
+                .collect(Collectors.toList());
+
+        // Tạo đối tượng Page<TypeBuildingResponse> từ List<TypeBuildingResponse> và thông tin phân trang của Page<User>
+        return new PageImpl<>(customerResponses, pageable, customersPage.getTotalElements());
+    }
+
+    @Override
     public CustomerResponse getCustomerById(String id) {
         Customers customer = customersRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Customer not found"));
         return customerMapper.toResponse(customer);
     }
 
-    @Override
-    public List<CustomerResponse> getAllCustomers() {
-        List<Customers> customers = customersRepository.findAll();
-        return customers.stream()
-                .map(customerMapper::toResponse)
-                .toList();
-    }
+//    @Override
+//    public List<CustomerResponse> getAllCustomers() {
+//        List<Customers> customers = customersRepository.findAll();
+//        return customers.stream()
+//                .map(customerMapper::toResponse)
+//                .toList();
+//    }
 
     @Override
     public void deleteCustomers(List<String> ids) {
