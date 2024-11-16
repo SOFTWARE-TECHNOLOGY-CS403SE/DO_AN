@@ -20,7 +20,7 @@ public class TypeBuilding {
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
-    private String name;
+    private String type_name;
     private Double price;
     private int status;
 }

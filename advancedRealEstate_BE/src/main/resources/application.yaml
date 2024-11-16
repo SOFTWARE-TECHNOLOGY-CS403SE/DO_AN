@@ -20,7 +20,6 @@
 #  valid-duration: 3600 # in second
 #  refreshable-duration: 36000 # in seconds
 
-
 server:
   port: 9090
   host: localhost
@@ -28,14 +27,19 @@ spring:
   main:
     allow-bean-definition-overriding: true
   datasource:
-    url: ${DBMS_CONNECTION:jdbc:mysql://localhost:3307/identity_service4}
+    url: ${DBMS_CONNECTION:jdbc:mysql://localhost:3306/identity_service}
     driverClassName: "com.mysql.cj.jdbc.Driver"
-    password: ${DBMS_PASSWORD:28082001}
+    password: ${DBMS_PASSWORD:}
     username: ${DBMS_USERNAME:root}
   jpa:
     hibernate:
       ddl-auto: update
     show-sql: true
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 10MB
+      max-request-size: 20MB
 
 jwt:
   signerKey: "1TjXchw5FloESb63Kc+DFhTARvpWL4jUGCwfGWxuG5SIf/1y/LgJxHnMqaF6A/ij"

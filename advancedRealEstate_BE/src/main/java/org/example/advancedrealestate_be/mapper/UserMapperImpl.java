@@ -48,7 +48,7 @@ public class UserMapperImpl implements UserMapper {
         user.setBirthday(request.getBirthday());
         user.setAddress(request.getAddress());
         user.setPhone_number(request.getPhone_number());
-//        user.setAvatar(request.getAvatar());
+        user.setAvatar(String.valueOf(request.getAvatar()));
         user.setStatus(request.getStatus());
         // Add additional fields as necessary
         return user;

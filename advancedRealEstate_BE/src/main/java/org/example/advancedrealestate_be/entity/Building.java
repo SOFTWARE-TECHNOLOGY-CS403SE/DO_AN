@@ -29,23 +29,14 @@ public class Building {
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
 
-    private String name;
-    private String structure;
-    private String area;
-
-    @Column(name = "type")
-    private String type;
-    private String status;
-
     @Column(columnDefinition = "text")
     private String description;
+    @Column(name = "image", columnDefinition = "TEXT")
+    private String image;
+    private String name;
+    private int status;
     private int number_of_basement;
-    private double price;
-
-    @Lob
-    @Column(columnDefinition = "LONGBLOB")
-    private byte[] image;
-    private String file_type;
+    private String acreage;
 
     @CreationTimestamp
     private LocalDateTime createdOn;
@@ -58,13 +49,18 @@ public class Building {
     @JsonBackReference("building-maps")
     private Map map;
 
+    @ManyToOne
+    @JoinColumn(name = "type_building_id", nullable = true)
+    @JsonBackReference("building-type")
+    private TypeBuilding typeBuilding;
+
     @OneToMany(mappedBy = "building", cascade = CascadeType.REMOVE)
     @JsonManagedReference("building-auctions")
     private List<Auction> auctions = new ArrayList<>();
     
-//    @OneToMany(mappedBy = "building", cascade = CascadeType.ALL)
-//    @JsonManagedReference("device-buidings")
-//    private List<Devices> devices;
+    @OneToMany(mappedBy = "building", cascade = CascadeType.ALL)
+    @JsonManagedReference("device-buidings")
+    private List<Devices> devices;
 
     @OneToMany(mappedBy = "building", cascade = CascadeType.ALL)
     private List<Contracts> contracts;
