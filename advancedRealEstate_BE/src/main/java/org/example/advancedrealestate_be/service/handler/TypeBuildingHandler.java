@@ -47,10 +47,10 @@ public class TypeBuildingHandler implements TypeBuildingService {
         try {
             typeBuildingRepository.save(typeBuilding);
         } catch (DataIntegrityViolationException exception) {
-            throw new AppException(ErrorCode.USER_EXISTED);
+            throw new RuntimeException(exception);
         }
 
-        return "Đã thêm mới thành công!";
+        return  "Create Successfully !";
     }
 
     @Override
@@ -64,7 +64,7 @@ public class TypeBuildingHandler implements TypeBuildingService {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
 
-        return "Đã cập nhật thành công!";
+        return "Update successfully !";
     }
 
     @Override
@@ -75,7 +75,7 @@ public class TypeBuildingHandler implements TypeBuildingService {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
 
-        return "Đã xóa thành công!";
+        return "Delete successfully !";
     }
 
     @Override

@@ -28,7 +28,7 @@ public class contractDetailApiController {
     public ResponseEntity<JSONObject> createContractDetail(@RequestBody ContractDetailRequest request) {
         JSONObject data=new JSONObject();
         try{
-            ContractDetailResponse response=contractDetailService.createContractDetail(request);
+            String response=contractDetailService.createContractDetail(request);
             data.put("data",response);
             data.put("message","Contract details created successfully !");
             return new ResponseEntity<>(data, HttpStatus.OK);
@@ -75,7 +75,7 @@ public class contractDetailApiController {
             @RequestBody ContractDetailRequest request) {
         JSONObject data=new JSONObject();
         try{
-            ContractDetailResponse response=contractDetailService.updateContractDetail(id,request);
+            String response=contractDetailService.updateContractDetail(id,request);
             data.put("data",response);
             data.put("message","Contract was updated successfully !");
             return new ResponseEntity<>(data,HttpStatus.OK);

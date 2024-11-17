@@ -7,6 +7,8 @@ import org.example.advancedrealestate_be.entity.Building;
 import org.example.advancedrealestate_be.entity.Contracts;
 import org.example.advancedrealestate_be.entity.Customers;
 import org.example.advancedrealestate_be.entity.User;
+import org.example.advancedrealestate_be.exception.AppException;
+import org.example.advancedrealestate_be.exception.ErrorCode;
 import org.example.advancedrealestate_be.mapper.ContractMapper;
 import org.example.advancedrealestate_be.repository.BuildingRepository;
 import org.example.advancedrealestate_be.repository.ContractReposetory;
@@ -14,6 +16,7 @@ import org.example.advancedrealestate_be.repository.CustomersRepository;
 import org.example.advancedrealestate_be.repository.UserRepository;
 import org.example.advancedrealestate_be.service.ContractService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -122,36 +125,39 @@ public class ContractHandler implements ContractService {
     // Create a new contract
 
     @Override
-    public ContractResponse createContract(ContractRequest request) {
+    public String createContract(ContractRequest request) {
 //        Contracts contract = contractMapper.toEntity(request);
 //        contract = contractRepository.save(contract);
 //        return contractMapper.toResponse(contract);
         // Map to entity
-        Contracts contract = contractMapper.toEntity(request);
+
+        try{
+            Contracts contract = contractMapper.toEntity(request);
+
+            Customers customer = customersRepository.findById(request.getCustomerId())
+                    .orElseThrow(() -> new RuntimeException("Customer not found"));
+            contract.setCustomer(customer);
+
+            Building building = buildingRepository.findById(request.getBuildingId())
+                    .orElseThrow(() -> new RuntimeException("Building not found"));
+            contract.setBuilding(building);
+
+            User user = userRepository.findById(request.getUserId())
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+            contract.setUser(user);
+
+            // Set the entities to the contract
+            contract.setCustomer(customer);
+            contract.setBuilding(building);
+            contract.setUser(user);
+            contract=contractRepository.save(contract);
+            // Save the contract entity
+            return "Create contract successfully !";
+        }catch (DataIntegrityViolationException exception){
+            throw new RuntimeException(exception);
+        }
 
 
-
-
-
-        Customers customer = customersRepository.findById(request.getCustomerId())
-                .orElseThrow(() -> new RuntimeException("Customer not found"));
-        contract.setCustomer(customer);
-
-        Building building = buildingRepository.findById(request.getBuildingId())
-                .orElseThrow(() -> new RuntimeException("Building not found"));
-        contract.setBuilding(building);
-
-        User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        contract.setUser(user);
-
-        // Set the entities to the contract
-        contract.setCustomer(customer);
-        contract.setBuilding(building);
-        contract.setUser(user);
-        contract=contractRepository.save(contract);
-        // Save the contract entity
-        return contractMapper.toResponse(contract);
     }
 
     // Get a contract by ID
@@ -164,22 +170,34 @@ public class ContractHandler implements ContractService {
 
     // Update a contract by ID
     @Override
-    public ContractResponse updateContract(String id, ContractRequest request) {
-        Contracts contract = contractRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Contract not found"));
+    public String updateContract(String id, ContractRequest request) {
+        try{
+            Contracts contract = contractRepository.findById(id)
+                    .orElseThrow(() -> new RuntimeException("Contract not found"));
 
-        contract.setContract_name(request.getContractName());
+            contract.setContract_name(request.getContractName());
 //        contract.setContract_details(request.getContractDetails());
-        // Set other fields based on the request data as necessary
+            // Set other fields based on the request data as necessary
 
-        contract = contractRepository.save(contract);
-        return contractMapper.toResponse(contract);
+            contractRepository.save(contract);
+            return "Update contract successfully !";
+        }catch(DataIntegrityViolationException exception){
+            throw new RuntimeException(exception);
+        }
+
+
     }
 
     // Delete a contract by ID
     @Override
-    public void deleteContract(String id) {
-        contractRepository.deleteById(id);
+    public String deleteContract(String id) {
+        Contracts contracts = contractRepository.findById(id).orElseThrow(()-> new RuntimeException("Can not find this id"));
+        try{
+            contractRepository.delete(contracts);
+            return "Delete contract successfully !";
+        }catch (DataIntegrityViolationException exception){
+            throw new RuntimeException(exception);
+        }
     }
 
     // List all contracts
@@ -200,12 +218,18 @@ public class ContractHandler implements ContractService {
 
     // Add this method to your ContractHandler class
     @Override
-    public void deleteContracts(List<String> ids) {
-        List<Contracts> contractsToDelete = contractRepository.findAllById(ids);
-        if (contractsToDelete.size() != ids.size()) {
-            throw new RuntimeException("Some contracts not found");
+    public String deleteContracts(List<String> ids) {
+        try{
+            List<Contracts> contractsToDelete = contractRepository.findAllById(ids);
+            if (contractsToDelete.size() != ids.size()) {
+                throw new RuntimeException("Some contracts not found");
+            }
+            contractRepository.deleteAll(contractsToDelete);
+            return "Delete all contract successfully !";
+        }catch (DataIntegrityViolationException exception){
+            throw new RuntimeException(exception);
         }
-        contractRepository.deleteAll(contractsToDelete);
+
     }
 
 
