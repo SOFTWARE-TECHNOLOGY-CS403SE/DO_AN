@@ -239,7 +239,8 @@ public class AuctionHistoryHandler implements AuctionHistoryService {
     @Override
     public JSONObject deleteById(String id) {
         JSONObject responseObject = new JSONObject();
-        auctionHistoryRepository.deleteById(id);
+        AuctionHistory auctionHistory = auctionHistoryRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.AUCTION_HISTORY_NOT_FOUND));
+        auctionHistoryRepository.delete(auctionHistory);
         responseObject.put("message", "Delete successfully!");
         return responseObject;
     }

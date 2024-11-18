@@ -8,6 +8,8 @@ import org.example.advancedrealestate_be.dto.response.TypeBuildingResponse;
 import org.example.advancedrealestate_be.entity.Building;
 import org.example.advancedrealestate_be.entity.Map;
 import org.example.advancedrealestate_be.entity.TypeBuilding;
+import org.example.advancedrealestate_be.exception.AppException;
+import org.example.advancedrealestate_be.exception.ErrorCode;
 import org.example.advancedrealestate_be.repository.BuildingRepository;
 import org.example.advancedrealestate_be.repository.MapRepository;
 import org.example.advancedrealestate_be.repository.TypeBuildingRepository;
@@ -55,14 +57,14 @@ public class BuidingMapperIml implements BuildingMapper{
         // Ánh xạ id_map sang entity Map
         if (request.getId_map() != null) {
             Map mapEntity = mapRepository.findById(request.getId_map())
-                    .orElseThrow(() -> new RuntimeException("Map ID không tồn tại"));
+                    .orElseThrow(() -> new AppException(ErrorCode.MAP_NOT_FOUND));
             building.setMap(mapEntity);
         }
 
         // Ánh xạ id_type_building sang entity TypeBuilding
         if (request.getId_type_building() != null) {
             TypeBuilding typeBuildingEntity = typeBuildingRepository.findById(request.getId_type_building())
-                    .orElseThrow(() -> new RuntimeException("TypeBuilding ID không tồn tại"));
+                    .orElseThrow(() -> new AppException(ErrorCode.TYPE_BUILDING_NOT_FOUND));
             building.setTypeBuilding(typeBuildingEntity);
         }
 
@@ -99,14 +101,14 @@ public class BuidingMapperIml implements BuildingMapper{
         // Ánh xạ id_map sang entity Map
         if (request.getId_map() != null) {
             Map mapEntity = mapRepository.findById(request.getId_map())
-                    .orElseThrow(() -> new RuntimeException("Map ID không tồn tại"));
+                    .orElseThrow(() -> new AppException(ErrorCode.MAP_NOT_FOUND));
             building.setMap(mapEntity);
         }
 
         // Ánh xạ id_type_building sang entity TypeBuilding
         if (request.getId_type_building() != null) {
             TypeBuilding typeBuildingEntity = typeBuildingRepository.findById(request.getId_type_building())
-                    .orElseThrow(() -> new RuntimeException("TypeBuilding ID không tồn tại"));
+                    .orElseThrow(() -> new AppException(ErrorCode.TYPE_BUILDING_NOT_FOUND));
             building.setTypeBuilding(typeBuildingEntity);
         }
     }
