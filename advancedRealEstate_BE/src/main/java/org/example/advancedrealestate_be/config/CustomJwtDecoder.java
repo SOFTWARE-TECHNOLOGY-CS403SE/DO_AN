@@ -21,11 +21,9 @@ import com.nimbusds.jose.JOSEException;
 
 @Component
 public class CustomJwtDecoder implements JwtDecoder {
+   
     @Value("${jwt.signerKey}")
-    //sua cung 1 
-    //private String signerKey;
-    // private String signerKey;
-    // private String signerKey;
+
     private String signerKey;
 
     @Autowired
