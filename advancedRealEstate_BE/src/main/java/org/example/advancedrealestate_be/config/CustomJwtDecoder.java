@@ -25,6 +25,9 @@ public class CustomJwtDecoder implements JwtDecoder {
     //alo co do kondhoaaymowis đi rửa chén vào nói đi giờ nghe ok
     //private String signerKey;
     @Value("${jwt.signerKey}")
+     //ví dụ cả tôi với ông sửa cùng dòng code này
+    //alo co do kondhoaaymowis đi rửa chén vào nói đi giờ nghe ok
+    //private String signerKey;
     private String signerKey;
 
     @Autowired
