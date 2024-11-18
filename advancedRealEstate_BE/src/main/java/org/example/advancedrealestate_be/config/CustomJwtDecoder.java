@@ -21,6 +21,9 @@ import com.nimbusds.jose.JOSEException;
 
 @Component
 public class CustomJwtDecoder implements JwtDecoder {
+    //ví dụ cả tôi với ông sửa cùng dòng code này
+    //alo co do kondhoaaymowis đi rửa chén vào nói đi giờ nghe ok
+    //private String signerKey;
     @Value("${jwt.signerKey}")
     private String signerKey;
 
