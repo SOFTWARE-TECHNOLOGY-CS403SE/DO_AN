@@ -8,10 +8,10 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface CategoryService {
-    String createCategory(CategoryCreateRequest request);
-    String updateCategory(String categoryId, CategoryUpdateRequest request);
-    String deleteCategory(String categoryId);
-    Page<CategoryResponse> getCategory(int page, int size);
-    String deleteCategorys(DeleteCategoryRequest request);
-    List<CategoryResponse> getAllCategories();
+    String  createCategory(CategoryCreateRequest request);
+    String  updateCategory(String categoryId, CategoryUpdateRequest request);
+    String  deleteCategory(String categoryId);
+    Page<CategoryResponse>  getCategory(int page, int size);
+    String  deleteCategorys(DeleteCategoryRequest request);
+    List<CategoryResponse>  getAllCategories();
 }

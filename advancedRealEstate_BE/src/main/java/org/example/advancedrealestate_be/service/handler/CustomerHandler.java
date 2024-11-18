@@ -10,6 +10,7 @@ import org.example.advancedrealestate_be.mapper.CustomerMapper;
 import org.example.advancedrealestate_be.repository.CustomersRepository;
 import org.example.advancedrealestate_be.service.CustomerService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -19,6 +20,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.zip.DataFormatException;
 
 @Service
 public class CustomerHandler implements CustomerService {
@@ -32,45 +34,58 @@ public class CustomerHandler implements CustomerService {
 
 
     @Override
-    public CustomerResponse deleteCustomer(String id) {
+    public String deleteCustomer(String id) {
         Customers customer = customersRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Customer not found"));
-        return customerMapper.toResponse(customer);
+        try{
+            customersRepository.delete(customer);
+            return "Delete successfully !";
+        }catch(DataIntegrityViolationException exception){
+            throw new RuntimeException(exception);
+        }
+
     }
 
     @Override
-    public CustomerResponse updateCustomer(String id, CustomerRequest request) {
-        Customers customers=customersRepository.findById(id)
-                .orElseThrow(() ->new RuntimeException("Customer not found !"));
-        if(!passwordEncoder.matches(request.getPassword(), customers.getPassword())){
-            throw new RuntimeException("Incorrect password !");
-        }
+    public String updateCustomer(String id, CustomerRequest request) {
+        try{
+            Customers customers=customersRepository.findById(id)
+                    .orElseThrow(() ->new RuntimeException("Customer not found !"));
+            if(!passwordEncoder.matches(request.getPassword(), customers.getPassword())){
+                throw new RuntimeException("Incorrect password !");
+            }
 
-        if(!request.getEmail().equals(customers.getEmail())){
-            throw new RuntimeException("Incorect email !");
-        }
+            if(!request.getEmail().equals(customers.getEmail())){
+                throw new RuntimeException("Incorect email !");
+            }
 
-        customerMapper.updateEntityFromRequest(request,customers);
-        if(request.getNewPassword() !=null && !request.getNewPassword().isEmpty()){
-               customers.setPassword(passwordEncoder.encode(request.getNewPassword()));
+            customerMapper.updateEntityFromRequest(request,customers);
+            if(request.getNewPassword() !=null && !request.getNewPassword().isEmpty()){
+                customers.setPassword(passwordEncoder.encode(request.getNewPassword()));
+            }
+            customersRepository.save(customers);
+            return "Update customer successfully !";
+        }catch(DataIntegrityViolationException exception){
+            throw new RuntimeException("Can not update !");
         }
-        Customers updateCustomer=customersRepository.save(customers);
-        return customerMapper.toResponse(updateCustomer);
-
 
     }
 
 
 
     @Override
-    public CustomerResponse createCustomer(CustomerRequest request) {
-      if(customersRepository.findByUser_nameOrEmail(request.getUser_name(),request.getEmail()).isPresent()){
-          throw new RuntimeException("User already exists");
-      }
-      String encodedPassword =passwordEncoder.encode(request.getPassword());
-      Customers newCustomer=customerMapper.toEntity(request,encodedPassword);
-      Customers savedCustomer=customersRepository.save(newCustomer);
-      return customerMapper.toResponse(savedCustomer);
+    public String createCustomer(CustomerRequest request) {
+        try{
+            if(customersRepository.findByUser_nameOrEmail(request.getUser_name(),request.getEmail()).isPresent()){
+                throw new RuntimeException("User already exists");
+            }
+            String encodedPassword =passwordEncoder.encode(request.getPassword());
+            Customers newCustomer=customerMapper.toEntity(request,encodedPassword);
+            customersRepository.save(newCustomer);
+            return "create customer successfully !";
+        }catch(DataIntegrityViolationException exception){
+            throw new RuntimeException(exception);
+        }
 
     }
 
@@ -103,11 +118,16 @@ public class CustomerHandler implements CustomerService {
 //    }
 
     @Override
-    public void deleteCustomers(List<String> ids) {
+    public String deleteCustomers(List<String> ids) {
         List<Customers> customers = customersRepository.findAllById(ids);
-        if (customers.size() != ids.size()) {
-            throw new RuntimeException("Some customers not found");
+        try{
+            if (customers.size() != ids.size()) {
+                throw new RuntimeException("Some customers not found");
+            }
+            customersRepository.deleteAll(customers);
+            return "Can't delete customer successfully !";
+        }catch (DataIntegrityViolationException exception){
+            throw new RuntimeException(exception);
         }
-        customersRepository.deleteAll(customers);
     }
 }

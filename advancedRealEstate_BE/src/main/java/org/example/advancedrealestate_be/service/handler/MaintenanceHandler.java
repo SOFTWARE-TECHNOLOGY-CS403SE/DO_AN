@@ -3,10 +3,13 @@ package org.example.advancedrealestate_be.service.handler;
 import org.example.advancedrealestate_be.dto.request.MaintenanceRequest;
 import org.example.advancedrealestate_be.dto.response.MaintenanceResponse;
 import org.example.advancedrealestate_be.entity.Maintenances;
+import org.example.advancedrealestate_be.exception.AppException;
+import org.example.advancedrealestate_be.exception.ErrorCode;
 import org.example.advancedrealestate_be.mapper.MaintenanceMapper;
 import org.example.advancedrealestate_be.repository.MaintenanceRepository;
 import org.example.advancedrealestate_be.service.MaintenanceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -27,10 +30,14 @@ public class MaintenanceHandler implements MaintenanceService {
 
 
     @Override
-    public MaintenanceResponse createMaintenance(MaintenanceRequest request) {
+    public String createMaintenance(MaintenanceRequest request) {
         Maintenances maintenances=maintenanceMapper.toEntity(request);
-        maintenances=maintenanceRepository.save(maintenances);
-        return maintenanceMapper.toResponse(maintenances);
+        try{
+            maintenanceRepository.save(maintenances);
+        }catch (DataIntegrityViolationException exception){
+            throw new AppException(ErrorCode.USER_EXISTED);
+        }
+        return  "Create Successfully !";
     }
 
     @Override
@@ -43,22 +50,32 @@ public class MaintenanceHandler implements MaintenanceService {
     }
 
     @Override
-    public MaintenanceResponse updateMaintenance(String id, MaintenanceRequest request) {
-          Maintenances maintenances=maintenanceRepository.findById(id)
-                  .orElseThrow(()->new RuntimeException("Maintenance not found !"));
-          maintenances.setMaintenance_date(request.getMaintenance_date());
-          maintenances.setDescription(request.getDescription());
-          maintenances.setCost(request.getCost());
-         maintenanceRepository.save(maintenances);
-         return maintenanceMapper.toResponse(maintenances);
+    public String updateMaintenance(String id, MaintenanceRequest request) {
+        try{
+            Maintenances maintenances=maintenanceRepository.findById(id)
+                    .orElseThrow(()->new RuntimeException("Maintenance not found !"));
+            maintenances.setMaintenance_date(request.getMaintenance_date());
+            maintenances.setDescription(request.getDescription());
+            maintenances.setCost(request.getCost());
+            maintenanceRepository.save(maintenances);
+        }catch(DataIntegrityViolationException exception){
+            throw new RuntimeException(exception);
+        }
+
+         return "Update successfully !";
 
 
     }
 
     @Override
-    public MaintenanceResponse deleteMaintenance(String id) {
-               maintenanceRepository.deleteById(id);
-        return null;
+    public String deleteMaintenance(String id) {
+        try{
+            maintenanceRepository.deleteById(id);
+        }catch(DataIntegrityViolationException exception){
+            throw new RuntimeException(exception);
+        }
+
+        return "Delete successfully !";
     }
 
 //    @Override
@@ -98,12 +115,18 @@ public class MaintenanceHandler implements MaintenanceService {
     }
 
     @Override
-    public void deleteAllMaintenance(List<String> ids) {
-        List<Maintenances> maintenanceResponses=maintenanceRepository.findAllById(ids);
-        if(maintenanceResponses.size()!=ids.size()){
-            throw new RuntimeException("Some maintenance form not found !");
+    public String deleteAllMaintenance(List<String> ids) {
+        try{
+            List<Maintenances> maintenanceResponses=maintenanceRepository.findAllById(ids);
+            if(maintenanceResponses.size()!=ids.size()){
+                throw new RuntimeException("Some maintenance form not found !");
+            }
+            maintenanceRepository.deleteAll(maintenanceResponses);
+
+        }catch (DataIntegrityViolationException exception){
+            throw new RuntimeException(exception);
         }
-        maintenanceRepository.deleteAll(maintenanceResponses);
+        return "Delete all successfully !";
     }
 
 

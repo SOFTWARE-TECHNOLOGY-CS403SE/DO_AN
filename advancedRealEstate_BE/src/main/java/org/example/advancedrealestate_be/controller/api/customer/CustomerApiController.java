@@ -94,7 +94,7 @@ public class CustomerApiController {
     public ResponseEntity<JSONObject> createCustomer(@RequestBody CustomerRequest request) {
         JSONObject data=new JSONObject();
         try{
-            CustomerResponse response=customerService.createCustomer(request);
+            String response=customerService.createCustomer(request);
             data.put("data",response);
             data.put("message","Customer was created successfully");
             return new ResponseEntity<>(data,HttpStatus.OK);
@@ -108,7 +108,7 @@ public class CustomerApiController {
     public ResponseEntity<JSONObject> updateCustomer(@PathVariable String id, @RequestBody CustomerRequest request) {
         JSONObject data=new JSONObject();
         try{
-            CustomerResponse response=customerService.updateCustomer(id,request);
+            String response=customerService.updateCustomer(id,request);
             data.put("data",response);
             data.put("message","Customer was updated successfully");
                     return new ResponseEntity<>(data,HttpStatus.OK);

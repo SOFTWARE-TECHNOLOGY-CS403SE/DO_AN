@@ -8,16 +8,16 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface CustomerService {
-     CustomerResponse deleteCustomer(String id);
+     String deleteCustomer(String id);
 
 
-     CustomerResponse updateCustomer(String id, CustomerRequest request);
+     String updateCustomer(String id, CustomerRequest request);
 
-     CustomerResponse createCustomer(CustomerRequest request);
+     String createCustomer(CustomerRequest request);
 
      Page<CustomerResponse> getAllCustomers(int page, int size);
 
      CustomerResponse getCustomerById(String id);
 //     List<CustomerResponse> getAllCustomers();
-     void deleteCustomers(List<String> ids);
+     String deleteCustomers(List<String> ids);
 }
