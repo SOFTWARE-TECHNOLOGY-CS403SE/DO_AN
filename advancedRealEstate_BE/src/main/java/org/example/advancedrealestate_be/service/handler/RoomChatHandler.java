@@ -1,42 +1,36 @@
 package org.example.advancedrealestate_be.service.handler;
 
-import net.minidev.json.JSONObject;
 import org.example.advancedrealestate_be.dto.RoomChatDto;
 import org.example.advancedrealestate_be.entity.RoomChat;
 import org.example.advancedrealestate_be.exception.AppException;
 import org.example.advancedrealestate_be.exception.ErrorCode;
 import org.example.advancedrealestate_be.mapper.RoomChatMapper;
-import org.example.advancedrealestate_be.repository.RoleRepository;
 import org.example.advancedrealestate_be.repository.RoomChatRepository;
 import org.example.advancedrealestate_be.service.RoomChatService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
 public class RoomChatHandler implements RoomChatService {
-    RoleRepository roleRepository;
     RoomChatRepository roomChatRepository;
     private final ModelMapper modelMapper;
 
 
     @Autowired
-    public RoomChatHandler(RoleRepository roleRepository, RoomChatRepository roomChatRepository, ModelMapper modelMapper) {
-        this.roleRepository = roleRepository;
+    public RoomChatHandler(RoomChatRepository roomChatRepository, ModelMapper modelMapper) {
         this.roomChatRepository = roomChatRepository;
         this.modelMapper = modelMapper;
     }
 
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
+//    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     @Override
     public RoomChatDto create(RoomChatDto roomChatDtoRequest) {
         RoomChat roomChat = new RoomChat();
@@ -73,7 +67,7 @@ public class RoomChatHandler implements RoomChatService {
         );
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
+//    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     @Override
     public RoomChatDto updateById(String id, RoomChatDto roomChatDtoRequest) {
         RoomChat roomChat = roomChatRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
@@ -89,7 +83,7 @@ public class RoomChatHandler implements RoomChatService {
         );
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
+//    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     @Override
     public RoomChatDto deleteById(String id) {
         RoomChat roomChat = roomChatRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));
@@ -103,7 +97,7 @@ public class RoomChatHandler implements RoomChatService {
         );
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
+//    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     @Override
     public RoomChatDto uploadImage(String id, MultipartFile imageFile) throws IOException {
         RoomChat roomChat = roomChatRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ROOM_NOT_FOUND));

@@ -6,16 +6,25 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.Set;
 
-@Getter
-@Setter
-@Builder
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
+@Builder
 @Entity
+@Table(name = "permissions") // Đổi tên bảng thành số nhiều
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Permission {
-    @Id
-    String name;
 
-    String description;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Integer id;
+
+    String permissionName;
+    String link;
+
+    // Nhiều Permission có thể liên kết với nhiều Role
+    @ManyToMany(mappedBy = "permissions")
+    private Set<Role> roles; // Quan hệ nhiều nhiều với Role
 }
+
+

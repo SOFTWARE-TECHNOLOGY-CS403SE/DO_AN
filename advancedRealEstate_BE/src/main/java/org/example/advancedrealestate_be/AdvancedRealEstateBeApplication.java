@@ -14,9 +14,13 @@ import java.util.Base64;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @OpenAPIDefinition(info = @Info(title = "Advanced Real Estate API", version = "2.0.2", description = "Advanced Real Estate API"))
+//@ComponentScan(basePackages = {
+//        "org.example.advancedrealestate_be.mapper" // Exclude mapper
+//})
 public class AdvancedRealEstateBeApplication {
 
     public static void main(String[] args) {

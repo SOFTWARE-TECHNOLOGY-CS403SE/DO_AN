@@ -7,13 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.advancedrealestate_be.constant.PredefinedRole;
 import org.example.advancedrealestate_be.dto.request.*;
 import org.example.advancedrealestate_be.dto.response.UserResponse;
-import org.example.advancedrealestate_be.dto.response.UserRoleResponse;
-import org.example.advancedrealestate_be.entity.Role;
 import org.example.advancedrealestate_be.entity.User;
 import org.example.advancedrealestate_be.exception.AppException;
 import org.example.advancedrealestate_be.exception.ErrorCode;
 import org.example.advancedrealestate_be.mapper.UserMapper;
-import org.example.advancedrealestate_be.repository.RoleRepository;
 import org.example.advancedrealestate_be.repository.UserRepository;
 import org.example.advancedrealestate_be.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +20,12 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import java.time.LocalDate;
+
 import java.util.*;
 import java.util.stream.Collectors;
 import java.io.File;
@@ -42,17 +38,19 @@ import java.nio.file.Paths;
 public class UserServiceHandler implements UserService {
     @Autowired
     UserRepository userRepository;
-    @Autowired
-    RoleRepository roleRepository;
+//    @Autowired
+//    RoleRepository roleRepository;
     @Autowired
     UserMapper userMapper;
+
     @Autowired
     PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserServiceHandler(UserRepository userRepository, RoleRepository roleRepository, UserMapper userMapper, PasswordEncoder passwordEncoder) {
+//    public UserServiceHandler(UserRepository userRepository, RoleRepository roleRepository, UserMapper userMapper, PasswordEncoder passwordEncoder) {
+    public UserServiceHandler(UserRepository userRepository,  UserMapper userMapper, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
+//        this.roleRepository = roleRepository;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
     }
@@ -91,10 +89,10 @@ public class UserServiceHandler implements UserService {
             }
         }
 
-        HashSet<Role> roles = new HashSet<>();
-        roleRepository.findById(PredefinedRole.USER_ROLE).ifPresent(roles::add);
-
-        user.setRoles(roles);
+//        HashSet<Role> roles = new HashSet<>();
+//        roleRepository.findById(PredefinedRole.USER_ROLE).ifPresent(roles::add);
+//
+//        user.setRoles(roles);
 
         try {
             userRepository.save(user);
@@ -194,46 +192,47 @@ public class UserServiceHandler implements UserService {
             userUpdate.getGender(),
             userUpdate.getAvatar(),
             userUpdate.getAddress(),
-            null
+        null,
+    null
         );
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
-    @Override
-    public UserRoleResponse updateRoleUser(String userId, UserRoleRequest request) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-        Set<UserRoleResponse.Role> oldRoles = user.getRoles().stream()
-                .map(role -> new UserRoleResponse.Role(role.getName(),
-                        role.getPermissions().stream()
-                                .map(permission -> new UserRoleResponse.Permission(permission.getName()))
-                                .collect(Collectors.toList())))
-                .collect(Collectors.toSet());
-        List<UserRoleRequest.Role> roleNames = request.getRoles();
-        Set<Role> roles = roleNames.stream()
-            .map(roleReq -> roleRepository.findById(roleReq.getName())
-              .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND)))
-            .collect(Collectors.toSet());
-        user.setRoles(roles);
-        User userRoleUpdate = userRepository.save(user);
+//    @PreAuthorize("hasRole('ADMIN')")
+//    @Override
+//    public UserRoleResponse updateRoleUser(String userId, UserRoleRequest request) {
+//        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
+//        Set<UserRoleResponse.Role> oldRoles = user.getRoles().stream()
+//                .map(role -> new UserRoleResponse.Role(role.getName(),
+//                        role.getPermissions().stream()
+//                                .map(permission -> new UserRoleResponse.Permission(permission.getName()))
+//                                .collect(Collectors.toList())))
+//                .collect(Collectors.toSet());
+//        List<UserRoleRequest.Role> roleNames = request.getRoles();
+//        Set<Role> roles = roleNames.stream()
+//            .map(roleReq -> roleRepository.findById(roleReq.getName())
+//              .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND)))
+//            .collect(Collectors.toSet());
+//        user.setRoles(roles);
+//        User userRoleUpdate = userRepository.save(user);
+//
+//        Set<UserRoleResponse.Role> responseRoles = roles.stream()
+//            .map(role -> new UserRoleResponse.Role(role.getName(),
+//                 role.getPermissions().stream()
+//            .map(permission -> new UserRoleResponse.Permission(permission.getName()))
+//        .collect(Collectors.toList())))
+//        .collect(Collectors.toSet());
+//
+//        return new UserRoleResponse(userRoleUpdate.getId(), userRoleUpdate.getEmail(), responseRoles, oldRoles);
+//    }
 
-        Set<UserRoleResponse.Role> responseRoles = roles.stream()
-            .map(role -> new UserRoleResponse.Role(role.getName(),
-                 role.getPermissions().stream()
-            .map(permission -> new UserRoleResponse.Permission(permission.getName()))
-        .collect(Collectors.toList())))
-        .collect(Collectors.toSet());
 
-        return new UserRoleResponse(userRoleUpdate.getId(), userRoleUpdate.getEmail(), responseRoles, oldRoles);
-    }
-
-
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public void deleteUser(String userId) {
         userRepository.deleteById(userId);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public List<UserResponse> getAllUsers() {
         log.info("In method get Users");
@@ -255,7 +254,7 @@ public class UserServiceHandler implements UserService {
     }
 
 //ko cần đâu, tạo q
-    @PreAuthorize("hasRole('ADMIN')")
+//    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public UserResponse getUser(String id) {
         return userMapper.toUserResponse(userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));

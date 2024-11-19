@@ -55,7 +55,7 @@ public class AuctionHistoryHandler implements AuctionHistoryService {
                 .collect(Collectors.toList());
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','STAFF','USER')")
+//    @PreAuthorize("hasAnyRole('ADMIN','STAFF','USER')")
     @Override
     public AuctionHistoryResponse findById(String id) {
         AuctionHistory auctionHistory = auctionHistoryRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.AUCTION_HISTORY_NOT_FOUND));
@@ -70,7 +70,7 @@ public class AuctionHistoryHandler implements AuctionHistoryService {
         );
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','STAFF','USER')")
+//    @PreAuthorize("hasAnyRole('ADMIN','STAFF','USER')")
     @Override
     public JSONObject create(AuctionHistoryRequest dto) {
         JSONObject responseObject = new JSONObject();
@@ -94,7 +94,7 @@ public class AuctionHistoryHandler implements AuctionHistoryService {
         AuctionHistory auctionDetailNew = auctionHistoryRepository.save(auctionHistory);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','STAFF','USER')")
+//    @PreAuthorize("hasAnyRole('ADMIN','STAFF','USER')")
     @Override
     public JSONObject handleBidMessages(List<AuctionHistoryRequest> dtos) {
         JSONObject responseObject = new JSONObject();
@@ -197,7 +197,7 @@ public class AuctionHistoryHandler implements AuctionHistoryService {
         AuctionHistory auctionHistoryNew = auctionHistoryRepository.save(auctionHistory);
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
+//    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
     @Override
     public JSONObject saveAll(List<AuctionHistoryRequest> dtos) {
         JSONObject responseObject = new JSONObject();
@@ -217,7 +217,7 @@ public class AuctionHistoryHandler implements AuctionHistoryService {
         return responseObject;
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
+//    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
     @Override
     public JSONObject updateById(String id, AuctionHistoryRequest dto) {
         JSONObject responseObject = new JSONObject();
@@ -235,7 +235,7 @@ public class AuctionHistoryHandler implements AuctionHistoryService {
         return responseObject;
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
+//    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
     @Override
     public JSONObject deleteById(String id) {
         JSONObject responseObject = new JSONObject();

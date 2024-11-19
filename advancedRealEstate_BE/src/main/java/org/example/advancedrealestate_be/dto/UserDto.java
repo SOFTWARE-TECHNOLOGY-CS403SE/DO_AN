@@ -1,7 +1,6 @@
 package org.example.advancedrealestate_be.dto;
 
 import lombok.*;
-import org.example.advancedrealestate_be.entity.Role;
 
 import java.util.List;
 
@@ -20,7 +19,7 @@ public class UserDto {
     private String email;
 
     private String roleCode;
-    private List<RoleDto> roles; // Add this line to store user roles
+//    private List<RoleDto> roles; // Add this line to store user roles
 
     // You can add other fields as needed (e.g., additional information)
 }
