@@ -21,6 +21,7 @@ import com.nimbusds.jose.JOSEException;
 
 @Component
 public class CustomJwtDecoder implements JwtDecoder {
+   
     @Value("${jwt.signerKey}")
     private String signerKey;
 

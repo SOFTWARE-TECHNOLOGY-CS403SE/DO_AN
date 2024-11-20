@@ -18,11 +18,11 @@ public interface ContractService {
 //
 //    ContractResponse mapContractToResponse(Contracts contract);
 //    public void mapRequestToContract(ContractRequest request, Contracts contract);
-   ContractResponse createContract(ContractRequest request);
-   ContractResponse getContractById(String id);
-    ContractResponse updateContract(String id, ContractRequest request);
-    void deleteContract(String id);
+    String createContract(ContractRequest request);
+    ContractResponse getContractById(String id);
+    String updateContract(String id, ContractRequest request);
+    String deleteContract(String id);
     Page<ContractResponse> getAllContracts(int page, int size);
-    void deleteContracts(List<String> ids);
+    String deleteContracts(List<String> ids);
 
 }

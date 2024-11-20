@@ -7,11 +7,11 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface MaintenanceService {
-    MaintenanceResponse createMaintenance(MaintenanceRequest request);
+    String createMaintenance(MaintenanceRequest request);
     MaintenanceResponse getMaintenanceById(String id);
-    MaintenanceResponse updateMaintenance(String id, MaintenanceRequest request);
-    MaintenanceResponse deleteMaintenance(String id);
+    String updateMaintenance(String id, MaintenanceRequest request);
+    String deleteMaintenance(String id);
     Page<MaintenanceResponse> getAllMaintenance(int page, int size);
 
-    void deleteAllMaintenance(List<String> ids);
+    String deleteAllMaintenance(List<String> ids);
 }
