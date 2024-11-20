@@ -65,6 +65,7 @@ public class ApplicationInitConfig {
                 // Lưu Permission vào database
                 List<Permission> savedPermissions = permissionRepository.saveAll(permissions);
 
+
 //                // Dùng vòng lặp `for` để liên kết từng Permission với Role
 //                for (Permission permission : savedPermissions) {
 //                    role.getPermissions().add(permission); // Thêm Permission vào Role

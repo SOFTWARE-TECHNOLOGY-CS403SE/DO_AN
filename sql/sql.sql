@@ -1,6 +1,6 @@
 create database advancedRealEstate_db;
 drop database advancedRealEstate_db;
-create database identity_service;
+rolescreate database identity_service;
 drop database identity_service;
 SHOW CREATE TABLE room_chats;
 
@@ -155,6 +155,19 @@ select * from user;
 delete from user where id = '0fe2a31b-5b23-41f8-80ed-37ec58e2aa1c';
 delete from user where id = '0fe2a31b-5b23-41f8-80ed-37ec58e2aa1c';
 
+INSERT INTO role_permissions (role_id, permission_id) VALUES
+('89b6b956-8e41-4d22-944b-d49da6515b84', 1),
+('89b6b956-8e41-4d22-944b-d49da6515b84', 2),
+('89b6b956-8e41-4d22-944b-d49da6515b84', 3),
+('89b6b956-8e41-4d22-944b-d49da6515b84', 4),
+('89b6b956-8e41-4d22-944b-d49da6515b84', 5),
+('89b6b956-8e41-4d22-944b-d49da6515b84', 6),
+('89b6b956-8e41-4d22-944b-d49da6515b84', 7),
+('89b6b956-8e41-4d22-944b-d49da6515b84', 8),
+('89b6b956-8e41-4d22-944b-d49da6515b84', 9),
+('89b6b956-8e41-4d22-944b-d49da6515b84', 10),
+('89b6b956-8e41-4d22-944b-d49da6515b84', 11),
+('89b6b956-8e41-4d22-944b-d49da6515b84', 12);
 
 
 
