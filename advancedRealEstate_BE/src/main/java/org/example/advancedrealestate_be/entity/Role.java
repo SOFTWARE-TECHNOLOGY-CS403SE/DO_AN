@@ -1,24 +1,36 @@
 package org.example.advancedrealestate_be.entity;
-
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Set;
 
-@Getter
-@Setter
+@Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
+@Table(name = "roles") // Đổi tên bảng thành số nhiều
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Role {
     @Id
-    String name;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    String id;
 
-    String description;
+    String role_name;
+    Integer status;
 
-    @ManyToMany
-    Set<Permission> permissions;
+    // Một Role có nhiều User
+    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<User> users;
+
+    // Một Role có nhiều Permission
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(
+            name = "role_permissions",
+            joinColumns = @JoinColumn(name = "role_id"),
+            inverseJoinColumns = @JoinColumn(name = "permission_id")
+    )
+    private Set<Permission> permissions; // Mối quan hệ nhiều nhiều với Permission
 }
+

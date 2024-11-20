@@ -27,9 +27,6 @@ import java.util.Set;
 @Getter
 @Setter
 public class User {
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.UUID)
-
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")
@@ -48,12 +45,11 @@ public class User {
     String avatar;
     String address;
     String hash_reset;
-    String id_role;
 
-    @ManyToMany
-    Set<Role> roles;
+    @ManyToOne
+    @JoinColumn(name = "role_id", referencedColumnName = "id")
+    private Role role; // Một User chỉ liên kết với một Role
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Contracts> contracts;
-
 }

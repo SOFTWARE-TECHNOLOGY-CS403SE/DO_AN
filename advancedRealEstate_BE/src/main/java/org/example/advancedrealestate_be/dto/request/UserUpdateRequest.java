@@ -2,17 +2,10 @@ package org.example.advancedrealestate_be.dto.request;
 
 
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import org.example.advancedrealestate_be.validator.DobConstraint;
-
 import java.time.LocalDate;
-import java.util.List;
-import java.util.Set;
-
-import org.example.advancedrealestate_be.repository.RoleRepository;
 
 @Data
 @Builder

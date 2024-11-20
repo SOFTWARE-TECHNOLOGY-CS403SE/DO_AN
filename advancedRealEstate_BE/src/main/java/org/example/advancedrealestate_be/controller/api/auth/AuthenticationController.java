@@ -32,11 +32,26 @@ public class AuthenticationController {
 
     @PostMapping("/token")
     ApiResponse<Object> authenticate(@RequestBody AuthenticationRequest request) {
+        // Lấy thông tin người dùng dựa trên email
+        var userInfo = userService.getMyInfo(request.getEmail());
+
+        // Kiểm tra nếu `status == 0`, trả về thông báo lỗi
+        if (userInfo.getStatus() == 0) {
+            return ApiResponse.builder()
+                    .message("Bạn không có quyền truy cập")
+                    .code(404)
+                    .build();
+        }
+
+        // Nếu `status != 0`, tiếp tục xử lý đăng nhập
         var result = authenticationService.authenticate(request);
         JSONObject responseObject = new JSONObject();
-        responseObject.put("infoUser", userService.getMyInfo(request.getEmail()));
+        responseObject.put("infoUser", userInfo);
         responseObject.put("login", result);
-        return ApiResponse.builder().result(responseObject).build();
+
+        return ApiResponse.builder()
+                .result(responseObject)
+                .build();
     }
 
     @PostMapping("/introspect")

@@ -16,8 +16,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -30,50 +30,54 @@ public class ApplicationInitConfig {
     @Autowired
     PasswordEncoder passwordEncoder;
 
-//    static  String ADMIN_USER_NAME = "admin@gmail.com";
-    static  String ADMIN_PASSWORD = "admin";
+    static String ADMIN_PASSWORD = "admin";
     static String ADMIN_EMAIL="admin@gmail.com";
-    @Autowired
-    PermissionRepository permissionRepository;
+    static Integer ADMIN_STATUS = 1;
 
     @Bean
     @ConditionalOnProperty(
             prefix = "spring",
             value = "datasource.driverClassName",
             havingValue = "com.mysql.cj.jdbc.Driver")
-    ApplicationRunner applicationRunner(UserRepository userRepository, RoleRepository roleRepository) {
+    ApplicationRunner applicationRunner(UserRepository userRepository, RoleRepository roleRepository, PermissionRepository permissionRepository) {
         log.info("Initializing application.....");
         return args -> {
             if (userRepository.findByEmail(ADMIN_EMAIL).isEmpty()) {
-                roleRepository.save(Role.builder()
-                        .name(PredefinedRole.USER_ROLE)
-                        .description("User role")
-                        .build());
+                Role role =  roleRepository.save(Role.builder()
+                                            .role_name("ADMIN")
+                                            .status(1)
+                                            .build());
                 List<Permission> permissions = Arrays.asList(
-                        new Permission("APPROVE_DATA", "Approve data"),
-                        new Permission("CREATE_DATA", "Create data"),
-                        new Permission("UPDATE_DATA", "Update data"),
-                        new Permission("DELETE_DATA", "Delete data")
+                        Permission.builder().permissionName("View admin").link("/admin").build(),
+                        Permission.builder().permissionName("View Chat").link("/admin/chat").build(),
+                        Permission.builder().permissionName("View Room Chat").link("/admin/room-chat").build(),
+                        Permission.builder().permissionName("View User").link("/admin/user").build(),
+                        Permission.builder().permissionName("View Building").link("/admin/building").build(),
+                        Permission.builder().permissionName("View Service").link("/admin/service").build(),
+                        Permission.builder().permissionName("View Map").link("/admin/map").build(),
+                        Permission.builder().permissionName("View Action").link("/admin/auction").build(),
+                        Permission.builder().permissionName("View Type Building").link("/admin/type-building").build(),
+                        Permission.builder().permissionName("View Device").link("/admin/device").build(),
+                        Permission.builder().permissionName("View Category").link("/admin/category").build(),
+                        Permission.builder().permissionName("View Contract Detail").link("/admin/contract-detail").build()
                 );
 
-                permissionRepository.saveAll(permissions);
-                Set<Permission> listPermission = new HashSet<>(permissionRepository.findAll());
+                // Lưu Permission vào database
+                List<Permission> savedPermissions = permissionRepository.saveAll(permissions);
 
-                Role adminRole = roleRepository.save(Role.builder()
+//                // Dùng vòng lặp `for` để liên kết từng Permission với Role
+//                for (Permission permission : savedPermissions) {
+//                    role.getPermissions().add(permission); // Thêm Permission vào Role
+//                }
 
-                        .name(PredefinedRole.ADMIN_ROLE)
-                        .description("Admin role")
-                        .permissions(new HashSet<>(listPermission))
-                        .build());
-
-                var roles = new HashSet<Role>();
-                roles.add(adminRole);
+//                // Lưu Role lại để cập nhật bảng `role_permissions`
+//                roleRepository.save(role);
 
                 User user = User.builder()
-//                        .isVerify(true)
                         .email(ADMIN_EMAIL)
                         .password(passwordEncoder.encode(ADMIN_PASSWORD))
-                        .roles(roles)
+                        .status(ADMIN_STATUS)
+                        .role(role)
                         .build();
 
                 userRepository.save(user);

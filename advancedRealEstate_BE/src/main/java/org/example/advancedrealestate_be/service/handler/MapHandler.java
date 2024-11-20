@@ -64,7 +64,7 @@ public class MapHandler implements MapService {
 
     @Transactional
     @Override
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
+//    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     public MapDto create(MapDto MapDto) {
         Map map = modelMapper.map(MapDto, Map.class);
         Map mapNew = mapRepository.save(map);
@@ -81,7 +81,7 @@ public class MapHandler implements MapService {
         );
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
+//    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     @Override
     public MapDto updateById(MapDto mapDto, String id) {
         Optional<Map> map = mapRepository.findById(id);
@@ -108,7 +108,7 @@ public class MapHandler implements MapService {
                 mapUpdate.getWard());
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
+//    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     @Override
     public MapDto deleteById(String id) {
         Optional<Map> map = mapRepository.findById(id);

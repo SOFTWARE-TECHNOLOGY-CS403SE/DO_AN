@@ -1,4 +1,4 @@
-package org.example.advancedrealestate_be.dto.response;
+package org.example.advancedrealestate_be.dto.request;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -8,8 +8,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class PermissionResponse {
-    Integer id;
+public class PermissionCreationRequest {
     String link;
     String permission_name;
 }

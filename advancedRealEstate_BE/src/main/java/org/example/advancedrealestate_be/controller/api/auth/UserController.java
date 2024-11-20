@@ -7,19 +7,12 @@ import jakarta.validation.Valid;
 
 import org.example.advancedrealestate_be.dto.request.*;
 import org.example.advancedrealestate_be.dto.response.ApiResponse;
-import org.example.advancedrealestate_be.dto.response.UserRoleResponse;
-import org.example.advancedrealestate_be.entity.User;
 import org.example.advancedrealestate_be.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
-import org.springframework.http.HttpHeaders;
 import org.example.advancedrealestate_be.dto.response.UserResponse;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import lombok.AccessLevel;

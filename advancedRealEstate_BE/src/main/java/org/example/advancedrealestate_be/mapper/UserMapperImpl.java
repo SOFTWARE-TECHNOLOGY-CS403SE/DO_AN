@@ -1,28 +1,35 @@
 package org.example.advancedrealestate_be.mapper;
 
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.example.advancedrealestate_be.dto.request.UserCreationRequest;
 import org.example.advancedrealestate_be.dto.request.UserUpdatePasswordRequest;
 import org.example.advancedrealestate_be.dto.request.UserUpdateRequest;
-import org.example.advancedrealestate_be.dto.response.PermissionResponse;
+//import org.example.advancedrealestate_be.dto.response.PermissionResponse;
+import org.example.advancedrealestate_be.dto.response.MapResponse;
 import org.example.advancedrealestate_be.dto.response.RoleResponse;
 import org.example.advancedrealestate_be.dto.response.UserResponse;
+//import org.example.advancedrealestate_be.entity.Permission;
+//import org.example.advancedrealestate_be.entity.Role;
 import org.example.advancedrealestate_be.entity.Permission;
 import org.example.advancedrealestate_be.entity.Role;
 import org.example.advancedrealestate_be.entity.User;
-import org.example.advancedrealestate_be.repository.RoleRepository;
+//import org.example.advancedrealestate_be.repository.RoleRepository;
+import org.example.advancedrealestate_be.repository.PermissionRepository;
+import org.example.advancedrealestate_be.service.PermissionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 @Component
 public class UserMapperImpl implements UserMapper {
-    @Autowired
-    RoleRepository roleRepository;
+//    @Autowired
+//    RoleRepository roleRepository;
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -32,6 +39,10 @@ public class UserMapperImpl implements UserMapper {
     private String serverHost;
 
     private String url = "http://";
+    @Autowired
+    private PermissionService permissionService;
+    @Autowired
+    private PermissionRepository permissionRepository;
 
     @Override
     public User toUser(UserCreationRequest request) {
@@ -60,16 +71,35 @@ public class UserMapperImpl implements UserMapper {
             return null; // Return null if the user is null
         }
 
-        Set<RoleResponse> roleResponses = user.getRoles().stream()
-                .map(this::toRoleResponse) // Convert Role to RoleResponse
-                .collect(Collectors.toSet());
-        String avatarUrl = null;
+        // Map Role to RoleResponse
+        RoleResponse roleResponse = null;
+        List<String> permissions = new ArrayList<>();
 
-        if (user.getAvatar() != null) {
-            String fileName = Paths.get(user.getAvatar()).getFileName().toString();
-            avatarUrl = url + serverHost +":"+ serverPort +"/api/user/" + fileName;
+        if (user.getRole() == null) {
+            System.out.println("Role is null for user: " + user.getUser_name());
+            roleResponse = RoleResponse.builder()
+                    .role_name("Unknown Role")
+                    .build();
+        } else {
+            Role role = user.getRole();
+            System.out.println("Role Name: " + role.getRole_name());
+
+            // Map Role to RoleResponse
+            roleResponse = RoleResponse.builder()
+                    .role_name(role.getRole_name())
+                    .build();
+
+            permissions = permissionRepository.findPermissionsByRoleLink(user.getRole().getId());
         }
 
+        // Map Avatar to URL
+        String avatarUrl = null;
+        if (user.getAvatar() != null) {
+            String fileName = Paths.get(user.getAvatar()).getFileName().toString();
+            avatarUrl = url + serverHost + ":" + serverPort + "/api/user/" + fileName;
+        }
+
+        // Build UserResponse
         return UserResponse.builder()
                 .id(user.getId())
                 .user_name(user.getUser_name())
@@ -82,36 +112,37 @@ public class UserMapperImpl implements UserMapper {
                 .status(user.getStatus())
                 .address(user.getAddress())
                 .avatar(avatarUrl)
-                .roles(roleResponses) // Use the converted roles
+                .roles(roleResponse != null ? roleResponse.getRole_name() : "Unknown Role")
+                .permission(permissions)
                 .build();
     }
 
-    public PermissionResponse toPermissionResponse(Permission permission) {
-        if (permission == null) {
-            return null;
-        }
+//    public PermissionResponse toPermissionResponse(Permission permission) {
+//        if (permission == null) {
+//            return null;
+//        }
+//
+//        return PermissionResponse.builder()
+//                .name(permission.getName())
+//                .description(permission.getDescription())
+//                .build();
+//    }
 
-        return PermissionResponse.builder()
-                .name(permission.getName())
-                .description(permission.getDescription())
-                .build();
-    }
-
-    private RoleResponse toRoleResponse(Role role) {
-        if (role == null) {
-            return null; // Return null if the role is null
-        }
-
-        Set<PermissionResponse> permissionResponses = role.getPermissions().stream()
-                .map(this::toPermissionResponse)
-                .collect(Collectors.toSet());
-
-        return RoleResponse.builder()
-                .name(role.getName())
-                .description(role.getDescription())
-                .permissions(permissionResponses) // Assuming permissions is properly mapped
-                .build();
-    }
+//    private RoleResponse toRoleResponse(Role role) {
+//        if (role == null) {
+//            return null; // Return null if the role is null
+//        }
+//
+//        Set<PermissionResponse> permissionResponses = role.getPermissions().stream()
+//                .map(this::toPermissionResponse)
+//                .collect(Collectors.toSet());
+//
+//        return RoleResponse.builder()
+//                .name(role.getName())
+//                .description(role.getDescription())
+//                .permissions(permissionResponses) // Assuming permissions is properly mapped
+//                .build();
+//    }
     @Override
     public void updateUser(User user, UserUpdateRequest request) {
         // Check if user or request is null to prevent NullPointerException

@@ -71,7 +71,7 @@ public class AuctionHandler implements AuctionService {
         );
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
+//    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
     @Override
     public JSONObject create(AuctionRequest auctionRequest) {
         JSONObject responseObject = new JSONObject();
@@ -102,7 +102,7 @@ public class AuctionHandler implements AuctionService {
         return "Aid"+key;
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
+//    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
     @Override
     public JSONObject updateById(String id, AuctionRequest auctionRequest) {
         JSONObject responseObject = new JSONObject();
@@ -123,7 +123,7 @@ public class AuctionHandler implements AuctionService {
         return responseObject;
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
+//    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
     @Override
     public JSONObject deleteById(String id) {
         JSONObject responseObject = new JSONObject();
