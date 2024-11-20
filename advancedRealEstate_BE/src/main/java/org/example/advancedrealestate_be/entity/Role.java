@@ -6,9 +6,9 @@ import lombok.experimental.FieldDefaults;
 import java.util.Set;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Entity
 @Table(name = "roles") // Đổi tên bảng thành số nhiều
 @FieldDefaults(level = AccessLevel.PRIVATE)

@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.HashSet;
 import java.util.Set;
 
 @Data
@@ -23,8 +24,8 @@ public class Permission {
     String link;
 
     // Nhiều Permission có thể liên kết với nhiều Role
-    @ManyToMany(mappedBy = "permissions")
-    private Set<Role> roles; // Quan hệ nhiều nhiều với Role
+    @ManyToMany(mappedBy = "permissions", fetch = FetchType.EAGER)
+    private Set<Role> roles = new HashSet<>();
 }
 
 

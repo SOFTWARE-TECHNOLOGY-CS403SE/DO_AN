@@ -11,6 +11,7 @@ import net.minidev.json.JSONObject;
 import org.example.advancedrealestate_be.dto.request.*;
 import org.example.advancedrealestate_be.dto.response.CategoryResponse;
 import org.example.advancedrealestate_be.service.CategoryService;
+import org.example.advancedrealestate_be.service.handler.CheckRuleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -31,40 +32,48 @@ import java.util.Map;
 public class CategoryApiController {
     @Autowired
     CategoryService categoryService;
+    @Autowired
+    CheckRuleService checkRuleService;
+
     @GetMapping
     public ResponseEntity<JSONObject> getAllCategory(
             @RequestParam(required = false) Integer page,
             @RequestParam(required = false) Integer size) {
-
         JSONObject data = new JSONObject();
         Map<String, Object> response = new HashMap<>();
 
-        try {
-            if (page == null || size == null) {
-                List<CategoryResponse> categories = categoryService.getAllCategories();
+        if(checkRuleService.checkRule(11L)) {
+            try {
+                if (page == null || size == null) {
+                    List<CategoryResponse> categories = categoryService.getAllCategories();
 
-                response.put("data", categories);
-            } else {
-                Page<CategoryResponse> pageResult = categoryService.getCategory(page, size);
+                    response.put("data", categories);
+                } else {
+                    Page<CategoryResponse> pageResult = categoryService.getCategory(page, size);
 
-                Map<String, Object> pagination = new HashMap<>();
-                pagination.put("total", pageResult.getTotalElements());
-                pagination.put("per_page", pageResult.getSize());
-                pagination.put("current_page", pageResult.getNumber() + 1);
-                pagination.put("last_page", pageResult.getTotalPages());
-                pagination.put("from", (pageResult.getNumber() * pageResult.getSize()) + 1);
-                pagination.put("to", Math.min((pageResult.getNumber() + 1) * pageResult.getSize(), pageResult.getTotalElements()));
+                    Map<String, Object> pagination = new HashMap<>();
+                    pagination.put("total", pageResult.getTotalElements());
+                    pagination.put("per_page", pageResult.getSize());
+                    pagination.put("current_page", pageResult.getNumber() + 1);
+                    pagination.put("last_page", pageResult.getTotalPages());
+                    pagination.put("from", (pageResult.getNumber() * pageResult.getSize()) + 1);
+                    pagination.put("to", Math.min((pageResult.getNumber() + 1) * pageResult.getSize(), pageResult.getTotalElements()));
 
-                response.put("pagination", pagination);
-                response.put("data", pageResult.getContent());
+                    response.put("pagination", pagination);
+                    response.put("data", pageResult.getContent());
+                }
+
+                data.put("status", 200);
+                data.put("data", response);
+                return new ResponseEntity<>(data, HttpStatus.OK);
+            } catch (Exception error) {
+                data.put("message", error.getMessage());
+                return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
             }
-
-            data.put("status", 200);
-            data.put("data", response);
-            return new ResponseEntity<>(data, HttpStatus.OK);
-        } catch (Exception error) {
-            data.put("message", error.getMessage());
-            return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
+        } else  {
+            data.put("status", 403);
+            data.put("message", "You do not have permission to access this resource.");
+            return new ResponseEntity<>(data, HttpStatus.FORBIDDEN);
         }
     }
 

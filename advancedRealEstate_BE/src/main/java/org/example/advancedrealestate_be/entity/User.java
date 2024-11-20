@@ -27,9 +27,6 @@ import java.util.Set;
 @Getter
 @Setter
 public class User {
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.UUID)
-
     @Id
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "uuid2")

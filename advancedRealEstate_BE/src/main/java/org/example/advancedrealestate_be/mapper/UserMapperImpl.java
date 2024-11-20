@@ -89,7 +89,7 @@ public class UserMapperImpl implements UserMapper {
                     .role_name(role.getRole_name())
                     .build();
 
-            permissions = permissionRepository.findPermissionsByRoleId(user.getRole().getId());
+            permissions = permissionRepository.findPermissionsByRoleLink(user.getRole().getId());
         }
 
         // Map Avatar to URL
