@@ -16,6 +16,7 @@ import org.example.advancedrealestate_be.repository.TypeBuildingRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.nio.file.Paths;
 import java.util.ArrayList;
