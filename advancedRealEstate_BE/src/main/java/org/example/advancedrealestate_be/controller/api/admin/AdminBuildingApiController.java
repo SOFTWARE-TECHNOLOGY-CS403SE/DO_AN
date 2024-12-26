@@ -1,93 +1,109 @@
 package org.example.advancedrealestate_be.controller.api.admin;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import net.minidev.json.JSONObject;
-import org.example.advancedrealestate_be.dto.BuildingDto;
+import org.example.advancedrealestate_be.dto.request.*;
+import org.example.advancedrealestate_be.dto.response.BuildingResponse;
+import org.example.advancedrealestate_be.dto.response.TypeBuildingResponse;
 import org.example.advancedrealestate_be.service.BuildingService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.annotation.Order;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/admin")
-@Tag(name = "Admin buildings", description = "API for admin")
+@SecurityRequirement(name = "bearerAuth")
+@RequestMapping("/api/admin/buildings")
+@Tag(name = "4. Building API", description = "API for building")
 public class AdminBuildingApiController {
-
-    BuildingService buildingService;
+    private final BuildingService buildingService;
 
     @Autowired
     public AdminBuildingApiController(BuildingService buildingService) {
         this.buildingService = buildingService;
     }
 
-    @PostMapping("/buildings")
-    private ResponseEntity<JSONObject> create(@RequestBody BuildingDto buildingDto) {
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<JSONObject> create(
+            @ModelAttribute @Valid BuildingCreateRequest request,
+            @RequestPart(value = "image", required = false) List<MultipartFile> images) {
         JSONObject data = new JSONObject();
-        try {
-            BuildingDto responseDto = buildingService.create(buildingDto);
-            data.put("data", responseDto);
-            return new ResponseEntity<>(data, HttpStatus.OK);
-        } catch (Exception error) {
-            data.put("message", error.getMessage());
-            return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @GetMapping("/buildings")
-    private ResponseEntity<JSONObject> index() {
-        JSONObject data = new JSONObject();
-        try {
-            List<BuildingDto> buildingDtoList = buildingService.findAll();
-            data.put("total", buildingDtoList.size());
-            data.put("data", buildingDtoList);
-            return new ResponseEntity<>(data, HttpStatus.OK);
-        } catch (Exception error) {
-            data.put("message", error.getMessage());
-            return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-
-    @GetMapping("/buildings/{id}")
-    private ResponseEntity<JSONObject> detail(@PathVariable String id) {
-        JSONObject object = new JSONObject();
-        try {
-            BuildingDto buildingDto = buildingService.findById(id);
-            object.put("data", buildingDto);
-            return new ResponseEntity<>(object, HttpStatus.OK);
-        } catch (Exception error) {
-            object.put("message", error.getMessage());
-            return new ResponseEntity<>(object, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        request.setImage(images); // Set images vào request
+        String response = buildingService.createBuilding(request);
+        data.put("status", 200);
+        data.put("message", response);
+        return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
 
-    @PatchMapping("/buildings/{id}")
-    private ResponseEntity<JSONObject> update(@PathVariable String id, @RequestBody BuildingDto buildingDto) {
+    @GetMapping
+    public ResponseEntity<JSONObject> getAllBuildings(@RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) {
         JSONObject data = new JSONObject();
-        try {
-            BuildingDto responseDto = buildingService.updateById(buildingDto, id);
-            data.put("data", responseDto);
-            return new ResponseEntity<>(data, HttpStatus.OK);
-        } catch (Exception error) {
-            data.put("message", error.getMessage());
-            return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
+        Map<String, Object> response = new HashMap<>();
+        if (page == null || size == null) {
+            List<BuildingResponse> allBuilding = buildingService.getAllBuildings();
+            response.put("data", allBuilding);
+        } else {
+            Page<BuildingResponse> pageResult = buildingService.getBuilding(page, size);
+            Map<String, Object> pagination = new HashMap<>();
+            pagination.put("total", pageResult.getTotalElements());
+            pagination.put("per_page", pageResult.getSize());
+            pagination.put("current_page", pageResult.getNumber() + 1);
+            pagination.put("last_page", pageResult.getTotalPages());
+            pagination.put("from", (pageResult.getNumber() * pageResult.getSize()) + 1);
+            pagination.put("to", Math.min((pageResult.getNumber() + 1) * pageResult.getSize(), pageResult.getTotalElements()));
+            response.put("pagination", pagination);
+            response.put("data", pageResult.getContent());
         }
+        data.put("status", 200);
+        data.put("data", response);
+        return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
-    @DeleteMapping("/buildings/{id}")
-    private ResponseEntity<JSONObject> remove(@PathVariable String id) {
+    @PutMapping("/{id}")
+    public ResponseEntity<JSONObject> updateBuilding(@Valid @PathVariable String id, @RequestBody BuildingUpdateResquest request) {
         JSONObject data = new JSONObject();
-        try {
-            BuildingDto responseDto = buildingService.deleteById(id);
-            data.put("data", responseDto);
-            return new ResponseEntity<>(data, HttpStatus.OK);
-        } catch (Exception error) {
-            data.put("message", error.getMessage());
-            return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        String response = buildingService.updateBuilding(id, request);
+        data.put("status", 200);
+        data.put("message", response);
+        return new ResponseEntity<>(data, HttpStatus.OK);
+    }
+
+    @PutMapping(value = "/image/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<JSONObject> updateImageBuilding(@Valid @PathVariable String id, @ModelAttribute @Valid BuildingUpdateImageRequest request,
+                                                          @RequestPart(value = "image", required = false) List<MultipartFile> images) {
+        JSONObject data = new JSONObject();
+        String response = buildingService.updateImageBuilding(id, request);
+        data.put("status", 200);
+        data.put("message", response);
+        return new ResponseEntity<>(data, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<JSONObject> deleteBuilding(@PathVariable String id) {
+        JSONObject data = new JSONObject();
+        String response = buildingService.deleteBuilding(id);
+        data.put("status", 200);
+        data.put("message", response);
+        return new ResponseEntity<>(data, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/delete-all")
+    public ResponseEntity<JSONObject> deleteAllBuilding(@Valid @RequestBody DeleteBuildingRequest request) {
+        JSONObject data = new JSONObject();
+        String response = buildingService.deleteBuildings(request);
+        data.put("status", 200);
+        data.put("message", response);
+        return new ResponseEntity<>(data, HttpStatus.OK);
     }
 }

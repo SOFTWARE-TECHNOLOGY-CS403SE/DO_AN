@@ -1,17 +1,17 @@
 package org.example.advancedrealestate_be.service;
 
+import net.minidev.json.JSONObject;
 import org.example.advancedrealestate_be.dto.ServiceDto;
 
 import java.util.List;
 
 public interface ServiceService {
     List<ServiceDto> findAll();
+    JSONObject findById(String id);
 
-    ServiceDto findById(String id);
+    JSONObject create(ServiceDto serviceDto);
 
-    ServiceDto create(ServiceDto serviceDto);
+    JSONObject updateById(String id, ServiceDto buildingDto);
 
-    ServiceDto updateById(String id, ServiceDto buildingDto);
-
-    ServiceDto deleteById(String id);
+    JSONObject deleteById(String id);
 }
