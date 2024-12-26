@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import net.minidev.json.JSONObject;
+import org.example.advancedrealestate_be.dto.request.DeleteMaintenanceRequest;
 import org.example.advancedrealestate_be.dto.request.MaintenanceRequest;
 import org.example.advancedrealestate_be.dto.response.CustomerResponse;
 import org.example.advancedrealestate_be.dto.response.MaintenanceResponse;
@@ -24,11 +25,14 @@ import java.util.Map;
 @RestController
 @SecurityRequirement(name = "bearerAuth")
 @RequestMapping("/api/maintenance")
-@Tag(name = "Admin admin", description = "API for admin")
+@Tag(name = "16. Maintenance API", description = "API for maintenance")
 public class MaintenanceApiController {
-    @Autowired
-    private MaintenanceService maintenanceService;
+    private final MaintenanceService maintenanceService;
 
+    @Autowired
+    public MaintenanceApiController(MaintenanceService maintenanceService) {
+        this.maintenanceService = maintenanceService;
+    }
 
     @GetMapping
     public ResponseEntity<JSONObject> getAllMaintenance(@RequestParam(defaultValue = "1") int page,
@@ -36,10 +40,8 @@ public class MaintenanceApiController {
         JSONObject data = new JSONObject();
         // Lấy dữ liệu người dùng với phân trang
         Page<MaintenanceResponse> pageResult = maintenanceService.getAllMaintenance(page, size);
-
         // Tạo đối tượng response chứa thông tin phân trang và danh sách người dùng
         Map<String, Object> response = new HashMap<>();
-
         // Metadata về phân trang
         Map<String, Object> pagination = new HashMap<>();
         pagination.put("total", pageResult.getTotalElements());
@@ -48,81 +50,46 @@ public class MaintenanceApiController {
         pagination.put("last_page", pageResult.getTotalPages());
         pagination.put("from", (pageResult.getNumber() * pageResult.getSize()) + 1);
         pagination.put("to", Math.min((pageResult.getNumber() + 1) * pageResult.getSize(), pageResult.getTotalElements()));
-
         response.put("pagination", pagination);
         response.put("data", pageResult.getContent());
-
-        try {
-            data.put("status", 200);
-            data.put("data", response);
-            return new ResponseEntity<>(data, HttpStatus.OK);
-        }catch (Exception error){
-            data.put("message", error.getMessage());
-            return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        data.put("status", 200);
+        data.put("data", response);
+        return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
     @PostMapping
     public ResponseEntity<JSONObject> createMaintenance(@Valid @RequestBody MaintenanceRequest request){
         JSONObject data=new JSONObject();
-        try{
-            maintenanceService.createMaintenance(request);
-            data.put("status", 200);
-            data.put("message", "Maintenance form was created successfully !");
-            return new ResponseEntity<>(data,HttpStatus.OK);
-
-        }catch(Exception e){
-            data.put("message", e.getMessage());
-            return new ResponseEntity<>(data,HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        maintenanceService.createMaintenance(request);
+        data.put("status", 200);
+        data.put("message", "Maintenance form was created successfully !");
+        return new ResponseEntity<>(data,HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<JSONObject>updateMaintenance(@Valid @PathVariable String id, @RequestBody MaintenanceRequest request){
         JSONObject data=new JSONObject();
-        try{
-            maintenanceService.updateMaintenance(id,request);
-            data.put("status",200);
-            data.put("message","Maintenance form was updated successfully !");
-            return new ResponseEntity<>(data,HttpStatus.OK);
-
-        }catch(Exception e){
-
-            data.put("message",e.getMessage());
-            return new ResponseEntity<>(data,HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        maintenanceService.updateMaintenance(id,request);
+        data.put("status",200);
+        data.put("message","Maintenance form was updated successfully !");
+        return new ResponseEntity<>(data,HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<JSONObject> deleteMaintenance(@PathVariable String id){
         JSONObject data=new JSONObject();
-        try{
-            maintenanceService.deleteMaintenance(id);
-            data.put("status",200);
-            data.put("message","Delete maintenance form was deleted successfully");
-            return new ResponseEntity<>(data,HttpStatus.OK);
-        }catch(Exception e){
-            data.put("message",e.getMessage());
-            return new ResponseEntity<>(data,HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        maintenanceService.deleteMaintenance(id);
+        data.put("status",200);
+        data.put("message","Delete maintenance form was deleted successfully");
+        return new ResponseEntity<>(data,HttpStatus.OK);
     }
 
     @DeleteMapping("/delete-all")
-    public ResponseEntity<JSONObject> deleteAllMaintenance(@RequestBody List<String> ids){
+    public ResponseEntity<JSONObject> deleteAllMaintenance(@RequestBody DeleteMaintenanceRequest request){
         JSONObject data=new JSONObject();
-        try {
-            maintenanceService.deleteAllMaintenance(ids);
-            data.put("message","All maintenance forms were deleted successfully");
-            return new ResponseEntity<>(data,HttpStatus.OK);
-
-        }catch(Exception e){
-
-            data.put("message", e.getMessage());
-            return new ResponseEntity<>(data,HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-
+        String response = maintenanceService.deleteAllMaintenance(request);
+        data.put("message", response);
+        data.put("status", 200);
+        return new ResponseEntity<>(data,HttpStatus.OK);
     }
-
-
-
 }

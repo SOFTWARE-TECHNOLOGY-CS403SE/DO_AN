@@ -2,6 +2,7 @@ package org.example.advancedrealestate_be.service.handler;
 
 
 import net.minidev.json.JSONObject;
+import org.example.advancedrealestate_be.constant.EnumConstant;
 import org.example.advancedrealestate_be.dto.request.AuctionHistoryRequest;
 import org.example.advancedrealestate_be.dto.response.AuctionHistoryResponse;
 import org.example.advancedrealestate_be.entity.Auction;
@@ -11,6 +12,7 @@ import org.example.advancedrealestate_be.entity.User;
 import org.example.advancedrealestate_be.exception.AppException;
 import org.example.advancedrealestate_be.exception.ErrorCode;
 import org.example.advancedrealestate_be.mapper.AuctionHistoryMapper;
+import org.example.advancedrealestate_be.mapper.AuctionMapper;
 import org.example.advancedrealestate_be.repository.AuctionDetailRepository;
 import org.example.advancedrealestate_be.repository.AuctionHistoryRepository;
 import org.example.advancedrealestate_be.repository.AuctionRepository;
@@ -18,9 +20,11 @@ import org.example.advancedrealestate_be.repository.UserRepository;
 import org.example.advancedrealestate_be.service.AuctionHistoryService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -29,20 +33,26 @@ import java.util.stream.Collectors;
 @Service
 public class AuctionHistoryHandler implements AuctionHistoryService {
 
-
+    @Value("${server.port}")
+    private String serverPort;
+    @Value("${server.host}")
+    private String serverHost;
     private final AuctionDetailRepository auctionDetailRepository;
     private final AuctionHistoryRepository auctionHistoryRepository;
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final AuctionRepository auctionRepository;
     private final Lock lock = new ReentrantLock();
+    private final AuctionHistoryMapper auctionHistoryMapper;
+
     @Autowired
-    public AuctionHistoryHandler(AuctionDetailRepository auctionDetailRepository, AuctionHistoryRepository auctionHistoryRepository, UserRepository userRepository, ModelMapper modelMapper, AuctionRepository auctionRepository) {
-        this.auctionDetailRepository = auctionDetailRepository;
+    public AuctionHistoryHandler(AuctionDetailRepository auctionDetailRepository, AuctionHistoryRepository auctionHistoryRepository, UserRepository userRepository, ModelMapper modelMapper, AuctionRepository auctionRepository, AuctionHistoryMapper auctionHistoryMapper) {
         this.auctionHistoryRepository = auctionHistoryRepository;
+        this.auctionDetailRepository = auctionDetailRepository;
+        this.auctionHistoryMapper = auctionHistoryMapper;
+        this.auctionRepository = auctionRepository;
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
-        this.auctionRepository = auctionRepository;
     }
 
     @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
@@ -51,36 +61,55 @@ public class AuctionHistoryHandler implements AuctionHistoryService {
         List<AuctionHistory> auctionDetailList = auctionHistoryRepository.findAll();
 
         return auctionDetailList.stream()
-                .map(AuctionHistoryMapper::mapToAuctionHistory)
+                .map(auctionHistoryMapper::mapToAuctionHistory)
                 .collect(Collectors.toList());
     }
 
-//    @PreAuthorize("hasAnyRole('ADMIN','STAFF','USER')")
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF','USER')")
     @Override
-    public AuctionHistoryResponse findById(String id) {
+    public JSONObject findById(String id) {
         AuctionHistory auctionHistory = auctionHistoryRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.AUCTION_HISTORY_NOT_FOUND));
+        JSONObject responseObject = new JSONObject();
+        Auction auction = auctionHistory.getAuction();
+        List<String> buildingImageUrls = new ArrayList<>();
 
-        return new AuctionHistoryResponse(
-                auctionHistory.getId(),
-                auctionHistory.getBidAmount(),
-                auctionHistory.getBidTime(),
-                auctionHistory.getMessageBidId(),
-                auctionHistory.getAuction(),
-                auctionHistory.getClient()
-        );
+        if (auction.getBuilding().getImage() != null && !auction.getBuilding().getImage().isEmpty()) {
+            String[] imagePaths = auction.getBuilding().getImage().split(";");
+            for (String path : imagePaths) {
+                if (!path.trim().isEmpty()) {
+                    String fileName = Paths.get(path).getFileName().toString();
+                    String url = String.format("http://%s:%s/api/user/building/%s",
+                            serverHost, serverPort, fileName);
+                    buildingImageUrls.add(url);
+                }
+            }
+        }
+        responseObject.put("data", new AuctionHistoryResponse(
+            auctionHistory.getId(),
+            auctionHistory.getBidAmount(),
+            auctionHistory.getBidTime(),
+            auctionHistory.getMessageBidId(),
+            auctionHistory.getIdentity_key(),
+            auctionHistory.getStatus(),
+            auctionHistory.getAuction(),
+            auctionHistory.getAuction().getBuilding(),
+            auctionHistory.getClient(),
+            buildingImageUrls
+        ));
+        return responseObject;
     }
 
-//    @PreAuthorize("hasAnyRole('ADMIN','STAFF','USER')")
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
     @Override
     public JSONObject create(AuctionHistoryRequest dto) {
         JSONObject responseObject = new JSONObject();
         AuctionHistory auctionHistory = modelMapper.map(dto, AuctionHistory.class);
-        AuctionHistory auctionDetailNew = auctionHistoryRepository.save(auctionHistory);
-        responseObject.put("data", auctionDetailNew);
+        auctionHistoryRepository.save(auctionHistory);
+        responseObject.put("message", "Created successfully");
         return responseObject;
     }
 
-//    @PreAuthorize("hasAnyRole('ADMIN','STAFF','USER')")
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF','USER')")
     @Override
     public void saveBidMessage(AuctionHistoryRequest dto) {
         Auction auction = auctionRepository.findById(dto.getAuction_id()).orElse(null);
@@ -91,10 +120,10 @@ public class AuctionHistoryHandler implements AuctionHistoryService {
         auctionHistory.setBidAmount(dto.getBidAmount());
         auctionHistory.setAuction(auction);
         auctionHistory.setClient(client);
-        AuctionHistory auctionDetailNew = auctionHistoryRepository.save(auctionHistory);
+        auctionHistoryRepository.save(auctionHistory);
     }
 
-//    @PreAuthorize("hasAnyRole('ADMIN','STAFF','USER')")
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF','USER')")
     @Override
     public JSONObject handleBidMessages(List<AuctionHistoryRequest> dtos) {
         JSONObject responseObject = new JSONObject();
@@ -191,13 +220,22 @@ public class AuctionHistoryHandler implements AuctionHistoryService {
         auctionHistory.setMessageBidId(dto.getMessageBidId());
         auctionHistory.setBidTime(dto.getBidTime());
         auctionHistory.setBidAmount(dto.getBidAmount());
+        auctionHistory.setStatus(String.valueOf(EnumConstant.YET_CONFIRM));
         auctionHistory.setAuction(auction);
         auctionHistory.setClient(client);
-//        auctionHistory.setIdentity_history_key();
-        AuctionHistory auctionHistoryNew = auctionHistoryRepository.save(auctionHistory);
+        assert auction != null;
+        auctionHistory.setIdentity_key(auction.getIdentity_key());
+        auctionHistoryRepository.save(auctionHistory);
     }
 
-//    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
+    @Override
+    public void handleDeleteAllAuctionHistoriesByAid(String auctionId) {
+        Auction auction = auctionRepository.findById(auctionId).orElse(null);
+        assert auction != null;
+        auctionHistoryRepository.deleteAuctionHistoriesByIdentity_key(auction.getIdentity_key());
+    }
+
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
     @Override
     public JSONObject saveAll(List<AuctionHistoryRequest> dtos) {
         JSONObject responseObject = new JSONObject();
@@ -217,7 +255,7 @@ public class AuctionHistoryHandler implements AuctionHistoryService {
         return responseObject;
     }
 
-//    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
     @Override
     public JSONObject updateById(String id, AuctionHistoryRequest dto) {
         JSONObject responseObject = new JSONObject();
@@ -231,11 +269,11 @@ public class AuctionHistoryHandler implements AuctionHistoryService {
         auctionHistory.setClient(client);
         AuctionHistory auctionHistoryUpdated = auctionHistoryRepository.save(auctionHistory);
         responseObject.put("data", auctionHistoryUpdated);
-        responseObject.put("message", "Update successfully!");
+        responseObject.put("message", "Updated successfully!");
         return responseObject;
     }
 
-//    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
+    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
     @Override
     public JSONObject deleteById(String id) {
         JSONObject responseObject = new JSONObject();

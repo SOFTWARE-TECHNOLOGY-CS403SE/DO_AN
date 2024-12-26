@@ -1,6 +1,8 @@
 package org.example.advancedrealestate_be.entity;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.annotations.GenericGenerator;
@@ -45,11 +47,16 @@ public class User {
     String avatar;
     String address;
     String hash_reset;
-
+//    @NotNull
+    private String rawPassword;  // Plain password (used temporarily for input)
     @ManyToOne
     @JoinColumn(name = "role_id", referencedColumnName = "id")
     private Role role; // Một User chỉ liên kết với một Role
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private List<Contracts> contracts;
+
+    @OneToMany(mappedBy = "user")
+    private Set<EmailVerificationToken> emailVerificationTokens;
+
 }

@@ -1,11 +1,14 @@
 package org.example.advancedrealestate_be.service.handler;
 
+import org.example.advancedrealestate_be.dto.request.DeleteMaintenanceRequest;
 import org.example.advancedrealestate_be.dto.request.MaintenanceRequest;
 import org.example.advancedrealestate_be.dto.response.MaintenanceResponse;
 import org.example.advancedrealestate_be.entity.Maintenances;
 import org.example.advancedrealestate_be.exception.AppException;
 import org.example.advancedrealestate_be.exception.ErrorCode;
 import org.example.advancedrealestate_be.mapper.MaintenanceMapper;
+import org.example.advancedrealestate_be.repository.BuildingRepository;
+import org.example.advancedrealestate_be.repository.CustomersRepository;
 import org.example.advancedrealestate_be.repository.MaintenanceRepository;
 import org.example.advancedrealestate_be.service.MaintenanceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,12 +25,18 @@ import java.util.stream.Collectors;
 @Service
 public class MaintenanceHandler implements MaintenanceService {
 
-    @Autowired
-    private MaintenanceRepository maintenanceRepository;
+    private final MaintenanceRepository maintenanceRepository;
+    private final MaintenanceMapper maintenanceMapper;
+    private final BuildingRepository buildingRepository;
+    private final CustomersRepository customersRepository;
 
     @Autowired
-    private MaintenanceMapper maintenanceMapper;
-
+    public MaintenanceHandler(MaintenanceRepository maintenanceRepository, MaintenanceMapper maintenanceMapper, BuildingRepository buildingRepository, CustomersRepository customersRepository) {
+        this.maintenanceRepository = maintenanceRepository;
+        this.maintenanceMapper = maintenanceMapper;
+        this.buildingRepository = buildingRepository;
+        this.customersRepository = customersRepository;
+    }
 
     @Override
     public String createMaintenance(MaintenanceRequest request) {
@@ -57,14 +66,13 @@ public class MaintenanceHandler implements MaintenanceService {
             maintenances.setMaintenance_date(request.getMaintenance_date());
             maintenances.setDescription(request.getDescription());
             maintenances.setCost(request.getCost());
+            buildingRepository.findById(request.getBuildingId()).ifPresent(maintenances::setBuilding);
+            customersRepository.findById(request.getCustomerId()).ifPresent(maintenances::setCustomers);
             maintenanceRepository.save(maintenances);
         }catch(DataIntegrityViolationException exception){
             throw new RuntimeException(exception);
         }
-
-         return "Update successfully !";
-
-
+        return "Update successfully !";
     }
 
     @Override
@@ -74,7 +82,6 @@ public class MaintenanceHandler implements MaintenanceService {
         }catch(DataIntegrityViolationException exception){
             throw new RuntimeException(exception);
         }
-
         return "Delete successfully !";
     }
 
@@ -115,18 +122,15 @@ public class MaintenanceHandler implements MaintenanceService {
     }
 
     @Override
-    public String deleteAllMaintenance(List<String> ids) {
-        try{
-            List<Maintenances> maintenanceResponses=maintenanceRepository.findAllById(ids);
-            if(maintenanceResponses.size()!=ids.size()){
-                throw new RuntimeException("Some maintenance form not found !");
+    public String deleteAllMaintenance(DeleteMaintenanceRequest request) {
+        for (String id : request.getIds()) {
+            if (maintenanceRepository.existsById(id)) {
+                maintenanceRepository.deleteById(id);
+            } else {
+                throw new RuntimeException("TypeBuilding with ID " + id + " does not exist");
             }
-            maintenanceRepository.deleteAll(maintenanceResponses);
-
-        }catch (DataIntegrityViolationException exception){
-            throw new RuntimeException(exception);
         }
-        return "Delete all successfully !";
+        return "Deleted successfully!";
     }
 
 

@@ -11,13 +11,13 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-
 public class BuildingCreateRequest {
 
     private String id_type_building;
     private String id_map;
     private String description;
-//    private List<MultipartFile> image;
+    private String structure;
+    //    private List<MultipartFile> image;
     private String name;
     private int status;
     private int number_of_basement;

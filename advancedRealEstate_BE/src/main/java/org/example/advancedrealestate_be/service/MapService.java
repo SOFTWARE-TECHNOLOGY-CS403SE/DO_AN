@@ -1,7 +1,10 @@
 package org.example.advancedrealestate_be.service;
 
+import net.minidev.json.JSONObject;
 import org.example.advancedrealestate_be.dto.BuildingDto;
 import org.example.advancedrealestate_be.dto.MapDto;
+import org.example.advancedrealestate_be.dto.request.DeleteCategoryRequest;
+import org.example.advancedrealestate_be.dto.request.DeleteMapRequest;
 
 import java.util.List;
 
@@ -9,11 +12,11 @@ public interface MapService {
 
     List<MapDto> findAll();
 
-    MapDto findById(String id);
+    JSONObject findById(String id);
 
-    MapDto create(MapDto MapDto);
+    JSONObject create(MapDto MapDto);
 
-    MapDto updateById(MapDto MapDto, String id);
+    JSONObject updateById(MapDto MapDto, String id);
 
-    MapDto deleteById(String id);
+    String deleteAll(DeleteMapRequest request);
 }

@@ -12,7 +12,7 @@ public interface AuctionDetailService {
 
     List<AuctionDetailResponse> findAll();
 
-    AuctionDetailResponse findById(String id);
+    JSONObject findById(String id);
 
     JSONObject create(AuctionDetailRequest dto);
 

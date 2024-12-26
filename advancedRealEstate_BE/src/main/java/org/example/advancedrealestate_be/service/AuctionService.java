@@ -10,7 +10,7 @@ public interface AuctionService {
 
     List<AuctionResponse> findAll();
 
-    AuctionResponse findById(String id);
+    JSONObject findById(String id);
 
     JSONObject create(AuctionRequest dto);
 

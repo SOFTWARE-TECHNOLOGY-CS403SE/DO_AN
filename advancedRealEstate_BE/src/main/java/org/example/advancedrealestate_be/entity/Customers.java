@@ -1,10 +1,15 @@
 package org.example.advancedrealestate_be.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 import org.joda.time.DateTime;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -22,19 +27,28 @@ public class Customers {
     @GenericGenerator(name = "uuid", strategy = "uuid2")
     private String id;
 
-    private String first_name;   // OK, but consider camelCase: firstName
-    private String last_name;    // OK, but consider camelCase: lastName
-    private String user_name;    // OK, but consider camelCase: userName
+    private String firstName;
+    private String lastName;
+    private String userName;
+
+    private int status;  // 0: unverified, 1: verified
+
     private String password;
-    private int status;          // Consider changing to `boolean` if it stores a binary state
+
+    @NotNull(message = "Email cannot be null")
+    @Email(message = "Email should be valid")
+    @Column(unique = true)
     private String email;
-    private String phone_number; // OK, but consider camelCase: phoneNumber
 
-    private String avatar;
-    private String address;
-    private String hash;
-    private int is_activity;     // Consider changing to `boolean` if it stores a binary state
+    @Column(name = "phone_number", length = 15, nullable = false, unique = true)
+    @Size(min = 10, max = 10, message = "Phone number must be exactly 10 digits.")
+    @Pattern(regexp = "0\\d{9,14}", message = "Phone number format is incorrect.")
+    private String phoneNumber;
 
-    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)  // Ensure `mappedBy` is correct
+    private int isActivity;  // 0: inactive, 1: active
+
+
+
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
     private List<Contracts> contracts;
 }

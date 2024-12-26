@@ -1,5 +1,7 @@
 package org.example.advancedrealestate_be.service.handler;
 
+import lombok.Value;
+import net.minidev.json.JSONObject;
 import org.example.advancedrealestate_be.dto.request.BuildingCreateRequest;
 import org.example.advancedrealestate_be.dto.request.BuildingUpdateImageRequest;
 import org.example.advancedrealestate_be.dto.request.BuildingUpdateResquest;
@@ -18,6 +20,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -35,51 +38,15 @@ import java.util.stream.Collectors;
 @Service
 public class BuildingHandler implements BuildingService {
 
-    @Autowired
-    BuildingRepository buildingRepository;
+    private final BuildingRepository buildingRepository;
+    private final BuildingMapper buildingMapper;
 
     @Autowired
-    BuildingMapper buildingMapper;
-
     public BuildingHandler(BuildingRepository buildingRepository, BuildingMapper buildingMapper) {
         this.buildingRepository = buildingRepository;
         this.buildingMapper = buildingMapper;
     }
-
     private static final String IMAGE_DIRECTORY = "uploads/buiding/images/";
-//    @Override
-//    public String createBuilding(BuildingCreateRequest request) {
-//        Building building = buildingMapper.toRequest(request);
-//
-//        try {
-//            List<MultipartFile> images = request.getImage();
-//            if (images != null && !images.isEmpty()) {
-//                // Kiểm tra và tạo thư mục "IMAGE" nếu chưa tồn tại
-//                File directory = new File(IMAGE_DIRECTORY);
-//                if (!directory.exists()) {
-//                    directory.mkdirs();
-//                }
-//
-//                // Lưu ảnh vào thư mục "IMAGE" và lưu đường dẫn vào DB
-//                List<String> imagePaths = new ArrayList<>();
-//                for (MultipartFile image : images) {
-//                    String fileName = image.getOriginalFilename();
-//                    Path filePath = Paths.get(IMAGE_DIRECTORY, fileName);
-//                    try {
-//                        image.transferTo(filePath);
-//                        imagePaths.add(filePath.toString());
-//                    } catch (IOException e) {
-//                        throw new RuntimeException("Lưu ảnh thất bại", e);
-//                    }
-//                }
-//                building.setImage(String.join(";", imagePaths));
-//            }
-//            buildingRepository.save(building);
-//        } catch (DataIntegrityViolationException exception) {
-//            throw new AppException(ErrorCode.USER_EXISTED);
-//        }
-//
-//        return "Đã thêm mới thành công!";
 //    }
     @Override
     public String createBuilding(BuildingCreateRequest request) {
@@ -100,7 +67,7 @@ public class BuildingHandler implements BuildingService {
                 for (MultipartFile image : images) {
                     String originalFilename = image.getOriginalFilename();
                     String fileExtension = originalFilename.substring(originalFilename.lastIndexOf("."));
-                    String fileName = UUID.randomUUID().toString() + fileExtension;
+                    String fileName = UUID.randomUUID() + fileExtension;
                     Path filePath = Paths.get(uploadDir, fileName);
                     try {
                         Files.copy(image.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
@@ -181,11 +148,7 @@ public class BuildingHandler implements BuildingService {
     public Page<BuildingResponse> getBuilding(int page, int size) {
         Pageable pageable = PageRequest.of(page - 1, size);
         Page<Building> buildingPage = buildingRepository.findAll(pageable);
-
-        List<BuildingResponse> buildingResponses = buildingPage.getContent().stream()
-                .map(buildingMapper::toResponse)
-                .collect(Collectors.toList());
-
+        List<BuildingResponse> buildingResponses = buildingPage.getContent().stream().map(buildingMapper::toResponse).collect(Collectors.toList());
         // Tạo đối tượng Page<TypeBuildingResponse> từ List<TypeBuildingResponse> và thông tin phân trang của Page<User>
         return new PageImpl<>(buildingResponses, pageable, buildingPage.getTotalElements());
     }
@@ -208,9 +171,10 @@ public class BuildingHandler implements BuildingService {
     }
 
     @Override
-    public List<BuildingResponse> findById(String id) {
-        return buildingRepository.findById(id).stream().map(buildingMapper::toResponse).collect(Collectors.toList());
+    public JSONObject findById(String id) {
+        JSONObject responseObject = new JSONObject();
+        responseObject.put("data", buildingRepository.findById(id).stream().map(buildingMapper::toResponse).collect(Collectors.toList()));
+        return responseObject;
     }
-
 
 }

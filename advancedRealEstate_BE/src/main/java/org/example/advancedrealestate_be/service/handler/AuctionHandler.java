@@ -1,10 +1,12 @@
 package org.example.advancedrealestate_be.service.handler;
 
+import lombok.Getter;
 import net.minidev.json.JSONObject;
 import org.example.advancedrealestate_be.dto.request.AuctionRequest;
 import org.example.advancedrealestate_be.dto.response.AuctionResponse;
 import org.example.advancedrealestate_be.entity.Auction;
 import org.example.advancedrealestate_be.entity.Building;
+import org.example.advancedrealestate_be.entity.Map;
 import org.example.advancedrealestate_be.entity.User;
 import org.example.advancedrealestate_be.exception.AppException;
 import org.example.advancedrealestate_be.exception.ErrorCode;
@@ -16,9 +18,12 @@ import org.example.advancedrealestate_be.repository.UserRepository;
 import org.example.advancedrealestate_be.service.AuctionService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -32,31 +37,52 @@ public class AuctionHandler implements AuctionService {
     private final BuildingRepository buildingRepository;
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final AuctionMapper auctionMapper;
+
+    @Value("${server.port}")
+    private String serverPort;
+    @Value("${server.host}")
+    private String serverHost;
 
     @Autowired
-    public AuctionHandler(AuctionRepository auctionRepository, AuctionDetailRepository auctionDetailRepository, BuildingRepository buildingRepository, UserRepository userRepository, ModelMapper modelMapper) {
+    public AuctionHandler(AuctionRepository auctionRepository, AuctionDetailRepository auctionDetailRepository, BuildingRepository buildingRepository, UserRepository userRepository, ModelMapper modelMapper, AuctionMapper auctionMapper) {
         this.auctionRepository = auctionRepository;
         this.auctionDetailRepository = auctionDetailRepository;
         this.buildingRepository = buildingRepository;
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
+        this.auctionMapper = auctionMapper;
     }
-
 
     @Override
     public List<AuctionResponse> findAll() {
         List<Auction> auctionList = auctionRepository.findAll();
 
         return auctionList.stream()
-                .map(AuctionMapper::mapToAuction)
+                .map(auctionMapper::mapToAuction)
                 .collect(Collectors.toList());
     }
 
     @Override
-    public AuctionResponse findById(String id) {
+    public JSONObject findById(String id) {
+        JSONObject responseObject = new JSONObject();
         Auction auction = auctionRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.AUCTION_NOT_FOUND));
 
-        return new AuctionResponse(
+        List<String> imageUrls = new ArrayList<>();
+
+        if (auction.getBuilding().getImage() != null && !auction.getBuilding().getImage().isEmpty()) {
+            String[] imagePaths = auction.getBuilding().getImage().split(";");
+            for (String path : imagePaths) {
+                if (!path.trim().isEmpty()) {
+                    String fileName = Paths.get(path).getFileName().toString();
+                    String url = String.format("http://%s:%s/api/user/building/%s",
+                    serverHost, serverPort, fileName);
+                    imageUrls.add(url);
+                }
+            }
+        }
+        assert auction.getBuilding() != null;
+        responseObject.put("data", new AuctionResponse(
                 auction.getId(),
                 auction.getName(),
                 auction.getStart_date(),
@@ -64,11 +90,14 @@ public class AuctionHandler implements AuctionService {
                 auction.getEnd_time(),
                 auction.getDescription(),
                 auction.isActive(),
-                auction.getBuilding() != null ? auction.getBuilding() : null,
-                auction.getBuilding() != null ? auction.getBuilding().getMap() : null,
+                auction.getBuilding(),
+                auction.getBuilding().getTypeBuilding(),
+                auction.getBuilding().getMap(),
                 auction.getUserCreatedBy(),
-                auction.getIdentity_key()
-        );
+                auction.getIdentity_key(),
+                imageUrls
+        ));
+        return responseObject;
     }
 
 //    @PreAuthorize("hasAnyRole('ADMIN','STAFF')")
@@ -77,7 +106,7 @@ public class AuctionHandler implements AuctionService {
         JSONObject responseObject = new JSONObject();
         Auction auction = new Auction();
         User userCreatedBy = userRepository.findById(auctionRequest.getUserCreatedBy()).orElse(null);
-//        Building building = buildingRepository.findById(auctionRequest.getBuilding_id()).orElse(null);
+        Building building = buildingRepository.findById(auctionRequest.getBuilding_id()).orElse(null);
         auction.setName(auctionRequest.getName());
         auction.setStart_date(auctionRequest.getStart_date());
         auction.setStart_time(auctionRequest.getStart_time());
@@ -86,7 +115,7 @@ public class AuctionHandler implements AuctionService {
         auction.setActive(false);
         auction.setUserCreatedBy(userCreatedBy);
         auction.setIdentity_key(generateAuctionIdKey(10));
-//        auction.setBuilding(building);
+        auction.setBuilding(building);
         Auction auctionNew = auctionRepository.save(auction);
         responseObject.put("data", auctionNew);
         return responseObject;
@@ -114,6 +143,7 @@ public class AuctionHandler implements AuctionService {
         auction.setStart_time(auctionRequest.getStart_time());
         auction.setEnd_time(auctionRequest.getEnd_time());
         auction.setDescription(auctionRequest.getDescription());
+        auction.setIdentity_key(generateAuctionIdKey(10));
         auction.setActive(auctionRequest.isActive());
         auction.setBuilding(building);
         auction.setUserCreatedBy(user);
@@ -127,7 +157,8 @@ public class AuctionHandler implements AuctionService {
     @Override
     public JSONObject deleteById(String id) {
         JSONObject responseObject = new JSONObject();
-        auctionRepository.deleteById(id);
+        Auction auction = auctionRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.AUCTION_NOT_FOUND));
+        auctionRepository.delete(auction);
         responseObject.put("message", "Delete successfully!");
         return responseObject;
     }

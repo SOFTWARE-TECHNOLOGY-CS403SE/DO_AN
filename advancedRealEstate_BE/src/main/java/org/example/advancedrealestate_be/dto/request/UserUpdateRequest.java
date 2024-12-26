@@ -21,7 +21,7 @@ public class UserUpdateRequest {
     LocalDate birthday;
 //    String avatar;
     String address;
-//    String id_role;
+    String role_id;
     @NotNull
     private String email;
 

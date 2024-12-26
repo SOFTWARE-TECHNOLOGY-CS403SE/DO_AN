@@ -10,4 +10,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MaintenanceRepository extends JpaRepository<Maintenances,String> {
     Page<Maintenances> findAll(Pageable pageable);
+    boolean existsByBuildingId(String buildingId);
 }

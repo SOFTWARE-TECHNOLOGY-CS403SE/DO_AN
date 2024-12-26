@@ -107,21 +107,20 @@ public class ContractHandler implements ContractService {
 //        response.setInvoiceIds(contract.getInvoices().stream().map(i -> i.getId()).collect(Collectors.toList()));
 //        return response;
 //    }
+    private final ContractReposetory contractRepository;
+    private final ContractMapper contractMapper;
+    private final CustomersRepository customersRepository;
+    private final BuildingRepository buildingRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    private ContractReposetory contractRepository;
-
-    @Autowired
-    private ContractMapper contractMapper;
-
-    @Autowired
-    private CustomersRepository customersRepository;
-
-    @Autowired
-    private BuildingRepository buildingRepository;
-
-    @Autowired
-    private UserRepository userRepository;
+    public ContractHandler(ContractReposetory contractRepository, ContractMapper contractMapper, CustomersRepository customersRepository, BuildingRepository buildingRepository, UserRepository userRepository) {
+        this.contractRepository = contractRepository;
+        this.contractMapper = contractMapper;
+        this.customersRepository = customersRepository;
+        this.buildingRepository = buildingRepository;
+        this.userRepository = userRepository;
+    }
     // Create a new contract
 
     @Override
@@ -171,9 +170,10 @@ public class ContractHandler implements ContractService {
     // Update a contract by ID
     @Override
     public String updateContract(String id, ContractRequest request) {
+        Contracts contract = contractRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Contract not found"));
         try{
-            Contracts contract = contractRepository.findById(id)
-                    .orElseThrow(() -> new RuntimeException("Contract not found"));
+
 
             contract.setContract_name(request.getContractName());
 //        contract.setContract_details(request.getContractDetails());

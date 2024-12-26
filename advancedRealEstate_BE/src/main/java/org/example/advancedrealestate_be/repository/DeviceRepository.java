@@ -11,4 +11,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface DeviceRepository extends JpaRepository<Devices,String> {
     Page<Devices> findAll(Pageable pageable);
+    boolean existsByBuildingId(String buildingId);
 }

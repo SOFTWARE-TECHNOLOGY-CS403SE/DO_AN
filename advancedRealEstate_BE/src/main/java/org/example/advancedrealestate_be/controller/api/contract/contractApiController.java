@@ -22,9 +22,8 @@ import java.util.Map;
 @RestController
 @SecurityRequirement(name = "bearerAuth")
 @RequestMapping("/api/contract")
-@Tag(name = "Admin contract", description = "API for admin")
+@Tag(name = "13. Contract API", description = "API for admin")
 public class contractApiController {
-
 
     @Autowired
     private ContractService contractService;
@@ -33,30 +32,18 @@ public class contractApiController {
     @PostMapping
     public ResponseEntity<JSONObject> createContract(@RequestBody ContractRequest request){
         JSONObject data=new JSONObject();
-        try{
-            String response=contractService.createContract(request);
-            data.put("data",response);
-            data.put("message","Contract was created successfully");
-            return new ResponseEntity<>(data, HttpStatus.OK);
-        }catch (Exception error){
-            data.put("message",error.getMessage());
-            return new ResponseEntity<>(data,HttpStatus.INTERNAL_SERVER_ERROR);
-
-        }
+        String response=contractService.createContract(request);
+        data.put("data",response);
+        data.put("message","Contract was created successfully");
+        return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<JSONObject> getContractById(@PathVariable String id){
         JSONObject data=new JSONObject();
-        try{
-            ContractResponse response=contractService.getContractById(id);
-            data.put("data",response);
-            return new ResponseEntity<>(data, HttpStatus.OK);
-        }catch (Exception error){
-            data.put("message",error.getMessage());
-            return new ResponseEntity<>(data,HttpStatus.INTERNAL_SERVER_ERROR);
-
-        }
+        ContractResponse response=contractService.getContractById(id);
+        data.put("data",response);
+        return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
 //    @GetMapping
@@ -96,56 +83,34 @@ public class contractApiController {
 
         response.put("pagination", pagination);
         response.put("data", pageResult.getContent());
-
-        try {
-            data.put("status", 200);
-            data.put("data", response);
-            return new ResponseEntity<>(data, HttpStatus.OK);
-        }catch (Exception error){
-            data.put("message", error.getMessage());
-            return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        data.put("status", 200);
+        data.put("data", response);
+        return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<JSONObject> updateContract(@PathVariable String id, @RequestBody ContractRequest request){
         JSONObject data=new JSONObject();
-        try {
-            String response=contractService.updateContract(id,request);
-            data.put("data",response);
-            data.put("message","Contract was updated successfully");
-            return new ResponseEntity<>(data,HttpStatus.OK);
-        }catch(Exception error){
-            data.put("message", error.getMessage());
-            return new ResponseEntity<>(data,HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        String response=contractService.updateContract(id,request);
+        data.put("data",response);
+        data.put("message","Contract was updated successfully");
+        return new ResponseEntity<>(data,HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<JSONObject> deleteContract(@PathVariable String id){
         JSONObject data=new JSONObject();
-        try {
-            contractService.deleteContract(id);
-            data.put("message","Contract was deleted successfully");
-            return new ResponseEntity<>(data,HttpStatus.OK);
-        }catch (Exception error){
-            data.put("message", error.getMessage());
-            return new ResponseEntity<>(data,HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        contractService.deleteContract(id);
+        data.put("message","Contract was deleted successfully");
+        return new ResponseEntity<>(data,HttpStatus.OK);
     }
     @DeleteMapping
     public ResponseEntity<JSONObject> deleteContracts(@RequestBody List<String> ids) {
         JSONObject data = new JSONObject();
-        try {
-            contractService.deleteContracts(ids);
-            data.put("message", "Contracts were deleted successfully");
-            return new ResponseEntity<>(data, HttpStatus.OK);
-        } catch (Exception error) {
-            data.put("message", error.getMessage());
-            return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        contractService.deleteContracts(ids);
+        data.put("message", "Contracts were deleted successfully");
+        return new ResponseEntity<>(data, HttpStatus.OK);
     }
-
 
 
 }

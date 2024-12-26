@@ -41,14 +41,11 @@ import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 
 @Service
-@RequiredArgsConstructor
 @Slf4j
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationServiceHandler implements AuthenticationService {
-    @Autowired
-    UserRepository userRepository;
-    @Autowired
-    InvalidatedTokenRepository invalidatedTokenRepository;
+    private final UserRepository userRepository;
+    private final InvalidatedTokenRepository invalidatedTokenRepository;
 
     @NonFinal
     @Value("${jwt.signerKey}")
@@ -62,7 +59,11 @@ public class AuthenticationServiceHandler implements AuthenticationService {
     @Value("${jwt.refreshable-duration}")
     protected long REFRESHABLE_DURATION;
 
-
+    @Autowired
+    public AuthenticationServiceHandler(UserRepository userRepository, InvalidatedTokenRepository invalidatedTokenRepository) {
+        this.userRepository = userRepository;
+        this.invalidatedTokenRepository = invalidatedTokenRepository;
+    }
     @Override
     public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException {
         var token = request.getToken();
@@ -85,7 +86,9 @@ public class AuthenticationServiceHandler implements AuthenticationService {
 
         boolean authenticated = passwordEncoder.matches(request.getPassword(), user.getPassword());
 
-//        if(!user.isVerify()) throw new AppException(ErrorCode.UNAUTHENTICATED);
+        // Kiểm tra nếu `status == 0`, trả về thông báo lỗi
+        if(user.getStatus() == 0) throw new AppException(ErrorCode.UNAUTHENTICATED);
+
         if (!authenticated) throw new AppException(ErrorCode.UNAUTHENTICATED);
 
         var token = generateToken(user);
@@ -137,6 +140,7 @@ public class AuthenticationServiceHandler implements AuthenticationService {
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
                 .subject(user.getEmail())
+                .claim("roles", user.getRole().getRole_name())
                 .issuer("example.org")
                 .issueTime(new Date())
                 .expirationTime(new Date(

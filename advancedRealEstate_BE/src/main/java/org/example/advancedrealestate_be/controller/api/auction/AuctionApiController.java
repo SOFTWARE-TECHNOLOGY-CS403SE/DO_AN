@@ -19,13 +19,12 @@ import java.util.List;
 @RestController
 @SecurityRequirement(name = "bearerAuth")
 @RequestMapping("/api/admin/")
-@Tag(name = "Admin auctions", description = "API for auction")
+@Tag(name = "5. Auction API", description = "API for auction")
 @Slf4j
 public class AuctionApiController {
 
     private final MapService mapService;
     private final AuctionService auctionService;
-
 
     @Autowired
     public AuctionApiController(MapService mapService, AuctionService auctionService) {
@@ -48,9 +47,7 @@ public class AuctionApiController {
 
     @GetMapping("/auctions/{id}")
     private ResponseEntity<JSONObject> detail(@PathVariable String id) {
-        JSONObject responseObject = new JSONObject();
-        responseObject.put("data", auctionService.findById(id));
-        return new ResponseEntity<>(responseObject, HttpStatus.OK);
+        return new ResponseEntity<>(auctionService.findById(id), HttpStatus.OK);
     }
 
     @PatchMapping("/auctions/{id}")

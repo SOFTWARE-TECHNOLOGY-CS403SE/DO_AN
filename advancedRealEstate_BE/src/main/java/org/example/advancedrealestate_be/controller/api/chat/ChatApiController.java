@@ -22,7 +22,6 @@ import java.util.*;
 import java.util.concurrent.CompletableFuture;
 
 @Controller
-@CrossOrigin(origins = "https://localhost:3000")
 public class ChatApiController {
 
 //    @MessageMapping("/chat")

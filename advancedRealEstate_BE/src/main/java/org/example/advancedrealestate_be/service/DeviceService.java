@@ -7,10 +7,12 @@ import org.springframework.data.domain.Page;
 import java.util.List;
 
 public interface DeviceService {
-    DeviceResponse createDevice(DeviceRequest request);
+    String createDevice(DeviceRequest request);
     DeviceResponse getDeviceById(String id);
     List<DeviceResponse> getAllDevice();
-    DeviceResponse updateDevice(String id, DeviceRequest request);
-    void deleteDevice(String id);
+
+    String deleteAllDevices(List<String> ids);
+    String updateDevice(String id, DeviceRequest request);
+    String deleteDevice(String id);
     Page<DeviceResponse> getDevice(int page, int size);
 }

@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatusCode;
 
 @Getter
 public enum ErrorCode {
+    SEND_MAIL_FAILED(500, "Send mail failed", HttpStatus.INTERNAL_SERVER_ERROR),
     UNCATEGORIZED_EXCEPTION(9999, "Uncategorized error", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_KEY(1001, "Uncategorized error", HttpStatus.BAD_REQUEST),
     USER_EXISTED(1002, "User existed", HttpStatus.BAD_REQUEST),
@@ -22,6 +23,7 @@ public enum ErrorCode {
     INVALID_DOB(1008, "Your age must be at least {min}", HttpStatus.BAD_REQUEST),
     TOKEN_EXPIRED(1009,"Token already expired",HttpStatus.NOT_FOUND),
     MAP_NOT_FOUND(404, "Map not found", HttpStatus.NOT_FOUND),
+    SERVICE_NOT_FOUND(404, "Service not found", HttpStatus.NOT_FOUND),
     AUCTION_NOT_FOUND(404, "Auction not found", HttpStatus.NOT_FOUND),
     AUCTION_DETAIL_NOT_FOUND(404, "Auction detail not found", HttpStatus.NOT_FOUND),
     AUCTION_HISTORY_NOT_FOUND(404, "Auction history not found", HttpStatus.NOT_FOUND),

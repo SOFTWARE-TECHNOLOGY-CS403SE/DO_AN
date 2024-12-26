@@ -1,5 +1,16 @@
 # DO_AN
 
+## Members
+```bash
+
+- Nguyễn Ngọc Khánh
+- Trần Thế Tường
+- Phùng Văn Mạnh
+- Nguyễn Khắc Hoài Nam
+- Trần Ngọc Tiến
+
+```
+
 ## HƯỚNG DẪN SỬ DỤNG GIT
 ```bash
 

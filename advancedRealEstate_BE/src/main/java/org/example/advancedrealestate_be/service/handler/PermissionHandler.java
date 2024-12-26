@@ -32,16 +32,15 @@ import java.util.stream.Collectors;
 @Slf4j
 public class PermissionHandler implements PermissionService {
 
-    @Autowired
-    PermissionRepository permissionRepository;
-    @Autowired
-    PermissionMapper permissionMapper;
-//    @Autowired
-//    private RoleRepository roleRepository;
+    private final PermissionRepository permissionRepository;
+    private final PermissionMapper permissionMapper;
+    private final RoleRepository roleRepository;
 
-    public PermissionHandler(PermissionRepository permissionRepository, PermissionMapper permissionMapper) {
+    @Autowired
+    public PermissionHandler(PermissionRepository permissionRepository, PermissionMapper permissionMapper, RoleRepository roleRepository) {
         this.permissionRepository = permissionRepository;
         this.permissionMapper = permissionMapper;
+        this.roleRepository = roleRepository;
     }
 
     @Override

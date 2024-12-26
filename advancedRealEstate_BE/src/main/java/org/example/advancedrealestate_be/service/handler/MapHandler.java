@@ -1,12 +1,17 @@
 package org.example.advancedrealestate_be.service.handler;
+import net.minidev.json.JSONObject;
 import org.example.advancedrealestate_be.constant.ErrorEnumConstant;
 import org.example.advancedrealestate_be.dto.MapDto;
-import org.example.advancedrealestate_be.entity.Map;
+import org.example.advancedrealestate_be.dto.request.DeleteMapRequest;
+import org.example.advancedrealestate_be.entity.*;
+import org.example.advancedrealestate_be.exception.AppException;
+import org.example.advancedrealestate_be.exception.ErrorCode;
 import org.example.advancedrealestate_be.mapper.MapMapper;
 import org.example.advancedrealestate_be.repository.MapRepository;
 import org.example.advancedrealestate_be.service.MapService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -41,90 +46,57 @@ public class MapHandler implements MapService {
                 .collect(Collectors.toList());
     }
 
-
     @Override
-    public MapDto findById(String id) {
-        Optional<Map> map = mapRepository.findById(id);
-        if (map.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorEnumConstant.MapNotFound.toString());
-        }
-        return map.map(
-                value -> new MapDto(
-                    value.getId(),
-                    value.getMap_name(),
-                    value.getLatitude(),
-                    value.getLongitude(),
-                    value.getAddress(),
-                    value.getProvince(),
-                    value.getDistrict(),
-                    value.getWard()
-                ))
-        .orElse(null);
+    public JSONObject findById(String id) {
+        JSONObject responseObject = new JSONObject();
+        Map map = mapRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.MAP_NOT_FOUND));
+        responseObject.put("data", map);
+        return responseObject;
     }
 
-    @Transactional
     @Override
-//    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
-    public MapDto create(MapDto MapDto) {
-        Map map = modelMapper.map(MapDto, Map.class);
-        Map mapNew = mapRepository.save(map);
-
-        return new MapDto(
-                mapNew.getId(),
-                mapNew.getMap_name(),
-                mapNew.getLatitude(),
-                mapNew.getLongitude(),
-                mapNew.getAddress(),
-                mapNew.getProvince(),
-                mapNew.getDistrict(),
-                mapNew.getWard()
-        );
+    public JSONObject create(MapDto mapDto) {
+        JSONObject responseObject = new JSONObject();
+        Map map = new Map();
+        map.setMap_name(mapDto.getMap_name());
+        map.setLatitude(mapDto.getLatitude());
+        map.setLongitude(mapDto.getLongitude());
+        map.setAddress(mapDto.getAddress());
+        map.setProvince(mapDto.getProvince());
+        map.setDistrict(mapDto.getDistrict());
+        map.setWard(mapDto.getWard());
+        mapRepository.save(map);
+        responseObject.put("status", 200);
+        responseObject.put("message", "Đã thêm mới thành công");
+        return responseObject;
     }
 
-//    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     @Override
-    public MapDto updateById(MapDto mapDto, String id) {
-        Optional<Map> map = mapRepository.findById(id);
-        if (map.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorEnumConstant.MapNotFound.toString());
-        }
-        map.get().setMap_name(mapDto.getMap_name() != null ? mapDto.getMap_name() : map.get().getMap_name());
-        map.get().setLatitude(mapDto.getLatitude() != null ? mapDto.getLatitude() : map.get().getLatitude());
-        map.get().setLongitude(mapDto.getLongitude() != null ? mapDto.getLongitude() : map.get().getLongitude());
-        map.get().setAddress(mapDto.getAddress() != null ? mapDto.getAddress() : map.get().getAddress());
-        map.get().setProvince(mapDto.getProvince() != null ? mapDto.getProvince() : map.get().getProvince());
-        map.get().setDistrict(mapDto.getDistrict() != null ? mapDto.getDistrict() : map.get().getDistrict());
-        map.get().setWard(mapDto.getWard() != null ? mapDto.getWard() : map.get().getWard());
-
-        Map mapUpdate = mapRepository.save(map.get());
-        return new MapDto(
-                mapUpdate.getId(),
-                mapUpdate.getMap_name(),
-                mapUpdate.getLatitude(),
-                mapUpdate.getLongitude(),
-                mapUpdate.getAddress(),
-                mapUpdate.getProvince(),
-                mapUpdate.getDistrict(),
-                mapUpdate.getWard());
+    public JSONObject updateById(MapDto mapDto, String id) {
+        JSONObject responseObject = new JSONObject();
+        Map map = mapRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.MAP_NOT_FOUND));
+        map.setMap_name(mapDto.getMap_name() != null ? mapDto.getMap_name() : map.getMap_name());
+        map.setLatitude(mapDto.getLatitude() != null ? mapDto.getLatitude() : map.getLatitude());
+        map.setLongitude(mapDto.getLongitude() != null ? mapDto.getLongitude() : map.getLongitude());
+        map.setAddress(mapDto.getAddress() != null ? mapDto.getAddress() : map.getAddress());
+        map.setProvince(mapDto.getProvince() != null ? mapDto.getProvince() : map.getProvince());
+        map.setDistrict(mapDto.getDistrict() != null ? mapDto.getDistrict() : map.getDistrict());
+        map.setWard(mapDto.getWard() != null ? mapDto.getWard() : map.getWard());
+        Map mapUpdate = mapRepository.save(map);
+        responseObject.put("status", 200);
+        responseObject.put("message", "Update successfully!");
+        return responseObject;
     }
 
-//    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     @Override
-    public MapDto deleteById(String id) {
-        Optional<Map> map = mapRepository.findById(id);
-        if (map.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorEnumConstant.MapNotFound.toString());
+    public String deleteAll(DeleteMapRequest request) {
+        for (String id : request.getIds()) {
+            if (mapRepository.existsById(id)) {
+                mapRepository.deleteById(id);
+            } else {
+                throw new RuntimeException("TypeBuilding with ID " + id + " does not exist");
+            }
         }
-        MapDto mapDto = new MapDto(
-                map.get().getId(),
-                map.get().getMap_name(),
-                map.get().getLatitude(),
-                map.get().getLongitude(),
-                map.get().getAddress(),
-                map.get().getProvince(),
-                map.get().getDistrict(),
-                map.get().getWard());
-        mapRepository.delete(map.get());
-        return mapDto;
+        return "Deleted successfully!";
     }
 }

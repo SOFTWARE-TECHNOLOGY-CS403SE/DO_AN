@@ -10,5 +10,6 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RoleCreationRequest {
     String role_name;
+    String role_type;
     Integer status;
 }

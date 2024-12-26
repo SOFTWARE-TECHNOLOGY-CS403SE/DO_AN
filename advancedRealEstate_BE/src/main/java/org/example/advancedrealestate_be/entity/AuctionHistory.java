@@ -29,6 +29,7 @@ public class AuctionHistory {
     private String bidTime;
     private String messageBidId;
     private String identity_key;
+    private String status;
 
     @ManyToOne
     @JoinColumn(name = "auction_id", nullable = true)

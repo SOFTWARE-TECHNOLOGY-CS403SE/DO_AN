@@ -1,7 +1,9 @@
 package org.example.advancedrealestate_be.entity;
+
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.util.Set;
 
@@ -10,27 +12,22 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "roles") // Đổi tên bảng thành số nhiều
+@Table(name = "roles") // Bảng lưu thông tin các vai trò
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Role {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(generator = "uuid")
+    @GenericGenerator(name = "uuid", strategy = "uuid2")
     String id;
-
     String role_name;
+    String role_type;
     Integer status;
 
-    // Một Role có nhiều User
-    @OneToMany(mappedBy = "role", cascade = CascadeType.ALL, orphanRemoval = true)
+    // Một Role có thể liên kết với nhiều RolePermission
+    @OneToMany(mappedBy = "role")
+    private Set<RolePermission> rolePermissions;
+
+    // Quan hệ với User (nếu cần)
+    @OneToMany(mappedBy = "role")
     private Set<User> users;
-
-    // Một Role có nhiều Permission
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(
-            name = "role_permissions",
-            joinColumns = @JoinColumn(name = "role_id"),
-            inverseJoinColumns = @JoinColumn(name = "permission_id")
-    )
-    private Set<Permission> permissions; // Mối quan hệ nhiều nhiều với Permission
 }
-

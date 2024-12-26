@@ -34,6 +34,7 @@ public class Building {
     @Column(columnDefinition = "text")
     private String image;
     private String name;
+    private String structure;
     private int status;
     private int number_of_basement;
     private String acreage;

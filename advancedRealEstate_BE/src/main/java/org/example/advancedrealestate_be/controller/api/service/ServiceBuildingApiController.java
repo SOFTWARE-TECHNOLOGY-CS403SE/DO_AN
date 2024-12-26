@@ -17,7 +17,7 @@ import java.util.List;
 @RestController
 @SecurityRequirement(name = "bearerAuth")
 @RequestMapping("/api/admin/")
-@Tag(name = "Admin services", description = "API for service")
+@Tag(name = "18. Service", description = "API for service")
 @Slf4j
 public class ServiceBuildingApiController {
     @Autowired
@@ -30,67 +30,29 @@ public class ServiceBuildingApiController {
 
     @PostMapping("/services")
     private ResponseEntity<JSONObject> create(@RequestBody ServiceDto serviceDto) {
-        JSONObject data = new JSONObject();
-        try {
-            ServiceDto responseDto = serviceService.create(serviceDto);
-            data.put("data", responseDto);
-            return new ResponseEntity<>(data, HttpStatus.OK);
-        } catch (Exception error) {
-            data.put("message", error.getMessage());
-            return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return new ResponseEntity<>(serviceService.create(serviceDto), HttpStatus.OK);
     }
 
     @GetMapping("/services")
     private ResponseEntity<JSONObject> index() {
         JSONObject data = new JSONObject();
-        try {
-            List<ServiceDto> serviceDtoList = serviceService.findAll();
-            data.put("total", serviceDtoList.size());
-            data.put("data", serviceDtoList);
-            return new ResponseEntity<>(data, HttpStatus.OK);
-        } catch (Exception error) {
-            data.put("message", error.getMessage());
-            return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        data.put("total", serviceService.findAll().size());
+        data.put("data", serviceService.findAll());
+        return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
     @GetMapping("/services/{id}")
     private ResponseEntity<JSONObject> detail(@PathVariable String id) {
-        JSONObject object = new JSONObject();
-        try {
-            ServiceDto responseDto = serviceService.findById(id);
-            object.put("data", responseDto);
-            return new ResponseEntity<>(object, HttpStatus.OK);
-        } catch (Exception error) {
-            object.put("message", error.getMessage());
-            return new ResponseEntity<>(object, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return new ResponseEntity<>(serviceService.findById(id), HttpStatus.OK);
     }
 
     @PatchMapping("/services/{id}")
     private ResponseEntity<JSONObject> update(@PathVariable String id, @RequestBody ServiceDto serviceDto) {
-        JSONObject data = new JSONObject();
-        try {
-            ServiceDto responseDto = serviceService.updateById(id, serviceDto);
-            data.put("data", responseDto);
-            return new ResponseEntity<>(data, HttpStatus.OK);
-        } catch (Exception error) {
-            data.put("message", error.getMessage());
-            return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return new ResponseEntity<>(serviceService.updateById(id, serviceDto), HttpStatus.OK);
     }
 
     @DeleteMapping("/services/{id}")
     private ResponseEntity<JSONObject> remove(@PathVariable String id) {
-        JSONObject data = new JSONObject();
-        try {
-            ServiceDto responseDto = serviceService.deleteById(id);
-            data.put("data", responseDto);
-            return new ResponseEntity<>(data, HttpStatus.OK);
-        } catch (Exception error) {
-            data.put("message", error.getMessage());
-            return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return new ResponseEntity<>(serviceService.deleteById(id), HttpStatus.OK);
     }
 }

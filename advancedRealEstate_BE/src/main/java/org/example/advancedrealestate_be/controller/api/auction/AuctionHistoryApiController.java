@@ -10,6 +10,7 @@ import org.example.advancedrealestate_be.dto.request.AuctionHistoryRequest;
 import org.example.advancedrealestate_be.service.AuctionDetailService;
 import org.example.advancedrealestate_be.service.AuctionHistoryService;
 import org.example.advancedrealestate_be.service.AuctionService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +20,7 @@ import java.util.List;
 @RestController
 @SecurityRequirement(name = "bearerAuth")
 @RequestMapping("/api/admin/")
-@Tag(name = "Admin auction histories", description = "API for auction history")
+@Tag(name = "7. Auction history API", description = "API for auction history")
 @Slf4j
 public class AuctionHistoryApiController {
 
@@ -28,6 +29,7 @@ public class AuctionHistoryApiController {
     private final AuctionHistoryService auctionHistoryService;
 
 
+    @Autowired
     public AuctionHistoryApiController(AuctionService auctionService, AuctionDetailService auctionDetailService, AuctionHistoryService auctionHistoryService) {
         this.auctionService = auctionService;
         this.auctionDetailService = auctionDetailService;
@@ -59,9 +61,7 @@ public class AuctionHistoryApiController {
 
     @GetMapping("/auction-histories/{id}")
     private ResponseEntity<JSONObject> detail(@PathVariable String id) {
-        JSONObject responseObject = new JSONObject();
-        responseObject.put("data", auctionHistoryService.findById(id));
-        return new ResponseEntity<>(responseObject, HttpStatus.OK);
+        return new ResponseEntity<>(auctionHistoryService.findById(id), HttpStatus.OK);
     }
 
     @PatchMapping("/auction-histories/{id}")

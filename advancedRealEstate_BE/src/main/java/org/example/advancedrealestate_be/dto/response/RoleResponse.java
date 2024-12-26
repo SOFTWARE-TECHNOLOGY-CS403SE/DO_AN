@@ -13,5 +13,6 @@ import java.util.Set;
 public class RoleResponse {
     String id;
     String role_name;
+    String role_type;
     Integer status;
 }

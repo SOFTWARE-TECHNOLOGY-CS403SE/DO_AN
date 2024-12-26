@@ -1,5 +1,6 @@
 package org.example.advancedrealestate_be.service;
 
+import org.example.advancedrealestate_be.dto.request.DeleteMaintenanceRequest;
 import org.example.advancedrealestate_be.dto.request.MaintenanceRequest;
 import org.example.advancedrealestate_be.dto.response.MaintenanceResponse;
 import org.springframework.data.domain.Page;
@@ -12,6 +13,5 @@ public interface MaintenanceService {
     String updateMaintenance(String id, MaintenanceRequest request);
     String deleteMaintenance(String id);
     Page<MaintenanceResponse> getAllMaintenance(int page, int size);
-
-    String deleteAllMaintenance(List<String> ids);
+    String deleteAllMaintenance(DeleteMaintenanceRequest request);
 }

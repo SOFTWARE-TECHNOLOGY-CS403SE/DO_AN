@@ -3,21 +3,18 @@ package org.example.advancedrealestate_be.service.handler;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.example.advancedrealestate_be.dto.request.CreateRolePermissionRequest;
+import net.minidev.json.JSONObject;
 import org.example.advancedrealestate_be.dto.request.DeleteRoleRequest;
 import org.example.advancedrealestate_be.dto.request.RoleCreationRequest;
 import org.example.advancedrealestate_be.dto.request.RoleUpdateRequest;
-import org.example.advancedrealestate_be.dto.response.BuildingResponse;
 import org.example.advancedrealestate_be.dto.response.RoleResponse;
-import org.example.advancedrealestate_be.entity.Building;
-import org.example.advancedrealestate_be.entity.Permission;
 import org.example.advancedrealestate_be.entity.Role;
 import org.example.advancedrealestate_be.exception.AppException;
 import org.example.advancedrealestate_be.exception.ErrorCode;
 import org.example.advancedrealestate_be.mapper.RoleMapper;
-import org.example.advancedrealestate_be.mapper.RoleMapperImpl;
-import org.example.advancedrealestate_be.repository.PermissionRepository;
+import org.example.advancedrealestate_be.repository.RolePermissionRepository;
 import org.example.advancedrealestate_be.repository.RoleRepository;
+import org.example.advancedrealestate_be.repository.UserRepository;
 import org.example.advancedrealestate_be.service.RoleService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -35,55 +32,34 @@ import java.util.stream.Collectors;
 @Slf4j
 
 public class RoleServiceHandler implements RoleService {
-    @Autowired
-    RoleRepository roleRepository;
+    private final RoleRepository roleRepository;
+    private final RoleMapper roleMapper;
+    private final RolePermissionRepository rolePermissionRepository;
+    private final UserRepository userRepository;
 
     @Autowired
-    RoleMapper roleMapper;
-
-    @Autowired
-    PermissionRepository permissionRepository;
-
-    public RoleServiceHandler(RoleRepository roleRepository, RoleMapper roleMapper, PermissionRepository permissionRepository) {
+    public RoleServiceHandler(RoleRepository roleRepository, RoleMapper roleMapper, RolePermissionRepository rolePermissionRepository, UserRepository userRepository) {
         this.roleRepository = roleRepository;
         this.roleMapper = roleMapper;
-        this.permissionRepository = permissionRepository;
+        this.rolePermissionRepository = rolePermissionRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
-    public String createRole(RoleCreationRequest request) {
+    public JSONObject createRole(RoleCreationRequest request) {
         Role role = roleMapper.toRequest(request);
-        try {
-            roleRepository.save(role);
-        } catch (DataIntegrityViolationException exception) {
-            throw new AppException(ErrorCode.USER_EXISTED);
-        }
-        return "Đã thêm mới thành công";
-    }
-
-    @Override
-    public String createRolePermission(CreateRolePermissionRequest request) {
-        Role role = roleRepository.findById(request.getRoleId())
-                .orElseThrow(() -> new RuntimeException("Role not found"));
-
-        Permission permission = permissionRepository.findById(String.valueOf(request.getPermissionId()))
-                .orElseThrow(() -> new RuntimeException("Permission not found"));
-
-        // Thêm Permission vào Role
-        role.getPermissions().add(permission);
-
-        // Lưu thay đổi
         roleRepository.save(role);
-
-        return "Đã thêm mới thành công";
+        JSONObject dataResponse= new JSONObject();
+        //trả message từ service về cho controller trả ra cho client
+        dataResponse.put("status", 200);
+        dataResponse.put("message", "Đã thêm mới thành công");
+        return dataResponse;
     }
 
     @Override
     public String updateRole(String userId, RoleUpdateRequest request) {
 
-        Role role = roleRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy Role với ID: " + userId));
-
+        Role role = roleRepository.findById(userId).orElseThrow(() -> new RuntimeException("Không tìm thấy Role với ID: " + userId));
         roleMapper.toUpdateRequest(role, request);
         roleRepository.save(role);
         return "Đã cập nhật thành công";
@@ -91,9 +67,7 @@ public class RoleServiceHandler implements RoleService {
 
     @Override
     public String deleteRole(String RoleId) {
-        Role role = roleRepository.findById(RoleId)
-                .orElseThrow(() -> new RuntimeException("Không tìm thấy Role với ID: " + RoleId));
-
+        Role role = roleRepository.findById(RoleId).orElseThrow(() -> new RuntimeException("Không tìm thấy Role với ID: " + RoleId));
         roleRepository.delete(role);
         return "Đã xóa thành công";
     }
@@ -114,6 +88,16 @@ public class RoleServiceHandler implements RoleService {
     @Override
     public String deleteRoles(DeleteRoleRequest request) {
         for (String id : request.getIds()) {
+            // Kiểm tra xem có User nào đang tham chiếu đến Role này không
+            Role role = roleRepository.findById(id).orElseThrow(() -> new RuntimeException("Role with ID " + id + " does not exist"));;
+            if (userRepository.existsByRoleId(id)) {
+                throw new RuntimeException("Vai trò " + role.getRole_name() + " vẫn được một số người dùng tham chiếu và không thể xóa được");
+            }
+
+            // Nếu không có User tham chiếu, tiến hành xóa RolePermission trước
+            rolePermissionRepository.deleteByRoleId(id);
+
+            // Sau đó xóa Role
             if (roleRepository.existsById(id)) {
                 roleRepository.deleteById(id);
             } else {
@@ -126,5 +110,10 @@ public class RoleServiceHandler implements RoleService {
     @Override
     public List<RoleResponse> getAllRoles() {
         return roleRepository.findAll().stream().map(roleMapper::toResponse).collect(Collectors.toList());
+    }
+
+    @Override
+    public List<RoleResponse> findRolesByType(String type) {
+        return roleRepository.findRolesByRole_type(type).stream().map(roleMapper::toResponse).collect(Collectors.toList());
     }
 }

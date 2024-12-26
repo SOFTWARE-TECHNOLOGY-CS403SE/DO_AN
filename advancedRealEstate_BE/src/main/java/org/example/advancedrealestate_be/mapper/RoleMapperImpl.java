@@ -23,6 +23,7 @@ public class RoleMapperImpl implements RoleMapper{
 
         Role role = new Role();
         role.setRole_name(request.getRole_name());
+        role.setRole_type(request.getRole_type());
         role.setStatus(request.getStatus());
         return  role;
     }
@@ -50,6 +51,7 @@ public class RoleMapperImpl implements RoleMapper{
         return RoleResponse.builder()
                 .id(role.getId())
                 .role_name(role.getRole_name())
+                .role_type(role.getRole_type())
                 .status(role.getStatus())
                 .build();
     }

@@ -42,14 +42,5 @@ public class Contracts {
 
     @OneToMany(mappedBy = "contracts", cascade = CascadeType.ALL)
     private List<Transactions> transactions = new ArrayList<>();
-
-    @OneToMany(mappedBy = "contracts", cascade = CascadeType.ALL)
-    private List<Invoices> invoices = new ArrayList<>();
-
-    // Correct field reference to the contract details
-    @ManyToOne
-    @JoinColumn(name = "contract_detail_id", nullable = true)
-    @JsonBackReference("contract-detail-contracts")
-    private Contract_details contractDetails;
 }
 

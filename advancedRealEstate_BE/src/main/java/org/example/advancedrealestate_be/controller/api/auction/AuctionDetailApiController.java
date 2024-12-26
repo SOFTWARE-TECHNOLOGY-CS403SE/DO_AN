@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @SecurityRequirement(name = "bearerAuth")
 @RequestMapping("/api/admin/")
-@Tag(name = "Admin auction details", description = "API for auction detail")
+@Tag(name = "6. Auction detail API", description = "API for auction detail")
 @Slf4j
 public class AuctionDetailApiController {
 
@@ -43,9 +43,7 @@ public class AuctionDetailApiController {
 
     @GetMapping("/auction-details/{id}")
     private ResponseEntity<JSONObject> detail(@PathVariable String id) {
-        JSONObject responseObject = new JSONObject();
-        responseObject.put("data", auctionDetailService.findById(id));
-        return new ResponseEntity<>(responseObject, HttpStatus.OK);
+        return new ResponseEntity<>(auctionDetailService.findById(id), HttpStatus.OK);
     }
 
     @PatchMapping("/auction-details/{id}")

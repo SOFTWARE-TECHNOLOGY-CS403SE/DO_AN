@@ -9,6 +9,7 @@ import org.example.advancedrealestate_be.mapper.DeviceMapper;
 import org.example.advancedrealestate_be.repository.DeviceRepository;
 import org.example.advancedrealestate_be.service.DeviceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -21,17 +22,24 @@ import java.util.stream.Collectors;
 @Service
 public class DeviceHandler implements DeviceService {
 
-    @Autowired
-    private DeviceRepository deviceRepository;
+    private final DeviceRepository deviceRepository;
+    private final DeviceMapper deviceMapper;
 
     @Autowired
-    private DeviceMapper deviceMapper;
+    public DeviceHandler(DeviceRepository deviceRepository, DeviceMapper deviceMapper) {
+        this.deviceRepository = deviceRepository;
+        this.deviceMapper = deviceMapper;
+    }
 
     @Override
-    public DeviceResponse createDevice(DeviceRequest request) {
-        Devices devices = deviceMapper.toEntity(request); // Ensure toEntity uses java.time.LocalDate
-        devices = deviceRepository.save(devices);
-        return deviceMapper.toResponse(devices); // Ensure toResponse uses java.time.LocalDate
+    public String createDevice(DeviceRequest request) {
+        Devices devices = deviceMapper.toEntity(request);
+        try{
+            deviceRepository.save(devices);
+            return "Create device successfully !";
+        }catch (DataIntegrityViolationException exception){
+            throw new RuntimeException(exception);
+        }
     }
 
     @Override
@@ -50,26 +58,57 @@ public class DeviceHandler implements DeviceService {
     }
 
     @Override
-    public DeviceResponse updateDevice(String id, DeviceRequest request) {
-        Devices devices = deviceRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Device not found!"));
-        devices.setDevice_name(request.getDevice_name());
-        devices.setInstallation_date(request.getInstallation_date()); // Ensure this is java.time.LocalDate
-        devices.setStatus(request.getStatus());
-        devices.setPrice(request.getPrice());
-        devices.setDescription(request.getDescription());
-        deviceRepository.save(devices);
-        return deviceMapper.toResponse(devices);
+    public String deleteAllDevices(List<String> ids) {
+        List<Devices> devicesList=deviceRepository.findAllById(ids);
+        try{
+
+            if(devicesList.size() != ids.size()){
+                throw new RuntimeException("Some devices not found");
+            }
+            deviceRepository.deleteAll(devicesList);
+            return "Delete all devices successfully !";
+        }catch (DataIntegrityViolationException exception){
+            throw new RuntimeException(exception);
+        }
     }
 
     @Override
-    public void deleteDevice(String id) {
-        deviceRepository.deleteById(id);
+    public String updateDevice(String id, DeviceRequest request) {
+        Devices devices = deviceRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Device not found!"));
+        try{
+
+            devices.setDevice_name(request.getDevice_name());
+            devices.setInstallation_date(request.getInstallation_date()); // Ensure this is java.time.LocalDate
+            devices.setStatus(request.getStatus());
+            devices.setPrice(request.getPrice());
+            devices.setDescription(request.getDescription());
+            deviceRepository.save(devices);
+            return "Update device successfully !";
+        }catch (DataIntegrityViolationException exception){
+            throw new RuntimeException(exception);
+
+        }
+
+
+    }
+
+    @Override
+    public String deleteDevice(String id) {
+        try{
+            deviceRepository.deleteById(id);
+            return  "Delete device successfully !";
+        }catch (DataIntegrityViolationException exception){
+            throw new RuntimeException(exception);
+        }
+
     }
 
     @Override
     public Page<DeviceResponse> getDevice(int page, int size) {
+
         Pageable pageable = PageRequest.of(page - 1, size);
+
         Page<Devices> categoryPage = deviceRepository.findAll(pageable);
 
         List<DeviceResponse> deviceResponses = categoryPage.getContent().stream()

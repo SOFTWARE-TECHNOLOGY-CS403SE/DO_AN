@@ -1,8 +1,11 @@
 package org.example.advancedrealestate_be.service.handler;
 
+import net.minidev.json.JSONObject;
 import org.example.advancedrealestate_be.constant.ErrorEnumConstant;
 import org.example.advancedrealestate_be.dto.ServiceDto;
 import org.example.advancedrealestate_be.entity.Service;
+import org.example.advancedrealestate_be.exception.AppException;
+import org.example.advancedrealestate_be.exception.ErrorCode;
 import org.example.advancedrealestate_be.mapper.ServiceMapper;
 import org.example.advancedrealestate_be.repository.ServiceRepository;
 import org.example.advancedrealestate_be.service.ServiceService;
@@ -37,45 +40,43 @@ public class ServiceHandler implements ServiceService {
     }
 
     @Override
-    public ServiceDto findById(String id) {
-        Optional<org.example.advancedrealestate_be.entity.Service> service = serviceRepository.findById(id);
-        if (service.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorEnumConstant.ServiceNotFound.toString());
-        }
-        return service.map(value -> new ServiceDto(value.getId(), value.getName(), value.getPrice())).orElse(null);
+    public JSONObject findById(String id) {
+        JSONObject responseObject = new JSONObject();
+        Service service = serviceRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.SERVICE_NOT_FOUND));
+        responseObject.put("data", service);
+        return responseObject;
     }
 
 //    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     @Transactional
     @Override
-    public ServiceDto create(ServiceDto serviceDto) {
+    public JSONObject create(ServiceDto serviceDto) {
+        JSONObject responseObject = new JSONObject();
         Service service = modelMapper.map(serviceDto, Service.class);
-        Service serviceNew = serviceRepository.save(service);
-        return new ServiceDto(serviceNew.getId(), serviceNew.getName(), serviceNew.getPrice());
+        serviceRepository.save(service);
+        responseObject.put("message", "Created successfully");
+        return responseObject;
     }
 
 //    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     @Override
-    public ServiceDto updateById(String id, ServiceDto serviceDto) {
-        Optional<org.example.advancedrealestate_be.entity.Service> service = serviceRepository.findById(id);
-        if (service.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorEnumConstant.BuildingNotFound.toString());
-        }
-        service.get().setName(serviceDto.getName() != null ? serviceDto.getName() : service.get().getName());
-        service.get().setPrice(serviceDto.getPrice() != 0 ? serviceDto.getPrice() : service.get().getPrice());
-        org.example.advancedrealestate_be.entity.Service serviceUpdate = serviceRepository.save(service.get());
-        return new ServiceDto(serviceUpdate.getId(), serviceUpdate.getName(), serviceUpdate.getPrice());
+    public JSONObject updateById(String id, ServiceDto serviceDto) {
+        JSONObject responseObject = new JSONObject();
+        Service service = serviceRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.SERVICE_NOT_FOUND));
+        service.setName(serviceDto.getName() != null ? serviceDto.getName() : service.getName());
+        service.setPrice(serviceDto.getPrice() != 0 ? serviceDto.getPrice() : service.getPrice());
+        serviceRepository.save(service);
+        responseObject.put("message", "Updated successfully");
+        return responseObject;
     }
 
 //    @PreAuthorize("hasAnyRole('ADMIN', 'STAFF')")
     @Override
-    public ServiceDto deleteById(String id) {
-        Optional<org.example.advancedrealestate_be.entity.Service> service = serviceRepository.findById(id);
-        if (service.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, ErrorEnumConstant.ServiceNotFound.toString());
-        }
-        ServiceDto serviceDto = new ServiceDto(service.get().getId(), service.get().getName(), service.get().getPrice());
-        serviceRepository.delete(service.get());
-        return serviceDto;
+    public JSONObject deleteById(String id) {
+        JSONObject responseObject = new JSONObject();
+        Service service = serviceRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.SERVICE_NOT_FOUND));
+        serviceRepository.delete(service);
+        responseObject.put("message", "Delete successfully");
+        return responseObject;
     }
 }

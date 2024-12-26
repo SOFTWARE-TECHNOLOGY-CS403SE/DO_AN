@@ -9,8 +9,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class DeviceMapper {
+
+    private final BuildingRepository buildingRepository;
+
     @Autowired
-    private BuildingRepository buildingRepository;
+    public DeviceMapper(BuildingRepository buildingRepository) {
+        this.buildingRepository = buildingRepository;
+    }
 
     public Devices toEntity(DeviceRequest request){
         Devices devices=new Devices();

@@ -13,6 +13,7 @@ public class BuildingUpdateResquest {
     private String id_map;
     private String description;
     private String name;
+    private String structure;
     private Integer status;
     private Integer number_of_basement;
     private String acreage;

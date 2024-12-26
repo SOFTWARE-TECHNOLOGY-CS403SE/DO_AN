@@ -14,7 +14,7 @@ import java.util.List;
 public interface AuctionHistoryService {
     List<AuctionHistoryResponse> findAll();
 
-    AuctionHistoryResponse findById(String id);
+    JSONObject findById(String id);
 
     JSONObject create(AuctionHistoryRequest dto);
 
@@ -29,4 +29,6 @@ public interface AuctionHistoryService {
     JSONObject deleteById(String id);
 
     void handleBidMessage(AuctionHistoryRequest dto);
+
+    void handleDeleteAllAuctionHistoriesByAid(String auctionId);
 }

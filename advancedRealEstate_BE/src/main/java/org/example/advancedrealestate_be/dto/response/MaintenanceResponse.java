@@ -16,6 +16,9 @@ public class MaintenanceResponse {
     private LocalDate maintenance_date;
     private String description;
     private Double cost;
-
     private String buildingId;
+    private String customerId;
+
+    private String full_name;
+    private String building_name;
 }

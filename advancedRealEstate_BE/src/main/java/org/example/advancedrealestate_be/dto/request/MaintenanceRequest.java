@@ -19,6 +19,6 @@ public class MaintenanceRequest {
     private LocalDate maintenance_date;
     private String description;
     private Double cost;
-
+    private String customerId;
     private String buildingId;
 }

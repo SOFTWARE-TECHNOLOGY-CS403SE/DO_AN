@@ -28,11 +28,11 @@ import java.util.stream.Collectors;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class CategoryServiceHandler implements CategoryService {
-    @Autowired
-    CategoryRepository categoryRepository;
-    @Autowired
-    CategoryMapper categoryMapper;
 
+    private final CategoryRepository categoryRepository;
+    private final CategoryMapper categoryMapper;
+
+    @Autowired
     public CategoryServiceHandler(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
         this.categoryRepository = categoryRepository;
         this.categoryMapper = categoryMapper;

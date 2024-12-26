@@ -27,14 +27,13 @@ import java.util.stream.Collectors;
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
-
 public class TypeBuildingHandler implements TypeBuildingService {
-    @Autowired
-    TypeBuildingRepository typeBuildingRepository;
+
+    private final TypeBuildingRepository typeBuildingRepository;
+
+    private final TypeBuildingMapper typeBuildingMapper;
 
     @Autowired
-    TypeBuildingMapper typeBuildingMapper;
-
     public TypeBuildingHandler(TypeBuildingRepository typeBuildingRepository, TypeBuildingMapper typeBuildingMapper) {
         this.typeBuildingRepository = typeBuildingRepository;
         this.typeBuildingMapper = typeBuildingMapper;
@@ -46,11 +45,10 @@ public class TypeBuildingHandler implements TypeBuildingService {
 
         try {
             typeBuildingRepository.save(typeBuilding);
+            return  "Create Successfully !";
         } catch (DataIntegrityViolationException exception) {
             throw new RuntimeException(exception);
         }
-
-        return  "Create Successfully !";
     }
 
     @Override
@@ -60,22 +58,23 @@ public class TypeBuildingHandler implements TypeBuildingService {
             typeBuildingMapper.toUpdateRequest(typeBuilding,request);
 
             typeBuildingRepository.save(typeBuilding);
+            return "Update successfully !";
         } catch (DataIntegrityViolationException exception) {
-            throw new AppException(ErrorCode.USER_EXISTED);
+            throw new RuntimeException(exception);
         }
 
-        return "Update successfully !";
     }
 
     @Override
     public String deleteTypeBuilding(String typeBuildingId) {
         try {
             typeBuildingRepository.deleteById(typeBuildingId);
+            return "Delete successfully !";
         } catch (DataIntegrityViolationException exception) {
-            throw new AppException(ErrorCode.USER_EXISTED);
+            throw new RuntimeException(exception);
         }
 
-        return "Delete successfully !";
+
     }
 
     @Override
@@ -93,14 +92,17 @@ public class TypeBuildingHandler implements TypeBuildingService {
 
     @Override
     public String deleteTypeBuildings(DeleteTypeBuildingsRequest request) {
-        for (String id : request.getIds()) {
-            if (typeBuildingRepository.existsById(id)) {
-                typeBuildingRepository.deleteById(id);
-            } else {
-                throw new RuntimeException("TypeBuilding with ID " + id + " does not exist");
+            for (String id : request.getIds()) {
+                if (typeBuildingRepository.existsById(id)) {
+                    typeBuildingRepository.deleteById(id);
+
+                } else {
+                    throw new RuntimeException("TypeBuilding with ID " + id + " does not exist");
+                }
             }
-        }
         return "Deleted successfully!";
+
+
     }
 
     @Override

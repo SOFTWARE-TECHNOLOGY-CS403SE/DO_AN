@@ -3,13 +3,14 @@ import java.util.List;
 
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 
+import jakarta.validation.Valid;
 import org.example.advancedrealestate_be.dto.request.*;
 import org.example.advancedrealestate_be.dto.response.ApiResponse;
 import org.example.advancedrealestate_be.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.example.advancedrealestate_be.dto.response.UserResponse;
 import java.util.HashMap;
@@ -24,13 +25,15 @@ import lombok.extern.slf4j.Slf4j;
 @RestController
 @SecurityRequirement(name = "bearerAuth")
 @RequestMapping("api/users")
-@RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
-@Tag(name = "Admin User")
+@Tag(name = "3. User API")
 public class UserController {
+    private final UserService userService;
     @Autowired
-    UserService userService;
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
 
     @GetMapping
     ApiResponse<Map<String, Object>> getUsers(
@@ -75,6 +78,7 @@ public class UserController {
                 .message(userService.createUser(request))
                 .build();
     }
+
 
     @PutMapping("/{userId}")
     ApiResponse<UserResponse> updateUser(@PathVariable String userId, @RequestBody UserUpdateRequest request) {
@@ -122,11 +126,4 @@ public class UserController {
                 .build();
     }
 
-//    @PatchMapping("role-user/{userId}")
-//    ApiResponse<UserRoleResponse> updateRoleUser(@PathVariable String userId, @RequestBody UserRoleRequest request) {
-//        UserRoleResponse userRoleResponse = userService.updateRoleUser(userId, request);
-//        return ApiResponse.<UserRoleResponse>builder()
-//                .result(userRoleResponse)
-//                .build();
-//    }
 }

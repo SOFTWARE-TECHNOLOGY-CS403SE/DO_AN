@@ -15,6 +15,7 @@ public class BuildingResponse {
     private String description;
     private List<String> image;
     private String name;
+    private String structure;
     private int status;
     private int number_of_basement;
     private String area;

@@ -17,12 +17,11 @@ import java.util.List;
 @Service
 public class CheckRuleService implements CheckRule {
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+
+    private final PermissionRepository permissionRepository;
 
     @Autowired
-    private PermissionRepository permissionRepository;
-
     public CheckRuleService(UserRepository userRepository, PermissionRepository permissionRepository) {
         this.userRepository = userRepository;
         this.permissionRepository = permissionRepository;

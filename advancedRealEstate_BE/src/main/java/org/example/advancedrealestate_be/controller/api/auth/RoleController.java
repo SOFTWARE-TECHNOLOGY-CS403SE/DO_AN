@@ -29,103 +29,74 @@ import java.util.Map;
 @RestController
 @SecurityRequirement(name = "bearerAuth")
 @RequestMapping("api/admins/role")
-@RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
-@Tag(name="Admin Role")
+@Tag(name="9. Role API")
 public class RoleController {
+
+    private final RoleService roleService;
+
     @Autowired
-    RoleService roleService;
+    public RoleController(RoleService roleService) {
+        this.roleService = roleService;
+    }
 
     @GetMapping
     public ResponseEntity<JSONObject> getAllRoles(@RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) {
         JSONObject data = new JSONObject();
         Map<String, Object> response = new HashMap<>();
+        if (page == null || size == null) {
+            List<RoleResponse> roleResponses = roleService.getAllRoles();
 
-        try {
-            if (page == null || size == null) {
-                List<RoleResponse> roleResponses = roleService.getAllRoles();
+            response.put("data", roleResponses);
+        } else {
+            Page<RoleResponse> pageResult = roleService.getBuilding(page, size);
 
-                response.put("data", roleResponses);
-            } else {
-                Page<RoleResponse> pageResult = roleService.getBuilding(page, size);
-
-                Map<String, Object> pagination = new HashMap<>();
-                pagination.put("total", pageResult.getTotalElements());
-                pagination.put("per_page", pageResult.getSize());
-                pagination.put("current_page", pageResult.getNumber() + 1);
-                pagination.put("last_page", pageResult.getTotalPages());
-                pagination.put("from", (pageResult.getNumber() * pageResult.getSize()) + 1);
-                pagination.put("to", Math.min((pageResult.getNumber() + 1) * pageResult.getSize(), pageResult.getTotalElements()));
-
-                response.put("pagination", pagination);
-                response.put("data", pageResult.getContent());
-            }
-
-            data.put("status", 200);
-            data.put("data", response);
-            return new ResponseEntity<>(data, HttpStatus.OK);
-        } catch (Exception error) {
-            data.put("message", error.getMessage());
-            return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
+            Map<String, Object> pagination = new HashMap<>();
+            pagination.put("total", pageResult.getTotalElements());
+            pagination.put("per_page", pageResult.getSize());
+            pagination.put("current_page", pageResult.getNumber() + 1);
+            pagination.put("last_page", pageResult.getTotalPages());
+            pagination.put("from", (pageResult.getNumber() * pageResult.getSize()) + 1);
+            pagination.put("to", Math.min((pageResult.getNumber() + 1) * pageResult.getSize(), pageResult.getTotalElements()));
+            response.put("pagination", pagination);
+            response.put("data", pageResult.getContent());
         }
+        data.put("status", 200);
+        data.put("data", response);
+        return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
     @PostMapping
     public ResponseEntity<JSONObject> createRole(@Valid @RequestBody RoleCreationRequest request) {
-        JSONObject data = new JSONObject();
-        try{
-            //trả message từ service về cho controller trả ra cho client
-            String response = roleService.createRole(request);
-            data.put("status", 200);
-            data.put("message", response);
-            return new ResponseEntity<>(data, HttpStatus.OK);
-        }catch (Exception error) {
-            data.put("message", error.getMessage());
-            return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        return new ResponseEntity<>(roleService.createRole(request), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
     public ResponseEntity<JSONObject> updateCategory(@Valid @PathVariable String id, @RequestBody RoleUpdateRequest request) {
         JSONObject data = new JSONObject();
-        try {
-            String response = roleService.updateRole(id, request);
-            data.put("status", 200);
-            data.put("message", response);
-            return new ResponseEntity<>(data, HttpStatus.OK);
-        } catch (Exception erro) {
-            data.put("message", erro.getMessage());
-            return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        String response = roleService.updateRole(id, request);
+        data.put("status", 200);
+        data.put("message", response);
+        return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<JSONObject> deleteCategory(@Valid @PathVariable String id) {
         JSONObject data = new JSONObject();
-        try {
-            String response = roleService.deleteRole(id);
-            data.put("status", 200);
-            data.put("message", response);
-            return new ResponseEntity<>(data, HttpStatus.OK);
-        } catch (Exception erro) {
-            data.put("message", erro.getMessage());
-            return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        String response = roleService.deleteRole(id);
+        data.put("status", 200);
+        data.put("message", response);
+        return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
     @DeleteMapping("/delete-all")
     public ResponseEntity<JSONObject> deleteAllTypeBuilding(@Valid @RequestBody DeleteRoleRequest request) {
         JSONObject data = new JSONObject();
-        try {
-            String response = roleService.deleteRoles(request);
-            data.put("status", 200);
-            data.put("message", response);
-            return new ResponseEntity<>(data, HttpStatus.OK);
-        } catch (Exception error) {
-            data.put("message", error.getMessage());
-            return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        String response = roleService.deleteRoles(request);
+        data.put("status", 200);
+        data.put("message", response);
+        return new ResponseEntity<>(data, HttpStatus.OK);
     }
 //    @PostMapping
 //    ApiResponse<RoleResponse> create(@RequestBody RoleCreationRequest request) {

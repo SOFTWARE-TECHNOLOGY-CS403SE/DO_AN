@@ -11,13 +11,13 @@ import lombok.ToString;
 @ToString
 public class Bid {
 
-
     private Bid.BidMessageType type;
     private double bidAmount;
     private String sender;
     private String email;
     private String auction_id;
     private String client_id;
+    private boolean clear;
 
     public enum BidMessageType {
         JOIN,

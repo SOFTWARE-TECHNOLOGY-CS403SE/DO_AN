@@ -6,6 +6,7 @@ import net.minidev.json.JSONObject;
 import org.example.advancedrealestate_be.dto.request.DeviceRequest;
 import org.example.advancedrealestate_be.dto.response.CategoryResponse;
 import org.example.advancedrealestate_be.dto.response.DeviceResponse;
+import org.example.advancedrealestate_be.entity.Devices;
 import org.example.advancedrealestate_be.service.DeviceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -20,25 +21,23 @@ import java.util.Map;
 @RestController
 @SecurityRequirement(name="bearerAuth")
 @RequestMapping("/api/device")
-@Tag(name="User device", description = " API for user")
+@Tag(name="15. Device API", description = " API for device")
 public class DeviceApiController {
 
+    private final DeviceService deviceService;
+
     @Autowired
-    private DeviceService deviceService;
+    public DeviceApiController(DeviceService deviceService) {
+        this.deviceService = deviceService;
+    }
 
     @PostMapping
     public ResponseEntity<JSONObject> createDevice(@RequestBody DeviceRequest request){
         JSONObject data=new JSONObject();
-        try{
-            DeviceResponse response=deviceService.createDevice(request);
-            data.put("status", 200);
-            data.put("message", "Device created successfully !");
-            return new ResponseEntity<>(data, HttpStatus.OK);
-
-        }catch(Exception error){
-            data.put("message",error.getMessage());
-            return new ResponseEntity<>(data,HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        String response=deviceService.createDevice(request);
+        data.put("status", 200);
+        data.put("message", response);
+        return new ResponseEntity<>(data, HttpStatus.OK);
     }
 //    @GetMapping("/{id}")
 //    public ResponseEntity<JSONObject> getDeviceById(@PathVariable String id){
@@ -54,71 +53,47 @@ public class DeviceApiController {
 //    }
 
     @GetMapping
-    public ResponseEntity<JSONObject> getAllDevices(
-                                                    @RequestParam(required = false) Integer page,
+    public ResponseEntity<JSONObject> getAllDevices(@RequestParam(required = false) Integer page,
                                                     @RequestParam(required = false) Integer size) {
 
         JSONObject data = new JSONObject();
         Map<String, Object> response = new HashMap<>();
+        if (page == null || size == null) {
+            List<DeviceResponse> categories = deviceService.getAllDevice();
+            response.put("data", categories);
+        } else {
+            Page<DeviceResponse> pageResult = deviceService.getDevice(page, size);
 
-        try {
-            if (page == null || size == null) {
-                List<DeviceResponse> categories = deviceService.getAllDevice();
+            Map<String, Object> pagination = new HashMap<>();
+            pagination.put("total", pageResult.getTotalElements());
+            pagination.put("per_page", pageResult.getSize());
+            pagination.put("current_page", pageResult.getNumber() + 1);
+            pagination.put("last_page", pageResult.getTotalPages());
+            pagination.put("from", (pageResult.getNumber() * pageResult.getSize()) + 1);
+            pagination.put("to", Math.min((pageResult.getNumber() + 1) * pageResult.getSize(), pageResult.getTotalElements()));
 
-                response.put("data", categories);
-            } else {
-                Page<DeviceResponse> pageResult = deviceService.getDevice(page, size);
-
-                Map<String, Object> pagination = new HashMap<>();
-                pagination.put("total", pageResult.getTotalElements());
-                pagination.put("per_page", pageResult.getSize());
-                pagination.put("current_page", pageResult.getNumber() + 1);
-                pagination.put("last_page", pageResult.getTotalPages());
-                pagination.put("from", (pageResult.getNumber() * pageResult.getSize()) + 1);
-                pagination.put("to", Math.min((pageResult.getNumber() + 1) * pageResult.getSize(), pageResult.getTotalElements()));
-
-                response.put("pagination", pagination);
-                response.put("data", pageResult.getContent());
-            }
-
-            data.put("status", 200);
-            data.put("data", response);
-            return new ResponseEntity<>(data, HttpStatus.OK);
-        } catch (Exception error) {
-            data.put("message", error.getMessage());
-            return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
+            response.put("pagination", pagination);
+            response.put("data", pageResult.getContent());
         }
+        data.put("status", 200);
+        data.put("data", response);
+        return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
     @PutMapping("{id}")
     public ResponseEntity<JSONObject> updateDevice(@PathVariable String id, @RequestBody DeviceRequest request){
         JSONObject data=new JSONObject();
-        try{
-            deviceService.updateDevice(id,request);
-
-            data.put("status",200);
-            data.put("message","device updated successfully");
-            return new ResponseEntity<>(data,HttpStatus.OK);
-        }catch(Exception e){
-            data.put("message",e.getMessage());
-            return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
-
-        }
+        data.put("status",200);
+        data.put("message",deviceService.updateDevice(id,request));
+        return new ResponseEntity<>(data,HttpStatus.OK);
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<JSONObject> deleteDevice(@PathVariable String id){
         JSONObject data=new JSONObject();
-        try{
-            deviceService.deleteDevice(id);
-            data.put("status", 200);
-            data.put("message","Device was deleted successfully");
-            return new ResponseEntity<>(data,HttpStatus.OK);
-        }catch(Exception error){
-            data.put("message",error.getMessage());
-            return new ResponseEntity<>(data,HttpStatus.INTERNAL_SERVER_ERROR);
-
-        }
+        data.put("status", 200);
+        data.put("message",deviceService.deleteDevice(id));
+        return new ResponseEntity<>(data,HttpStatus.OK);
     }
 
 }

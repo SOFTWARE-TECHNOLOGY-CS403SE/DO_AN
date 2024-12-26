@@ -1,21 +1,24 @@
 package org.example.advancedrealestate_be.service.handler;
 
 
+import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.example.advancedrealestate_be.constant.PredefinedRole;
 import org.example.advancedrealestate_be.dto.request.*;
 import org.example.advancedrealestate_be.dto.response.UserResponse;
+import org.example.advancedrealestate_be.entity.EmailVerificationToken;
 import org.example.advancedrealestate_be.entity.User;
 import org.example.advancedrealestate_be.exception.AppException;
 import org.example.advancedrealestate_be.exception.ErrorCode;
 import org.example.advancedrealestate_be.mapper.UserMapper;
+import org.example.advancedrealestate_be.repository.EmailVerificationTokenRepository;
+import org.example.advancedrealestate_be.repository.RoleRepository;
 import org.example.advancedrealestate_be.repository.UserRepository;
 import org.example.advancedrealestate_be.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -26,39 +29,43 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.*;
-import java.util.stream.Collectors;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class UserServiceHandler implements UserService {
-    @Autowired
-    UserRepository userRepository;
-//    @Autowired
-//    RoleRepository roleRepository;
-    @Autowired
-    UserMapper userMapper;
+    private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
+    private final UserMapper userMapper;
+    private final PasswordEncoder passwordEncoder;
+    private final SendEmailHandler sendEmailHandler;
+
+    private final EmailVerificationTokenRepository tokenRepository;
+
 
     @Autowired
-    PasswordEncoder passwordEncoder;
-
-    @Autowired
-//    public UserServiceHandler(UserRepository userRepository, RoleRepository roleRepository, UserMapper userMapper, PasswordEncoder passwordEncoder) {
-    public UserServiceHandler(UserRepository userRepository,  UserMapper userMapper, PasswordEncoder passwordEncoder) {
+    public UserServiceHandler(UserRepository userRepository, RoleRepository roleRepository, UserMapper userMapper, PasswordEncoder passwordEncoder, SendEmailHandler sendEmailHandler, EmailVerificationTokenRepository tokenRepository) {
         this.userRepository = userRepository;
-//        this.roleRepository = roleRepository;
+        this.roleRepository = roleRepository;
         this.userMapper = userMapper;
         this.passwordEncoder = passwordEncoder;
+        this.sendEmailHandler = sendEmailHandler;
+        this.tokenRepository = tokenRepository;
+
     }
 
     private static final String IMAGE_DIRECTORY = "IMAGE";
 
     @Override
-    public String createUser(UserCreationRequest request) {
+    public String createUser(@Valid UserCreationRequest request) {
 
         User user = userMapper.toUser(request);
         System.out.println(userRepository.findByEmail(request.getEmail()));
@@ -68,6 +75,7 @@ public class UserServiceHandler implements UserService {
             throw new AppException(ErrorCode.USER_EXISTED);
         }
         user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRawPassword(passwordEncoder.encode(request.getPassword()));
 
         MultipartFile avatar = request.getAvatar();
         if (avatar != null && !avatar.isEmpty()) {
@@ -88,24 +96,51 @@ public class UserServiceHandler implements UserService {
                 throw new RuntimeException("Lưu ảnh thất bại", e);
             }
         }
-
-//        HashSet<Role> roles = new HashSet<>();
-//        roleRepository.findById(PredefinedRole.USER_ROLE).ifPresent(roles::add);
-//
-//        user.setRoles(roles);
-
         try {
             userRepository.save(user);
         } catch (DataIntegrityViolationException exception) {
+            System.out.println("error: "+exception);
             throw new AppException(ErrorCode.USER_EXISTED);
         }
-
-//        return userMapper.toUserResponse(user);
-
-        return "Đã thêm mới thành công!";
+        return "tao user thanh cong !";
     }
 
-    @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'STAFF')")
+    @Override
+    @Transactional
+    public String createUserbyEmail(UserRequest userRequest) {
+        if (userRequest.getRawPassword() == null) {
+            throw new IllegalArgumentException("Password cannot be null");
+        }
+
+        User user = new User();
+        user.setFirst_name(userRequest.getFirstName());
+        user.setLast_name(userRequest.getLastName());
+        user.setUser_name(userRequest.getUserName());
+        user.setEmail(userRequest.getEmail());
+        // Set the raw password
+        user.setRawPassword(userRequest.getRawPassword());
+
+        // Encrypt the password (if needed)
+        String encryptedPassword = passwordEncoder.encode(userRequest.getRawPassword());
+        user.setPassword(encryptedPassword);
+        User newUser = userRepository.save(user);
+
+        // Generate email verification token and send email
+        String token = UUID.randomUUID().toString();
+        EmailVerificationToken verificationToken = new EmailVerificationToken();
+        verificationToken.setToken(token);
+        verificationToken.setUser(newUser);
+        verificationToken.setExpiryDate(LocalDateTime.now().plusHours(24));
+        tokenRepository.save(verificationToken);
+
+//         Send verification email with the token
+//        sendEmailHandler.sendVerificationEmail(userRequest.getEmail(), token);
+
+        return "User created and verification email sent.";
+    }
+
+
+//    @PreAuthorize("hasAnyRole('ADMIN', 'USER', 'STAFF')")
     @Override
     public UserResponse getMyInfo() {
         var context = SecurityContextHolder.getContext();
@@ -122,34 +157,14 @@ public class UserServiceHandler implements UserService {
 
         return userMapper.toUserResponse(user);
     }
-//    @PreAuthorize("hasRole('ADMIN')")
-//    @PostAuthorize("returnObject.email == authentication.email")
-//    public UserResponse updateUser(String userId, UserUpdateRequest request) {
-//        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-//
-//        userMapper.updateUser(user, request);
-//        user.setPassword(passwordEncoder.encode(request.getPassword()));
-//
-//        var roles = roleRepository.findAllById(request.getRoles());
-//        user.setRoles(new HashSet<>(roles));
-//
-//        return userMapper.toUserResponse(userRepository.save(user));
-//    }
 
-
-
-    //    @PostAuthorize("returnObject.email == authentication.name")
     @Override
     public String updateUser(String userId, UserUpdateRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
 
         userMapper.updateUser(user, request);
-
-//        var roles = roleRepository.findAllById(request.getRoles());
-//        user.setRoles(new HashSet<>(roles));
         userRepository.save(user);
-//        return userMapper.toUserResponse(userRepository.save(user));
         return "Đã cập nhập thành công!";
     }
 
@@ -165,7 +180,6 @@ public class UserServiceHandler implements UserService {
         return "Đã cập nhập thành công!";
     }
 
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN', 'STAFF')")
     @Override
     public UserResponse updateUserInfo(String userId, UpdateInfoUserRequest request) {
         User user = userRepository.findById(userId)
@@ -192,38 +206,11 @@ public class UserServiceHandler implements UserService {
             userUpdate.getGender(),
             userUpdate.getAvatar(),
             userUpdate.getAddress(),
-        null,
-    null
+            null,
+            null,
+                null
         );
     }
-
-//    @PreAuthorize("hasRole('ADMIN')")
-//    @Override
-//    public UserRoleResponse updateRoleUser(String userId, UserRoleRequest request) {
-//        User user = userRepository.findById(userId).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED));
-//        Set<UserRoleResponse.Role> oldRoles = user.getRoles().stream()
-//                .map(role -> new UserRoleResponse.Role(role.getName(),
-//                        role.getPermissions().stream()
-//                                .map(permission -> new UserRoleResponse.Permission(permission.getName()))
-//                                .collect(Collectors.toList())))
-//                .collect(Collectors.toSet());
-//        List<UserRoleRequest.Role> roleNames = request.getRoles();
-//        Set<Role> roles = roleNames.stream()
-//            .map(roleReq -> roleRepository.findById(roleReq.getName())
-//              .orElseThrow(() -> new AppException(ErrorCode.ROLE_NOT_FOUND)))
-//            .collect(Collectors.toSet());
-//        user.setRoles(roles);
-//        User userRoleUpdate = userRepository.save(user);
-//
-//        Set<UserRoleResponse.Role> responseRoles = roles.stream()
-//            .map(role -> new UserRoleResponse.Role(role.getName(),
-//                 role.getPermissions().stream()
-//            .map(permission -> new UserRoleResponse.Permission(permission.getName()))
-//        .collect(Collectors.toList())))
-//        .collect(Collectors.toSet());
-//
-//        return new UserRoleResponse(userRoleUpdate.getId(), userRoleUpdate.getEmail(), responseRoles, oldRoles);
-//    }
 
 
 //    @PreAuthorize("hasRole('ADMIN')")
@@ -253,8 +240,7 @@ public class UserServiceHandler implements UserService {
         return new PageImpl<>(userResponses, pageable, userPage.getTotalElements());
     }
 
-//ko cần đâu, tạo q
-//    @PreAuthorize("hasRole('ADMIN')")
+//  @PreAuthorize("hasRole('ADMIN')")
     @Override
     public UserResponse getUser(String id) {
         return userMapper.toUserResponse(userRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.USER_NOT_EXISTED)));

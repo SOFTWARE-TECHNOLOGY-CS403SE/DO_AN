@@ -13,8 +13,19 @@ import java.util.Optional;
 
 @Repository
 public interface CustomersRepository extends JpaRepository<Customers, String> {
-    @Query("SELECT c FROM Customers c WHERE c.user_name = :user_name OR c.email = :email")
-    Optional<Customers> findByUser_nameOrEmail(@Param("user_name") String user_name, @Param("email") String email);
+//    @Query("SELECT c FROM Customers c WHERE c.user_name = :user_name OR c.email = :email")
+//    //Optional<Customers> findByUser_nameOrEmail(@Param("user_name") String user_name, @Param("email") String email);
+//    Customers findByVerifyToken(String token);
+//    Page<Customers> findAll(Pageable pageable);
+Optional<Customers> findByEmail(String email);
+    Optional<Customers> findById(String id);
 
-    Page<Customers> findAll(Pageable pageable);
+
+//    @Query("SELECT c FROM Customers c WHERE c.userName = :userName AND c.email = :email")
+//    Optional<Customers> findByUserNameOrEmail(@Param("userName") String userName, @Param("email") String email);
+//
+//    @Query("SELECT c FROM Customers c WHERE c.verifyToken = :token")
+//    Optional<Customers> findByVerifyToken(@Param("token") String token);
+
+    boolean existsByEmail(String email);
 }

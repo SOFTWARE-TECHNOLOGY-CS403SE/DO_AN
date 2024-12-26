@@ -23,10 +23,13 @@ public class Maintenances {
     private LocalDate maintenance_date;
     private String description;
     private Double cost;
-
     @ManyToOne
     @JoinColumn(name = "building_id")
     private Building building;
+
+    @ManyToOne
+    @JoinColumn(name = "customer_id")
+    private Customers customers;
 
 
 }

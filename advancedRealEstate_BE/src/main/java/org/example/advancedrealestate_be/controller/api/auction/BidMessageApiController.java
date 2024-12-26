@@ -21,15 +21,15 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 @Controller
-@CrossOrigin(origins = "https://localhost:3000")
+//@CrossOrigin(origins = "https://localhost:3000")
 public class BidMessageApiController {
 
 
     private final SimpMessagingTemplate messagingTemplate;
     private final AuctionHistoryService auctionHistoryService;
-
     private final ScheduledTask scheduledTask;
     private final Map<String, Set<String>> roomUsers = new HashMap<>();
+    private final Map<String, Set<String>> msgUsers = new HashMap<>();
 
     @Autowired
     public BidMessageApiController(SimpMessagingTemplate messagingTemplate, AuctionHistoryService auctionHistoryService, ScheduledTask scheduledTask) {
@@ -57,6 +57,7 @@ public class BidMessageApiController {
         String currentDateTime = currentTimeInVN.format(formatter);
         String messageId = generateRandomBidMessageId(9);
         JSONObject messageObject = new JSONObject();
+        Set<String> messagesInRoom = msgUsers.getOrDefault(room, new HashSet<>());
 
         messageObject.put("id", messageId);
         messageObject.put("sender", bidMessage.getEmail());
@@ -66,13 +67,35 @@ public class BidMessageApiController {
         messageObject.put("currentDateTime", currentDateTime);
         messageObject.put("roomUser", room);
         messageObject.put("isSendBid", true);
+        messagesInRoom.add(messageObject.toString());
+        msgUsers.put(room, messagesInRoom);
+        messageObject.put("bids", messagesInRoom);
+
         AuctionHistoryRequest dto = new AuctionHistoryRequest();
         dto.setMessageBidId(messageObject.get("id").toString());
         dto.setBidTime(messageObject.get("currentDateTime").toString());
         dto.setBidAmount(bidMessage.getBidAmount());
         dto.setAuction_id(bidMessage.getAuction_id());
         dto.setClient_id(bidMessage.getClient_id());
-//        auctionHistoryService.handleBidMessage(dto);
+        auctionHistoryService.handleBidMessage(dto);
+
+        messagingTemplate.convertAndSend("/topic/room/" + room, messageObject.toString());
+    }
+
+    @MessageMapping("/clearBidToRoom/{room}")
+    public void clearBidToRoom(@DestinationVariable("room") String room, Bid bidMessage) {
+        System.out.println("Message: " + bidMessage);
+        System.out.println("Room: " + room);
+        System.out.println("Clear bids: " + bidMessage.isClear());
+
+        JSONObject messageObject = new JSONObject();
+        Set<String> messagesInRoom = msgUsers.getOrDefault(room, new HashSet<>());
+
+        messagesInRoom.clear();
+        messagesInRoom.add(messageObject.toString());
+        msgUsers.put(room, messagesInRoom);
+        messageObject.put("bids", messagesInRoom);
+        auctionHistoryService.handleDeleteAllAuctionHistoriesByAid(bidMessage.getAuction_id());
 
         messagingTemplate.convertAndSend("/topic/room/" + room, messageObject.toString());
     }
@@ -84,10 +107,18 @@ public class BidMessageApiController {
         System.out.println("Message: " + bidMessage);
         JSONObject messageObject = new JSONObject();
         Set<String> usersInRoom = roomUsers.getOrDefault(room, new HashSet<>());
+        Set<String> messagesInRoom = msgUsers.getOrDefault(room, new HashSet<>());
+
         usersInRoom.add(bidMessage.getEmail());
         roomUsers.put(room, usersInRoom);
-        System.out.println(usersInRoom);
+        if(!messagesInRoom.isEmpty()){
+            messagesInRoom.add(messageObject.toString());
+            msgUsers.put(room, messagesInRoom);
+            messageObject.put("bids", messagesInRoom);
+        }
         messageObject.put("count", usersInRoom.size());
+        messageObject.put("users", usersInRoom);
+        messageObject.put("newUser", bidMessage.getEmail());
 
         headerAccessor.getSessionAttributes().put("username", bidMessage.getSender());
 
@@ -103,6 +134,9 @@ public class BidMessageApiController {
         usersInRoom.remove(bidMessage.getEmail());
         messageObject.put("bot", bidMessage.getEmail() + " đã rời phòng " + room + "!");
         messageObject.put("count", usersInRoom.size());
+        messageObject.put("users", usersInRoom);
+        messageObject.put("userOut", bidMessage.getEmail());
+        messageObject.put("isOut", true);
 
         messagingTemplate.convertAndSend("/topic/room/" + room, messageObject.toString());
     }

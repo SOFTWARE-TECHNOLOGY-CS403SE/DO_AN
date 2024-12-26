@@ -11,8 +11,13 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class CategoryMapperIml implements CategoryMapper {
+
+    private final CategoryRepository categoryRepository;
+
     @Autowired
-    CategoryRepository categoryRepository;
+    public CategoryMapperIml(CategoryRepository categoryRepository) {
+        this.categoryRepository = categoryRepository;
+    }
 
     @Override
     public Category toRequest(CategoryCreateRequest request) {

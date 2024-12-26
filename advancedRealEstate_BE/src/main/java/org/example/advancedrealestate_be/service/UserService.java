@@ -1,5 +1,6 @@
 package org.example.advancedrealestate_be.service;
 
+import jakarta.validation.Valid;
 import org.example.advancedrealestate_be.dto.request.*;
 import org.example.advancedrealestate_be.dto.response.UserResponse;
 //import org.example.advancedrealestate_be.dto.response.UserRoleResponse;
@@ -17,7 +18,8 @@ public interface UserService {
     String updatePasswordUser(String userId, UserUpdatePasswordRequest request);
     UserResponse updateUserInfo(String userId, UpdateInfoUserRequest request);
 //    UserRoleResponse updateRoleUser(String userId, UserRoleRequest request);
-    String createUser(UserCreationRequest request);
+    String createUser(@Valid UserCreationRequest request);
     Page<UserResponse> getUsers(int page, int size);
+    String createUserbyEmail(UserRequest userRequest);
 
 }

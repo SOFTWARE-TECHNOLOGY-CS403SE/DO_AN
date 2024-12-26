@@ -20,7 +20,7 @@ import java.util.List;
 @RestController
 @SecurityRequirement(name = "bearerAuth")
 @RequestMapping("/api/admin/")
-@Tag(name = "Admin room chat", description = "API for room chat")
+@Tag(name = "12. Room chat API", description = "API for room chat")
 @Slf4j
 public class RoomChatApiController {
 
@@ -34,39 +34,24 @@ public class RoomChatApiController {
     @GetMapping("/room-chats")
     ResponseEntity<JSONObject> index() {
         JSONObject data = new JSONObject();
-        try {
-            List<RoomChatDto> roomChatDtoList = roomChatService.findAll();
-            data.put("total", roomChatDtoList.size());
-            data.put("data", roomChatDtoList);
-            return new ResponseEntity<>(data, HttpStatus.OK);
-        } catch (Exception error) {
-            data.put("message", error.getMessage());
-            return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        List<RoomChatDto> roomChatDtoList = roomChatService.findAll();
+        data.put("total", roomChatDtoList.size());
+        data.put("data", roomChatDtoList);
+        return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
     @GetMapping("/room-chats/{id}")
     ResponseEntity<JSONObject> detail(@PathVariable String id) {
         JSONObject data = new JSONObject();
-        try {
-            data.put("data", roomChatService.findById(id));
-            return new ResponseEntity<>(data, HttpStatus.OK);
-        } catch (Exception error) {
-            data.put("message", error.getMessage());
-            return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        data.put("data", roomChatService.findById(id));
+        return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
     @PostMapping("/room-chats")
     ResponseEntity<JSONObject> create(@RequestBody RoomChatDto request) {
         JSONObject data = new JSONObject();
-        try {
-            data.put("data", roomChatService.create(request));
-            return new ResponseEntity<>(data, HttpStatus.OK);
-        } catch (Exception error) {
-            data.put("message", error.getMessage());
-            return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        data.put("data", roomChatService.create(request));
+        return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
     @PostMapping(value = "/room-chats/{id}/upload-image", consumes = "multipart/form-data")
@@ -74,40 +59,24 @@ public class RoomChatApiController {
             @PathVariable String id,
             @RequestPart("image") @Schema(type = "string", format = "binary")
             MultipartFile imageFile) throws IOException {
-
         JSONObject data = new JSONObject();
-        try {
-            data.put("data", roomChatService.uploadImage(id, imageFile));
-            data.put("message", "Upload image successfully");
-            return new ResponseEntity<>(data, HttpStatus.OK);
-        } catch (Exception error) {
-            data.put("message", error.getMessage());
-            return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        data.put("data", roomChatService.uploadImage(id, imageFile));
+        data.put("message", "Upload image successfully");
+        return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
     @PatchMapping("/room-chats/{id}")
     ResponseEntity<JSONObject> updateById(@PathVariable String id ,@RequestBody RoomChatDto request) {
         JSONObject data = new JSONObject();
-        try {
-            data.put("data", roomChatService.updateById(id ,request));
-            return new ResponseEntity<>(data, HttpStatus.OK);
-        } catch (Exception error) {
-            data.put("message", error.getMessage());
-            return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        data.put("data", roomChatService.updateById(id ,request));
+        return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
     @DeleteMapping("/room-chats/{id}")
     ResponseEntity<JSONObject> deleteById(@PathVariable String id ,@RequestBody RoomChatDto request) {
         JSONObject data = new JSONObject();
-        try {
-            data.put("data", roomChatService.deleteById(id));
-            return new ResponseEntity<>(data, HttpStatus.OK);
-        } catch (Exception error) {
-            data.put("message", error.getMessage());
-            return new ResponseEntity<>(data, HttpStatus.INTERNAL_SERVER_ERROR);
-        }
+        data.put("data", roomChatService.deleteById(id));
+        return new ResponseEntity<>(data, HttpStatus.OK);
     }
 
 }

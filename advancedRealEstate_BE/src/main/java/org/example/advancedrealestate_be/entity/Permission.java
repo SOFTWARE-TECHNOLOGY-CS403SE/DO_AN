@@ -4,28 +4,25 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.HashSet;
 import java.util.Set;
 
 @Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Entity
-@Table(name = "permissions") // Đổi tên bảng thành số nhiều
+@Table(name = "permissions") // Bảng lưu thông tin các quyền
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Permission {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // ID tự động tăng
     Integer id;
 
     String permissionName;
     String link;
 
-    // Nhiều Permission có thể liên kết với nhiều Role
-    @ManyToMany(mappedBy = "permissions", fetch = FetchType.EAGER)
-    private Set<Role> roles = new HashSet<>();
+    // Một Permission có thể liên kết với nhiều RolePermission
+    @OneToMany(mappedBy = "permission")
+    private Set<RolePermission> rolePermissions;
 }
-
-

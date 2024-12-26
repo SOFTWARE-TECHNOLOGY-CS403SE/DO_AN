@@ -3,15 +3,15 @@ package org.example.advancedrealestate_be.controller.api.auth;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
 import java.net.MalformedURLException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -56,6 +56,37 @@ public class FileController {
             }
         } catch (MalformedURLException e) {
             throw new RuntimeException("Lỗi khi tải file: " + fileName, e);
+        }
+    }
+
+    private final Path rootLocation = Paths.get("uploads/contracts");
+    @GetMapping("/contract/{fileName:.+}")
+    public ResponseEntity<Resource> getFileContract(@PathVariable String fileName) {
+        try {
+            // Xác định đường dẫn tới file
+            Path filePath = rootLocation.resolve(fileName).normalize();
+
+            // Kiểm tra xem file có tồn tại không
+            if (!Files.exists(filePath)) {
+                return ResponseEntity.notFound().build(); // Trả về 404 nếu không tìm thấy file
+            }
+
+            // Tạo một resource từ file
+            Resource resource = new UrlResource(filePath.toUri());
+
+            // Kiểm tra xem file có phải là một resource hợp lệ không
+            if (resource.exists() || resource.isReadable()) {
+                // Trả về file với header "Content-Disposition" để trình duyệt biết là file để tải xuống
+                return ResponseEntity.ok()
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                        .body(resource);
+            } else {
+                return ResponseEntity.status(500).build(); // Trả về lỗi server nếu không thể đọc file
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(500).build(); // Trả về lỗi nếu gặp ngoại lệ
         }
     }
 }

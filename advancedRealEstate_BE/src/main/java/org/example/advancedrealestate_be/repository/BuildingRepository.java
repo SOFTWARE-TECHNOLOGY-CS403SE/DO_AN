@@ -1,9 +1,6 @@
 package org.example.advancedrealestate_be.repository;
 
 import org.example.advancedrealestate_be.entity.Building;
-import org.example.advancedrealestate_be.entity.Contract_details;
-import org.example.advancedrealestate_be.entity.Contracts;
-import org.example.advancedrealestate_be.entity.TypeBuilding;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

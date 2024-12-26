@@ -51,18 +51,19 @@ public class AuctionDetailHandler implements AuctionDetailService {
 
     @PreAuthorize("hasAnyRole('ADMIN','STAFF','USER')")
     @Override
-    public AuctionDetailResponse findById(String id) {
+    public JSONObject findById(String id) {
         AuctionDetail auctionDetail = auctionDetailRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.AUCTION_DETAIL_NOT_FOUND));
-
-        return new AuctionDetailResponse(
-                auctionDetail.getId(),
-                auctionDetail.getNote(),
-                auctionDetail.getResult(),
-                auctionDetail.getBidAmount(),
-                auctionDetail.getStatus(),
-                auctionDetail.getAuction(),
-                auctionDetail.getClient()
-        );
+        JSONObject responseObject = new JSONObject();
+        responseObject.put("data", new AuctionDetailResponse(
+            auctionDetail.getId(),
+            auctionDetail.getNote(),
+            auctionDetail.getResult(),
+            auctionDetail.getBidAmount(),
+            auctionDetail.getStatus(),
+            auctionDetail.getAuction(),
+            auctionDetail.getClient()
+        ));
+        return responseObject;
     }
 
 //    @PreAuthorize("hasAnyRole('ADMIN','STAFF','USER')")
@@ -90,7 +91,7 @@ public class AuctionDetailHandler implements AuctionDetailService {
         auctionDetail.setClient(client);
         AuctionDetail auctionDetailUpdated = auctionDetailRepository.save(auctionDetail);
         responseObject.put("data", auctionDetailUpdated);
-        responseObject.put("message", "Update successfully!");
+        responseObject.put("message", "Updated successfully!");
         return responseObject;
     }
 

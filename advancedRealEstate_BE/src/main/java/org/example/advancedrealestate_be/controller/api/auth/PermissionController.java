@@ -28,13 +28,18 @@ import java.util.Map;
 @RestController
 @SecurityRequirement(name = "bearerAuth")
 @RequestMapping("api/admin/permissions")
-@RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
-@Tag(name = "Admin Permission")
+@Tag(name = "8. Permission API")
 public class PermissionController {
+
+    private final PermissionService permissionService;
+
     @Autowired
-    PermissionService permissionService;
+    public PermissionController(PermissionService permissionService) {
+        this.permissionService = permissionService;
+    }
+
     @GetMapping
     public ResponseEntity<JSONObject> getAllPermissions(@RequestParam(required = false) Integer page, @RequestParam(required = false) Integer size) {
         JSONObject data = new JSONObject();

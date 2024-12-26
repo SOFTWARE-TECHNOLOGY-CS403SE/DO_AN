@@ -1,5 +1,6 @@
 package org.example.advancedrealestate_be.service;
 
+import net.minidev.json.JSONObject;
 import org.example.advancedrealestate_be.dto.request.*;
 import org.example.advancedrealestate_be.dto.response.BuildingResponse;
 import org.springframework.data.domain.Page;
@@ -14,7 +15,7 @@ public interface BuildingService {
     Page<BuildingResponse> getBuilding(int page, int size);
     String deleteBuildings(DeleteBuildingRequest request);
     List<BuildingResponse> getAllBuildings();
-    List<BuildingResponse> findById(String id);
+    JSONObject findById(String id);
 
 
 //    List<BuildingDto> findAll();

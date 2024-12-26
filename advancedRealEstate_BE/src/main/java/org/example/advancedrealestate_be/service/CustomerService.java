@@ -1,23 +1,12 @@
 package org.example.advancedrealestate_be.service;
 
 import org.example.advancedrealestate_be.dto.request.CustomerRequest;
-import org.example.advancedrealestate_be.dto.response.CustomerResponse;
-import org.example.advancedrealestate_be.dto.response.TypeBuildingResponse;
-import org.springframework.data.domain.Page;
-
-import java.util.List;
+import org.example.advancedrealestate_be.entity.Customers;
 
 public interface CustomerService {
-     String deleteCustomer(String id);
-
-
-     String updateCustomer(String id, CustomerRequest request);
-
-     String createCustomer(CustomerRequest request);
-
-     Page<CustomerResponse> getAllCustomers(int page, int size);
-
-     CustomerResponse getCustomerById(String id);
-//     List<CustomerResponse> getAllCustomers();
-     String deleteCustomers(List<String> ids);
+     void resetPassword(String token, String newPassword);
+     void requestPasswordReset(String email);
+     String registerCustomer(CustomerRequest customer);
+     boolean verifyCustomer(String token);
+     String login(String email, String password);
 }

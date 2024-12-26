@@ -46,4 +46,5 @@ public class UserCreationRequest {
     String birthday;
     MultipartFile avatar;
     String address;
+    String role_id;
 }

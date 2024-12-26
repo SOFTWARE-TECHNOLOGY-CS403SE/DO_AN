@@ -14,18 +14,10 @@ import java.util.List;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class CustomerRequest {
-
-
-    private String first_name;
-    private String last_name;
-    private String user_name;
-    private String password;
-    private String newPassword;
-//    private int status;
+    private String firstName;
+    private String lastName;
+    private String userName;
     private String email;
-    private String phone_number;
-
-    private String avatar;
-    private String address;
-
+    private String phoneNumber;
+    private String password;
 }
